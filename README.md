@@ -2,6 +2,14 @@
 
 Primera versió funcional de **Trading27**, una aplicació web educativa d'anàlisi borsària i simulació (*paper trading*), preparada per connectar-se a Vercel.
 
+## Visualització de dia i de nit
+
+- A la capçalera de l'aplicació hi ha el selector visible **☀ Dia / ☾ Nit**.
+- El **mode de nit** conserva el terminal fosc; el **mode de dia** utilitza fons clars i colors de contrast alt.
+- La selecció es conserva al navegador mitjançant `localStorage` (`trading27-theme`) i es restaura en reobrir l'aplicació.
+- El canvi és immediat, no modifica les dades, ni la cartera ni les operacions.
+- En pantalles petites, els botons mostren icones compactes amb etiquetes accessibles.
+
 ## Disseny poka-yoke (actualització)
 
 - **Camí inicial de tres passos**: aprendre, escollir empresa, practicar sense diners.
