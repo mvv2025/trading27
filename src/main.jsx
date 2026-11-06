@@ -55,6 +55,8 @@ function App(){
  const [selected,setSelected]=useState('BNP'),[comparison,setComparison]=useState(['BNP','SU']),[expanded,setExpanded]=useState(false);
  const [orderType,setOrderType]=useState('buy'),[quantity,setQuantity]=useState('1'),[limit,setLimit]=useState(''),[review,setReview]=useState(false),[initial,setInitial]=useState('5000');
  const [error,setError]=useState(''),[notice,setNotice]=useState(''),[feed,setFeed]=useState({}),[loading,setLoading]=useState(false);
+ const [history,setHistory]=useState([]),[historyRange,setHistoryRange]=useState('6M'),[historyLoading,setHistoryLoading]=useState(false),[historyError,setHistoryError]=useState(''),[quoteError,setQuoteError]=useState(''),[quoteLoading,setQuoteLoading]=useState(false);
+ const [marketMeta,setMarketMeta]=useState({});
  const l=COPY[language], t=(v)=>translate(language,v),locale=language==='en'?'en-US':language==='es'?'es-ES':'ca-ES';
  const fm=(v,c='EUR')=>money(v,c,locale),fn=(v,d=2)=>num(v,d,locale);
  const account=saved.account||{cash:5000,holdings:{},trades:[]},watch=saved.watch||['BNP','SU','AIR','TTE','RACE'];
@@ -68,7 +70,14 @@ function App(){
  const eurValue=holdings.reduce((acc,[sym,q])=>{const s=catalog.find(x=>x.symbol===sym);return acc+((s?.currency==='EUR'&&s.price!=null)?q*s.price:0)},0);
  const paperTotal=account.cash+eurValue;
  const mark=stock?.asOf?l.clarityApi:stock?.price==null?l.clarityNone:l.clarityHistorical;
- const label=(s)=>s?.asOf?l.api:s?.price==null?l.unknown:l.historical;
+ const lastQuote=marketMeta[selected];
+ const lastQuoteAge=lastQuote?.lastReceived?Date.now()-Date.parse(lastQuote.lastReceived):null;
+ const lastQuoteText=lastQuote?.lastReceived?new Date(lastQuote.lastReceived).toLocaleString(locale):null;
+ const historyPrices=history.map(x=>x.close).filter(x=>Number.isFinite(x));
+ const hMin=historyPrices.length?Math.min(...historyPrices):0,hMax=historyPrices.length?Math.max(...historyPrices):1;
+ const historyPoints=historyPrices.map((v,i)=>[20+(i/Math.max(historyPrices.length-1,1))*760,175-((v-hMin)/Math.max(hMax-hMin,.000001))*140].map(n=>Number(n.toFixed(2))).join(',')).join(' ');
+ const historyReturns=historyPrices.length>1?((historyPrices[historyPrices.length-1]/historyPrices[0])-1)*100:null;
+ const label=(s)=>s?.asOf?((Date.now()-Date.parse(s.asOf)>15*60*1000)?(language==='ca'?'Cotització anterior':language==='es'?'Cotización anterior':'Older quote'):l.api):s?.price==null?l.unknown:l.historical;
  const pageMap=[['home',l.home],['explore',l.explore],['compare',l.compare],['practice',l.practice],['learn',l.learn],['journal',l.journal]];
  useEffect(()=>{try{localStorage.setItem('trading27-language',language);localStorage.setItem('trading27-theme',theme)}catch{}document.documentElement.lang=language;document.title='Trading27 — Decision Canvas'},[language,theme]);
  useEffect(()=>{setLimit(stock?.price!=null?String(stock.price):'');setReview(false)},[selected]);
@@ -76,13 +85,35 @@ function App(){
  const toggleCompare=sym=>{setNotice('');if(comparison.includes(sym)){setComparison(comparison.filter(s=>s!==sym));return}if(comparison.length>=3){setNotice(l.selectedMax);return}setComparison([...comparison,sym])};
  const toggleWatch=sym=>persist({...saved,watch:watch.includes(sym)?watch.filter(s=>s!==sym):[...watch,sym]});
  const navigate=target=>{setPage(target);setError('');setReview(false);window.scrollTo({top:0,behavior:'smooth'})};
- async function refresh(){
-  const endpoint=import.meta.env.VITE_QUOTES_ENDPOINT;
-  if(!endpoint){setNotice(l.noProvider);return}
-  setLoading(true);setNotice('');setError('');
-  try{const response=await fetch(endpoint,{headers:{Accept:'application/json'},cache:'no-store'});if(!response.ok)throw new Error('HTTP '+response.status);const result=await response.json();if(!Array.isArray(result.quotes))throw new Error('quotes[]');const next={};for(const q of result.quotes){const s=SEED.find(x=>x.symbol===q.symbol);if(s&&Number.isFinite(q.price)&&q.price>0&&q.asOf&&q.currency===s.currency)next[q.symbol]={price:q.price,change:Number.isFinite(q.change)?q.change:null,asOf:q.asOf}}if(!Object.keys(next).length)throw Error(l.noData);setFeed(next);setNotice(l.newData)}
-  catch(e){setError(l.updateFailed+' '+e.message)}finally{setLoading(false)}
+ const labelProviderError=(code)=>code==='PROVIDER_NOT_CONFIGURED'?l.noProvider:code?.startsWith('PROVIDER_')?l.updateFailed+' ('+code+')':l.updateFailed;
+ async function refresh(symbol=selected,quiet=false){
+  setQuoteLoading(true);if(!quiet)setQuoteError('');
+  try{
+    const response=await fetch('/api/quotes?symbol='+encodeURIComponent(symbol),{cache:'no-store'});
+    const result=await response.json();
+    if(!response.ok)throw Error(result.error||'DATA_UNAVAILABLE');
+    if(!Array.isArray(result.quotes)||!result.quotes.length)throw Error('DATA_UNAVAILABLE');
+    const q=result.quotes[0];
+    if(q.symbol!==symbol||!Number.isFinite(q.price)||q.price<=0||!q.asOf)throw Error('INVALID_QUOTE');
+    setFeed(old=>({...old,[symbol]:{price:q.price,change:q.change,asOf:q.asOf,high:q.high52??old[symbol]?.high,low:q.low52??old[symbol]?.low}}));
+    setMarketMeta(old=>({...old,[symbol]:{provider:result.source||'Twelve Data',lastReceived:q.asOf,isMarketOpen:q.isMarketOpen,quality:q.quality}}));
+    setQuoteError('');
+    if(!quiet)setNotice(l.newData);
+  }catch(e){setQuoteError(labelProviderError(e.message));if(!quiet)setError(labelProviderError(e.message))}finally{setQuoteLoading(false)}
  }
+ async function loadHistory(symbol=selected,range=historyRange){
+  setHistoryLoading(true);setHistoryError('');setHistory([]);
+  try{
+    const response=await fetch('/api/history?symbol='+encodeURIComponent(symbol)+'&range='+range,{cache:'no-store'});
+    const data=await response.json();
+    if(!response.ok)throw Error(data.error||'DATA_UNAVAILABLE');
+    if(data.symbol!==symbol||!Array.isArray(data.candles))throw Error('INVALID_HISTORY');
+    setHistory(data.candles);
+  }catch(e){setHistoryError(labelProviderError(e.message))}finally{setHistoryLoading(false)}
+ }
+ useEffect(()=>{refresh(selected,true)},[selected]);
+ useEffect(()=>{loadHistory(selected,historyRange)},[selected,historyRange]);
+
  function validate(){
   const q=Number(quantity),p=Number(limit);
   if(stock.price==null||stock.currency!=='EUR')return l.eurOnly;
@@ -122,7 +153,11 @@ function App(){
    {page==='explore'&&<>
     <div className="pageHead"><span className="smallCaps">01 / DISCOVER</span><h1>{l.explore}</h1><p>{l.exploreIntro}</p></div>
     <section className="exploreLayout"><div className="paperPane"><div className="filterRow"><label className="searchInput"><Search size={18}/><input value={search} onChange={e=>setSearch(e.target.value)} placeholder={l.find} aria-label={l.find}/></label><select aria-label={l.market} value={country} onChange={e=>setCountry(e.target.value)}><option value="all">{l.all}</option>{markets.map(c=><option value={c} key={c}>{t(c)}</option>)}</select></div><div className="toggleRow"><button className={!onlySaved?'on':''} onClick={()=>setOnlySaved(false)}>{l.allStocks}</button><button className={onlySaved?'on':''} onClick={()=>setOnlySaved(true)}>{l.saved} · {watch.length}</button><button className="clearFilter" onClick={()=>{setSearch('');setCountry('all');setOnlySaved(false)}}>{l.clear}</button></div><div className="results">{filtered.map(s=><button key={s.symbol} className={'resultRow '+(selected===s.symbol?'resultActive':'')} onClick={()=>{selectStock(s.symbol);setDetail(true)}}><span className="resultInfo"><strong>{s.name}</strong><small>{s.symbol} · {t(s.country)}</small></span><span className="resultPrice"><b>{fm(s.price,s.currency)}</b><small>{label(s)}</small></span><span className="resultArrow">↗</span></button>)}{!filtered.length&&<p className="emptyState">{l.emptySearch}</p>}</div></div>
-    <aside className="detailPane"><span className="smallCaps">{l.selected}</span><div className="detailHeading"><h2>{stock.name}</h2><button onClick={()=>toggleWatch(selected)} aria-label={watch.includes(selected)?l.remove:l.add} className="bookmark">{watch.includes(selected)?'★':'☆'}</button></div><div className="detailSub">{stock.symbol} · {stock.market} · {t(stock.sector)}</div><div className="bigPrice">{fm(stock.price,stock.currency)}</div>{dataIcon(stock)}<p className="microText">{stock.asOf?stock.asOf:l.dataInfo}</p><div className="detailDivider"/><span className="smallCaps">{l.check}</span><div className="metricStack">{metricRows.slice(1,expanded?metricRows.length:3).map(([key,label,format])=><div className="metricLine" key={key}><button onClick={()=>setNotice(t(key==='pe'?GLOSSARY['P/E']:key==='dividend'?GLOSSARY['Yld %']:key==='cap'?GLOSSARY['MV(b)']:key==='high'?GLOSSARY['52W High']:GLOSSARY['52W Low']))} aria-label={l.explain+' '+label}><span>{label} <span className="questionMark">ⓘ</span></span></button><strong>{format(stock)}</strong></div>)}</div><button className="underButton" onClick={()=>setExpanded(v=>!v)}>{expanded?l.less:l.readMore} <ChevronDown size={15}/></button><div className="detailDivider"/><span className="smallCaps">{l.riskTitle}</span><div className="riskNotes">{risk(stock).slice(0,3).map((v,i)=><p key={i}><span>!</span>{t(v)}</p>)}</div><div className="detailActions"><button className="filled" onClick={()=>{if(!comparison.includes(selected))toggleCompare(selected);navigate('compare')}}>{l.goCompare} ↗</button><button className="outlineButton" onClick={()=>navigate('practice')}>{l.goPractice} →</button></div></aside></section>
+    <aside className="detailPane"><span className="smallCaps">{l.selected}</span><div className="detailHeading"><h2>{stock.name}</h2><button onClick={()=>toggleWatch(selected)} aria-label={watch.includes(selected)?l.remove:l.add} className="bookmark">{watch.includes(selected)?'★':'☆'}</button></div><div className="detailSub">{stock.symbol} · {stock.market} · {t(stock.sector)}</div><div className="bigPrice">{fm(stock.price,stock.currency)}</div>{dataIcon(stock)}<p className="microText">{stock.asOf?(language==='ca'?'Última dada: ':language==='es'?'Último dato: ':'Last quote: ')+lastQuoteText:l.dataInfo}</p>
+ <div className="marketUpdate"><button className="outlineButton" onClick={()=>refresh(selected)} disabled={quoteLoading}>{quoteLoading?l.busy:l.checkPrices}</button>{quoteError&&<span className="microText">{quoteError}</span>}</div><div className="detailDivider"/><span className="smallCaps">{l.check}</span><div className="metricStack">{metricRows.slice(1,expanded?metricRows.length:3).map(([key,label,format])=><div className="metricLine" key={key}><button onClick={()=>setNotice(t(key==='pe'?GLOSSARY['P/E']:key==='dividend'?GLOSSARY['Yld %']:key==='cap'?GLOSSARY['MV(b)']:key==='high'?GLOSSARY['52W High']:GLOSSARY['52W Low']))} aria-label={l.explain+' '+label}><span>{label} <span className="questionMark">ⓘ</span></span></button><strong>{format(stock)}</strong></div>)}</div><button className="underButton" onClick={()=>setExpanded(v=>!v)}>{expanded?l.less:l.readMore} <ChevronDown size={15}/></button><section className="historyBlock">
+  <div className="historyHeader"><div><span className="smallCaps">{language==='ca'?'HISTÒRIC VERIFICABLE':language==='es'?'HISTÓRICO VERIFICABLE':'VERIFIABLE PRICE HISTORY'}</span><h3>{language==='ca'?'Evolució de la cotització':language==='es'?'Evolución de la cotización':'Share price history'}</h3><p>{language==='ca'?'Preus de tancament diaris reals del proveïdor, ajustats per desdoblaments.':language==='es'?'Cierres diarios reales del proveedor, ajustados por desdoblamientos.':'Provider daily closes, split-adjusted.'}</p></div><div className="rangeButtons" role="group" aria-label="History period">{['1M','3M','6M','1Y','3Y','5Y'].map(v=><button key={v} className={historyRange===v?'active':''} onClick={()=>setHistoryRange(v)}>{v}</button>)}</div></div>
+  {historyLoading?<p className="historyState">{l.busy}</p>:historyError?<div className="historyState"><CircleAlert size={18}/> <span>{historyError}</span><button onClick={()=>loadHistory()}>{l.refresh}</button></div>:historyPrices.length>1?<><div className="chartStat"><strong>{fm(historyPrices[historyPrices.length-1],stock.currency)}</strong><span className={historyReturns>=0?'up':'down'}>{historyReturns>=0?'+':''}{fn(historyReturns)} % · {historyRange}</span></div><svg className="historyChart" viewBox="0 0 800 200" role="img" aria-label={language==='ca'?'Gràfic històric de tancaments':language==='es'?'Gráfico histórico de cierres':'Historical daily closing price chart'} preserveAspectRatio="none"><line x1="20" y1="175" x2="780" y2="175" stroke="currentColor" opacity=".17"/><line x1="20" y1="105" x2="780" y2="105" stroke="currentColor" opacity=".1"/><line x1="20" y1="35" x2="780" y2="35" stroke="currentColor" opacity=".1"/><polyline points={historyPoints} fill="none" stroke="var(--accent)" strokeWidth="3.5" strokeLinejoin="round" strokeLinecap="round"/></svg><div className="chartAxis"><span>{history[0]?.date}</span><span>{history[history.length-1]?.date}</span></div><p className="microText">{language==='ca'?'Font: Twelve Data · dades de mercat històriques, no prediccions.':language==='es'?'Fuente: Twelve Data · datos históricos de mercado, no predicciones.':'Source: Twelve Data · historical market data, not predictions.'}</p></>:<p className="historyState">{l.noData}</p>}
+ </section><div className="detailDivider"/><span className="smallCaps">{l.riskTitle}</span><div className="riskNotes">{risk(stock).slice(0,3).map((v,i)=><p key={i}><span>!</span>{t(v)}</p>)}</div><div className="detailActions"><button className="filled" onClick={()=>{if(!comparison.includes(selected))toggleCompare(selected);navigate('compare')}}>{l.goCompare} ↗</button><button className="outlineButton" onClick={()=>navigate('practice')}>{l.goPractice} →</button></div></aside></section>
    </>}
    {page==='compare'&&<>
     <div className="pageHead"><span className="smallCaps">02 / CONTRAST</span><h1>{l.compare}</h1><p>{l.compareIntro}</p></div>
