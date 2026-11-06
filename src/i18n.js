@@ -598,4 +598,8 @@ translations["No tens prou accions simulades per vendre."] = {"es":"No tienes su
 translations["No s’ha registrat la prova: el preu de referència és superior al teu límit de compra (o inferior al de venda). Pots modificar el límit o escollir una altra empresa."] = {"es":"No se ha registrado la prueba: el precio de referencia supera tu límite de compra (o está por debajo del de venta). Cambia el límite o elige otra empresa.","en":"Practice trade not recorded: the reference price is above your buy limit (or below your sell limit). Adjust the limit or select another stock."};
 translations["Vols reiniciar tota la cartera de simulació i el registre d’operacions?"] = {"es":"¿Quieres reiniciar toda la cartera de simulación y el registro de operaciones?","en":"Reset the entire paper portfolio and trade log?"};
 
+translations["PAPER MODE"] = {"es":"MODO SIMULACIÓN","en":"PAPER MODE"};
+translations["v0.1.0 · Evolució modular"] = {"es":"v0.1.0 · Evolución modular","en":"v0.1.0 · Modular roadmap"};
+translations["WORKSPACE"] = {"es":"ESPACIO DE TRABAJO","en":"WORKSPACE"};
+translations["DEMO / NO LIVE ORDERS"] = {"es":"DEMO / SIN ÓRDENES REALES","en":"DEMO / NO LIVE ORDERS"};
 export function translate(language,key){if(language==='ca')return key;return translations[key]?.[language]||key;}
