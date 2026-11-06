@@ -19,19 +19,39 @@ export async function provider(endpoint,stock,extra={}){
  if(!key){const e=new Error('PROVIDER_NOT_CONFIGURED');e.status=503;throw e}
  const url=new URL('https://api.twelvedata.com/'+endpoint);
  url.searchParams.set('symbol',stock.symbol);
- // NASDAQ's segment MICs (XNGS/XNCM/XNMS) vary by listing. Use the exchange name for reliable symbol lookup.
+ // Segment MICs for Nasdaq vary by listing; use the major exchange label.
  if(stock.mic==='XNAS')url.searchParams.set('exchange','NASDAQ');
  else if(stock.mic==='XNYS')url.searchParams.set('exchange','NYSE');
  else url.searchParams.set('mic_code',stock.mic);
- url.searchParams.set('apikey',key);
  for(const [k,v] of Object.entries(extra))url.searchParams.set(k,String(v));
- const response=await fetch(url.toString(),{headers:{Accept:'application/json'},signal:AbortSignal.timeout(10000)});
- if(!response.ok){const e=new Error('UPSTREAM_HTTP_'+response.status);e.status=502;throw e}
- const data=await response.json();
- if(data.status==='error'||data.code){const e=new Error('PROVIDER_'+String(data.code||'ERROR'));e.status=data.code===429?429:502;throw e}
- return data
+ // Keep the secret server-side and avoid exposing it in browser URLs or errors.
+ const controller=new AbortController();
+ const timeout=setTimeout(()=>controller.abort(),9000);
+ try{
+  const response=await fetch(url.toString(),{headers:{Accept:'application/json','Authorization':'apikey '+key},signal:controller.signal});
+  // Twelve Data error bodies can be JSON even for non-2xx status.
+  let data;
+  try{data=await response.json()}catch{const e=new Error('UPSTREAM_INVALID_RESPONSE');e.status=502;throw e}
+  const errorCode=Number(data?.code)||response.status;
+  if(!response.ok||data?.status==='error'||Number(data?.code)>=400){
+   const code=errorCode===400?'INVALID_INSTRUMENT_OR_QUERY':errorCode===401?'INVALID_PROVIDER_KEY':
+    errorCode===403?'MARKET_NOT_INCLUDED_IN_PLAN':errorCode===404?'INSTRUMENT_NOT_FOUND':
+    errorCode===429?'RATE_LIMIT_REACHED':errorCode>=500?'PROVIDER_TEMPORARILY_UNAVAILABLE':'DATA_UNAVAILABLE';
+   const e=new Error(code);e.status=errorCode===429?429:errorCode===403?403:errorCode===401?401:502;
+   console.warn('[market-data]',endpoint,stock.symbol,stock.mic,code);
+   throw e;
+  }
+  return data;
+ }catch(e){
+  if(e.name==='AbortError'){const timeoutError=new Error('PROVIDER_TIMEOUT');timeoutError.status=504;throw timeoutError}
+  if(e.status)throw e;
+  const networkError=new Error('PROVIDER_NETWORK_ERROR');networkError.status=502;throw networkError;
+ }finally{clearTimeout(timeout)}
 }
 export function verifiedCurrency(data,stock){return String(data.currency||data.meta?.currency||'').toUpperCase()===stock.currency}
 export function verifiedMic(data,stock){const given=String(data.mic_code||data.meta?.mic_code||'').toUpperCase();return !given||given===stock.mic||(stock.mic==='XNAS'&&['XNGS','XNCM','XNMS'].includes(given))}
 export function lookup(req){const symbols=String(req.query.symbol||req.query.symbols||'').split(',').map(x=>x.trim().toUpperCase()).filter(Boolean);if(symbols.length!==1||!INSTRUMENTS[symbols[0]]){const e=new Error('UNKNOWN_OR_MULTIPLE_SYMBOLS');e.status=400;throw e}return {ticker:symbols[0],stock:INSTRUMENTS[symbols[0]]}}
-export function failure(res,e){return res.status(e.status||500).json({error:e.message==='PROVIDER_NOT_CONFIGURED'?'PROVIDER_NOT_CONFIGURED':e.message.startsWith('PROVIDER_')?e.message:e.message==='UNKNOWN_OR_MULTIPLE_SYMBOLS'?e.message:'DATA_UNAVAILABLE'})}
+export function failure(res,e){
+ const known=new Set(['PROVIDER_NOT_CONFIGURED','INVALID_PROVIDER_KEY','MARKET_NOT_INCLUDED_IN_PLAN','INSTRUMENT_NOT_FOUND','INVALID_INSTRUMENT_OR_QUERY','RATE_LIMIT_REACHED','PROVIDER_TEMPORARILY_UNAVAILABLE','PROVIDER_TIMEOUT','PROVIDER_NETWORK_ERROR','UPSTREAM_INVALID_RESPONSE','UNKNOWN_OR_MULTIPLE_SYMBOLS']);
+ return res.status(e.status||502).json({error:known.has(e.message)?e.message:'DATA_UNAVAILABLE'});
+}
