@@ -10,6 +10,10 @@
 //     dibuixa l'històric si la clau coincideix amb la selecció actual.
 //  2. Només l'última petició pot actualitzar l'estat; les respostes antigues es
 //     desen a la memòria cau (són dades vàlides) però no es mostren.
+//
+// Els errors es recorden durant un temps (vegeu apiErrors.js) per no tornar a
+// gastar crèdits del proveïdor cada vegada que l'usuari torna a la mateixa empresa.
+import {apiError, failureWaitMs, readApiResponse} from './apiErrors.js';
 
 /** Temps de validesa de la memòria cau del client (10 minuts). */
 export const HISTORY_TTL_MS = 10 * 60 * 1000;
@@ -51,22 +55,21 @@ export function historyKey(symbol, range) {
  * @param {string} range Període.
  * @param {typeof fetch} [fetchImpl] Implementació de fetch (injectable per a tests).
  * @returns {Promise<Candle[]>}
- * @throws {Error} Amb el codi d'error de l'API com a missatge.
+ * @throws {import('./apiErrors.js').ApiError} Amb el codi d'error de l'API com a missatge.
  */
 export async function fetchHistory(symbol, range, fetchImpl = (...args) => fetch(...args)) {
-  const response = await fetchImpl(
-    '/api/history?symbol=' + encodeURIComponent(symbol) + '&range=' + encodeURIComponent(range),
-  );
-  let data;
+  let response;
   try {
-    data = await response.json();
+    response = await fetchImpl(
+      '/api/history?symbol=' + encodeURIComponent(symbol) + '&range=' + encodeURIComponent(range),
+    );
   } catch {
-    throw new Error('DATA_UNAVAILABLE');
+    throw apiError('DATA_UNAVAILABLE');
   }
-  if (!response.ok) throw new Error(data?.error || 'DATA_UNAVAILABLE');
+  const data = await readApiResponse(response);
   // La resposta ha de ser exactament la que s'ha demanat: mateix símbol i mateix període.
   if (data?.symbol !== symbol || data?.range !== range || !Array.isArray(data?.candles)) {
-    throw new Error('HISTORY_NOT_VERIFIED');
+    throw apiError('HISTORY_NOT_VERIFIED');
   }
   return data.candles;
 }
@@ -83,6 +86,8 @@ export async function fetchHistory(symbol, range, fetchImpl = (...args) => fetch
 export function createHistoryLoader({onUpdate, fetchImpl, now = Date.now, ttl = HISTORY_TTL_MS}) {
   /** @type {Map<string, {at: number, candles: Candle[]}>} */
   const cache = new Map();
+  /** @type {Map<string, {until: number, code: string}>} */
+  const failures = new Map();
   let latest = 0;
 
   return {
@@ -94,14 +99,23 @@ export function createHistoryLoader({onUpdate, fetchImpl, now = Date.now, ttl = 
         onUpdate({key, candles: hit.candles, error: '', loading: false});
         return;
       }
+      const failure = failures.get(key);
+      if (failure && now() < failure.until) {
+        // Error recent: es mostra sense tornar a cridar l'API.
+        onUpdate({key, candles: [], error: failure.code, loading: false});
+        return;
+      }
       onUpdate({key, candles: [], error: '', loading: true});
       try {
         const candles = await fetchHistory(symbol, range, fetchImpl);
         cache.set(key, {at: now(), candles});
+        failures.delete(key);
         if (id === latest) onUpdate({key, candles, error: '', loading: false});
       } catch (e) {
-        // Els errors no es desen a la memòria cau; tampoc es mostren si ja no és l'última petició.
-        if (id === latest) onUpdate({key, candles: [], error: e.message || 'DATA_UNAVAILABLE', loading: false});
+        const code = e.message || 'DATA_UNAVAILABLE';
+        failures.set(key, {until: now() + failureWaitMs(code, e.retryAfter), code});
+        // Un error d'una petició que ja no és l'última no es mostra.
+        if (id === latest) onUpdate({key, candles: [], error: code, loading: false});
       }
     },
   };

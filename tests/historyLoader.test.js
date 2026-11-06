@@ -89,24 +89,40 @@ describe('createHistoryLoader', () => {
     expect(updates.at(-1)).toMatchObject({key: 'NVDA|1Y', candles: [{close: 300}]});
   });
 
-  it('caduca la memòria cau i no hi desa els errors', async () => {
+  it('caduca la memòria cau de dades correctes', async () => {
     let clock = 0;
     const fetchImpl = vi.fn()
-      .mockResolvedValueOnce(new Response(JSON.stringify({error: 'PROVIDER_TIMEOUT'}), {status: 504}))
       .mockResolvedValueOnce(historyResponse('NVDA', '6M', 1))
       .mockResolvedValueOnce(historyResponse('NVDA', '6M', 2));
     const updates = [];
     const loader = createHistoryLoader({onUpdate: (v) => updates.push(v), fetchImpl, now: () => clock, ttl: 1000});
 
     await loader.load('NVDA', '6M');
-    expect(updates.at(-1)).toMatchObject({error: 'PROVIDER_TIMEOUT'});
-    await loader.load('NVDA', '6M'); // l'error no s'ha desat: torna a demanar
     await loader.load('NVDA', '6M'); // dins del TTL: memòria cau
-    expect(fetchImpl).toHaveBeenCalledTimes(2);
+    expect(fetchImpl).toHaveBeenCalledTimes(1);
     clock = 1000;
     await loader.load('NVDA', '6M'); // caducat
-    expect(fetchImpl).toHaveBeenCalledTimes(3);
+    expect(fetchImpl).toHaveBeenCalledTimes(2);
     expect(updates.at(-1)).toMatchObject({candles: [{close: 2}]});
+  });
+
+  it('recorda un error durant el temps d\'espera i no torna a cridar l\'API', async () => {
+    let clock = 0;
+    const fetchImpl = vi.fn()
+      .mockResolvedValueOnce(new Response(JSON.stringify({error: 'MARKET_NOT_INCLUDED_IN_PLAN'}), {status: 403}))
+      .mockResolvedValueOnce(historyResponse('BNP', '6M', 50));
+    const updates = [];
+    const loader = createHistoryLoader({onUpdate: (v) => updates.push(v), fetchImpl, now: () => clock});
+
+    await loader.load('BNP', '6M');
+    clock = 14 * 60 * 1000;
+    await loader.load('BNP', '6M'); // l'usuari torna a l'empresa: no es gasta cap crèdit
+    expect(fetchImpl).toHaveBeenCalledTimes(1);
+    expect(updates.at(-1)).toMatchObject({key: 'BNP|6M', error: 'MARKET_NOT_INCLUDED_IN_PLAN', loading: false});
+    clock = 15 * 60 * 1000;
+    await loader.load('BNP', '6M'); // passat el temps d'espera, es torna a provar
+    expect(fetchImpl).toHaveBeenCalledTimes(2);
+    expect(updates.at(-1)).toMatchObject({error: '', candles: [{close: 50}]});
   });
 });
 
