@@ -4,6 +4,7 @@ import {Activity, BarChart3, BookOpen, Bot, ChevronDown, CircleAlert, Clock3, Ex
 import './decision.css';
 import {LANGUAGES,translate} from './i18n';
 import {EXTRA} from './universe';
+import {EMPTY_HISTORY,createHistoryLoader,historyKey} from './historyLoader';
 
 const SEED=[
  {symbol:'BNP',name:'BNP Paribas',market:'PAR',country:'França',currency:'EUR',price:87.65,change:0.45,high:113.82,low:65.12,yield:6.62,pe:9.16,mv:97.89,sector:'Banca'},
@@ -57,9 +58,10 @@ function App(){
  const [selected,setSelected]=useState('NVDA'),[comparison,setComparison]=useState(['NVDA','MSFT']),[expanded,setExpanded]=useState(false);
  const [orderType,setOrderType]=useState('buy'),[quantity,setQuantity]=useState('1'),[limit,setLimit]=useState(''),[review,setReview]=useState(false),[initial,setInitial]=useState('5000');
  const [error,setError]=useState(''),[notice,setNotice]=useState(''),[feed,setFeed]=useState({}),[loading,setLoading]=useState(false);
- const [history,setHistory]=useState([]),[historyRange,setHistoryRange]=useState('6M'),[historyLoading,setHistoryLoading]=useState(false),[historyError,setHistoryError]=useState(''),[quoteError,setQuoteError]=useState(''),[quoteLoading,setQuoteLoading]=useState(false);
+ const [historyView,setHistoryView]=useState(EMPTY_HISTORY),[historyRange,setHistoryRange]=useState('6M'),[quoteError,setQuoteError]=useState(''),[quoteLoading,setQuoteLoading]=useState(false);
  const [marketMeta,setMarketMeta]=useState({});
- const quoteCache=useRef({}),historyCache=useRef({});
+ const quoteCache=useRef({}),historyLoader=useRef(null);
+ if(!historyLoader.current)historyLoader.current=createHistoryLoader({onUpdate:setHistoryView});
  const l=COPY[language], t=(v)=>translate(language,v),locale=language==='en'?'en-US':language==='es'?'es-ES':'ca-ES';
  const fm=(v,c='EUR')=>money(v,c,locale),fn=(v,d=2)=>num(v,d,locale);
  const account=saved.account||{cash:5000,holdings:{},trades:[]},watch=saved.watch||['BNP','SU','AIR','TTE','RACE'];
@@ -89,6 +91,11 @@ function App(){
  const lastQuote=marketMeta[selected];
  const lastQuoteAge=lastQuote?.lastReceived?Date.now()-Date.parse(lastQuote.lastReceived):null;
  const lastQuoteText=lastQuote?.lastReceived?new Date(lastQuote.lastReceived).toLocaleString(locale):null;
+ // Només es mostra l'històric si correspon a l'empresa i el període seleccionats ara mateix.
+ const historyMatches=historyView.key===historyKey(selected,historyRange);
+ const history=historyMatches?historyView.candles:[];
+ const historyLoading=!historyMatches||historyView.loading;
+ const historyError=historyMatches?historyView.error:''; // codi d'error; es tradueix en mostrar-lo
  const historyPrices=history.map(x=>x.close).filter(x=>Number.isFinite(x));
  const hMin=historyPrices.length?Math.min(...historyPrices):0,hMax=historyPrices.length?Math.max(...historyPrices):1;
  const historyPoints=historyPrices.map((v,i)=>[20+(i/Math.max(historyPrices.length-1,1))*760,175-((v-hMin)/Math.max(hMax-hMin,.000001))*140].map(n=>Number(n.toFixed(2))).join(',')).join(' ');
@@ -137,19 +144,7 @@ function App(){
    if(!quiet)setNotice(l.newData);
   }catch(e){setQuoteError(labelProviderError(e.message));if(!quiet)setError(labelProviderError(e.message))}finally{setQuoteLoading(false)}
  }
- async function loadHistory(symbol=selected,range=historyRange){
-  const cacheKey=symbol+'|'+range;
-  if(historyCache.current[cacheKey]&&Date.now()-historyCache.current[cacheKey].at<600000){setHistory(historyCache.current[cacheKey].data);setHistoryError('');return}
-  setHistoryLoading(true);setHistoryError('');setHistory([]);
-  try{
-   const response=await fetch('/api/history?symbol='+encodeURIComponent(symbol)+'&range='+range);
-   const data=await response.json();
-   if(!response.ok)throw Error(data.error||'DATA_UNAVAILABLE');
-   if(data.symbol!==symbol||!Array.isArray(data.candles))throw Error('HISTORY_NOT_VERIFIED');
-   historyCache.current[cacheKey]={at:Date.now(),data:data.candles};
-   setHistory(data.candles);
-  }catch(e){setHistoryError(labelProviderError(e.message))}finally{setHistoryLoading(false)}
- }
+ const loadHistory=(symbol=selected,range=historyRange)=>historyLoader.current.load(symbol,range);
  useEffect(()=>{
   if(page==='home'){const timer=setTimeout(()=>{['NVDA','AAPL','JPM'].forEach(sym=>refresh(sym,true))},300);return ()=>clearTimeout(timer)}
  },[page]);
@@ -215,7 +210,7 @@ function App(){
     <aside className="detailPane"><span className="smallCaps">{l.selected}</span><div className="detailHeading"><h2>{stock.name}</h2><button onClick={()=>toggleWatch(selected)} aria-label={watch.includes(selected)?l.remove:l.add} className="bookmark">{watch.includes(selected)?'★':'☆'}</button></div><div className="detailSub">{stock.symbol} · {stock.market} · {t(stock.sector)}</div><div className="bigPrice">{fm(stock.price,stock.currency)}</div>{dataIcon(stock)}<p className="microText">{stock.asOf?(language==='ca'?'Última dada: ':language==='es'?'Último dato: ':'Last quote: ')+lastQuoteText:l.dataInfo}</p>
  <div className="marketUpdate"><button className="outlineButton" onClick={()=>refresh(selected,false,true)} disabled={quoteLoading}>{quoteLoading?l.busy:l.checkPrices}</button>{quoteError&&<span className="microText">{quoteError}</span>}</div><div className="detailDivider"/><span className="smallCaps">{l.check}</span><div className="metricStack">{metricRows.slice(1,expanded?metricRows.length:3).map(([key,label,format])=><div className="metricLine" key={key}><button onClick={()=>setNotice(t(key==='pe'?GLOSSARY['P/E']:key==='dividend'?GLOSSARY['Yld %']:key==='cap'?GLOSSARY['MV(b)']:key==='high'?GLOSSARY['52W High']:GLOSSARY['52W Low']))} aria-label={l.explain+' '+label}><span>{label} <span className="questionMark">ⓘ</span></span></button><strong>{format(stock)}</strong></div>)}</div><button className="underButton" onClick={()=>setExpanded(v=>!v)}>{expanded?l.less:l.readMore} <ChevronDown size={15}/></button><section className="historyBlock">
   <div className="historyHeader"><div><span className="smallCaps">{language==='ca'?'HISTÒRIC VERIFICABLE':language==='es'?'HISTÓRICO VERIFICABLE':'VERIFIABLE PRICE HISTORY'}</span><h3>{language==='ca'?'Evolució de la cotització':language==='es'?'Evolución de la cotización':'Share price history'}</h3><p>{language==='ca'?'Preus de tancament diaris reals del proveïdor, ajustats per desdoblaments.':language==='es'?'Cierres diarios reales del proveedor, ajustados por desdoblamientos.':'Provider daily closes, split-adjusted.'}</p></div><div className="rangeButtons" role="group" aria-label="History period">{['1M','3M','6M','1Y','3Y','5Y'].map(v=><button key={v} className={historyRange===v?'active':''} onClick={()=>setHistoryRange(v)}>{v}</button>)}</div></div>
-  {historyLoading?<p className="historyState">{l.busy}</p>:historyError?<div className="historyState"><CircleAlert size={18}/> <span>{historyError}</span><button onClick={()=>loadHistory()}>{l.refresh}</button></div>:historyPrices.length>1?<><div className="chartStat"><strong>{fm(historyPrices[historyPrices.length-1],stock.currency)}</strong><span className={historyReturns>=0?'up':'down'}>{historyReturns>=0?'+':''}{fn(historyReturns)} % · {historyRange}</span></div><svg className="historyChart" viewBox="0 0 800 200" role="img" aria-label={language==='ca'?'Gràfic històric de tancaments':language==='es'?'Gráfico histórico de cierres':'Historical daily closing price chart'} preserveAspectRatio="none"><line x1="20" y1="175" x2="780" y2="175" stroke="currentColor" opacity=".17"/><line x1="20" y1="105" x2="780" y2="105" stroke="currentColor" opacity=".1"/><line x1="20" y1="35" x2="780" y2="35" stroke="currentColor" opacity=".1"/><polyline points={historyPoints} fill="none" stroke="var(--accent)" strokeWidth="3.5" strokeLinejoin="round" strokeLinecap="round"/></svg><div className="chartAxis"><span>{history[0]?.date}</span><span>{history[history.length-1]?.date}</span></div><p className="microText">{language==='ca'?'Font: Twelve Data · dades de mercat històriques, no prediccions.':language==='es'?'Fuente: Twelve Data · datos históricos de mercado, no predicciones.':'Source: Twelve Data · historical market data, not predictions.'}</p></>:<p className="historyState">{l.noData}</p>}
+  {historyLoading?<p className="historyState">{l.busy}</p>:historyError?<div className="historyState"><CircleAlert size={18}/> <span>{labelProviderError(historyError)}</span><button onClick={()=>loadHistory()}>{l.refresh}</button></div>:historyPrices.length>1?<><div className="chartStat"><strong>{fm(historyPrices[historyPrices.length-1],stock.currency)}</strong><span className={historyReturns>=0?'up':'down'}>{historyReturns>=0?'+':''}{fn(historyReturns)} % · {historyRange}</span></div><svg className="historyChart" viewBox="0 0 800 200" role="img" aria-label={language==='ca'?'Gràfic històric de tancaments':language==='es'?'Gráfico histórico de cierres':'Historical daily closing price chart'} preserveAspectRatio="none"><line x1="20" y1="175" x2="780" y2="175" stroke="currentColor" opacity=".17"/><line x1="20" y1="105" x2="780" y2="105" stroke="currentColor" opacity=".1"/><line x1="20" y1="35" x2="780" y2="35" stroke="currentColor" opacity=".1"/><polyline points={historyPoints} fill="none" stroke="var(--accent)" strokeWidth="3.5" strokeLinejoin="round" strokeLinecap="round"/></svg><div className="chartAxis"><span>{history[0]?.date}</span><span>{history[history.length-1]?.date}</span></div><p className="microText">{language==='ca'?'Font: Twelve Data · dades de mercat històriques, no prediccions.':language==='es'?'Fuente: Twelve Data · datos históricos de mercado, no predicciones.':'Source: Twelve Data · historical market data, not predictions.'}</p></>:<p className="historyState">{l.noData}</p>}
  </section><div className="detailDivider"/><span className="smallCaps">{l.riskTitle}</span><div className="riskNotes">{risk(stock).slice(0,3).map((v,i)=><p key={i}><span>!</span>{t(v)}</p>)}</div><div className="detailActions"><button className="filled" onClick={()=>{if(!comparison.includes(selected))toggleCompare(selected);navigate('compare')}}>{l.goCompare} ↗</button><button className="outlineButton" onClick={()=>navigate('practice')}>{l.goPractice} →</button></div></aside></section>
    </>}
    {page==='compare'&&<>
