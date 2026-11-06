@@ -30,3 +30,9 @@
 .canvas.theme-dark .quality.q-old{color:var(--ink)}
 .canvas.theme-dark .riskNotes p span{background:var(--emphasis);color:#FFFFFF}
 .canvas.theme-dark .mark,.canvas.theme-dark .filled,.canvas.theme-dark .largeTheme button.chosen,.canvas.theme-dark .langButtons button.chosen,.canvas.theme-dark .pickerChips button.chosen,.canvas.theme-dark .themeBox button.active{color:#121212}
+
+/* Market data connection: source clarity and simple historical chart */
+.marketUpdate{display:flex;align-items:center;gap:9px;flex-wrap:wrap;margin:14px 0 6px}.marketUpdate .outlineButton{padding:9px 12px;min-height:38px}.marketUpdate .microText{color:var(--error);font-size:10px}
+.historyBlock{padding:18px 0 2px}.historyHeader{display:flex;align-items:flex-start;gap:12px;justify-content:space-between;flex-wrap:wrap}.historyHeader h3{font-size:19px;margin:8px 0 5px}.historyHeader p{font-size:11px;line-height:1.6;color:var(--ink2);margin:0;max-width:340px}
+.rangeButtons{display:flex;flex-wrap:wrap;gap:3px}.rangeButtons button{background:var(--muted);color:var(--ink2);border:1px solid var(--line);border-radius:6px;padding:6px 8px;font-size:10px}.rangeButtons button.active{background:var(--accent);color:var(--accentText);border-color:var(--accent)}
+.chartStat{margin-top:18px;display:flex;align-items:baseline;gap:10px;flex-wrap:wrap}.chartStat strong{font-size:21px}.chartStat span{font-size:12px;font-weight:700}.historyChart{width:100%;height:140px;overflow:visible;margin-top:14px}.chartAxis{display:flex;justify-content:space-between;gap:14px;font-size:10px;color:var(--ink2)}.historyState{display:flex;align-items:center;gap:9px;flex-wrap:wrap;color:var(--ink2);font-size:12px;min-height:70px}.historyState button{border:1px solid var(--line);border-radius:8px;color:var(--ink);background:var(--paper);padding:8px 10px}.theme-dark .historyChart{color:var(--ink)} 
