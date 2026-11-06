@@ -63,6 +63,7 @@ Compatible amb Vercel: framework **Vite**, directori de sortida **dist**, constr
 Trading27 integra ara **Twelve Data** a través de funcions de servidor de Vercel:
 
 - `GET /api/quotes?symbol=NVDA`: cotització del proveïdor, variació, marca temporal i estat de mercat.
+- `GET /api/fx?pair=USD/EUR`: tipus de canvi del proveïdor per convertir les operacions simulades en USD a EUR (memòria cau CDN de 5 minuts). Només s'admet `USD/EUR`.
 - `GET /api/history?symbol=NVDA&range=6M`: tancaments i OHLC diaris reals, ajustats per desdoblaments. Períodes disponibles: `1M`, `3M`, `6M`, `1Y`, `3Y`, `5Y` (paràmetre obligatori, en majúscules).
 - A **Explorar**, la fitxa d'una empresa mostra un gràfic amb dates i el botó per comprovar el preu de referència. Cap punt del gràfic és simulat quan el proveïdor està configurat.
 - Les funcions comproven símbol autoritzat, MIC de la borsa quan el proveïdor el retorna, moneda, rang i validesa del preu. No hi ha cap substitució silenciosa per dades d'una empresa homònima.
@@ -111,7 +112,12 @@ La variable `TWELVE_DATA_API_KEY` és *server-side*; **mai** s'ha de crear una v
 
 ## Inversions i integració amb brokers
 
-**Només hi ha simulació.** Les operacions de prova es calculen amb preus de referència i es guarden al navegador, sense comissions ni divises convertides. La simulació no constitueix un backtest realista. Les accions que no cotitzen en EUR o no tenen preu disponible no es poden negociar en mode demo.
+**Només hi ha simulació.** Les operacions de prova es guarden al navegador, sense comissions, i no constitueixen un backtest realista. Regles del simulador (`src/paperTrading.js`):
+
+- Només s'opera amb un **preu confirmat pel proveïdor** i rebut fa menys de 15 minuts. Els preus històrics del Financial Times (01/11/2026) es mostren com a referència però no serveixen per operar.
+- Monedes admeses: **EUR i USD**. El saldo és en EUR; les operacions en USD es converteixen amb el tipus de canvi del proveïdor (`/api/fx`), rebut fa menys de 15 minuts. Cada operació registra el tipus de canvi i l'import en EUR.
+- Les accions en GBP (Borsa de Londres) encara no s'admeten: el proveïdor pot donar-ne el preu en penics (GBp) i caldria tractar-ho a part.
+- Les ordres són limitades: el preu del proveïdor ha de complir el límit, i el cost màxim d'una compra es calcula amb el límit.
 
 La integració futura amb Interactive Brokers o altres intermediaris requerirà APIs oficials, autenticació segura, permisos de només lectura inicials, controls d'ordres i comprovació del compliment normatiu. No s'ha habilitat cap accés ni cap execució real.
 

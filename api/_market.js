@@ -15,20 +15,40 @@ const BASE_INSTRUMENTS={
 export const INSTRUMENTS={...BASE_INSTRUMENTS,...Object.fromEntries(EXTRA.map(s=>[s.symbol,{symbol:s.symbol,mic:s.mic,currency:s.currency,market:s.market}]))};
 export function noCache(res){res.setHeader('Cache-Control','private, no-store, max-age=0');res.setHeader('X-Content-Type-Options','nosniff')}
 export function cacheSuccessfulQuote(res){res.setHeader('Cache-Control','public, max-age=0, s-maxage=90, stale-while-revalidate=45')}
+export function cacheSuccessfulFx(res){res.setHeader('Cache-Control','public, max-age=0, s-maxage=300, stale-while-revalidate=300')}
 export function cacheSuccessfulHistory(res){res.setHeader('Cache-Control','public, max-age=0, s-maxage=1800, stale-while-revalidate=3600')}
 export const asNumber=x=>{if(x===null||x===undefined||x==='')return null;const n=Number(x);return Number.isFinite(n)?n:null};
+/**
+ * Crida a un instrument cotitzat: afegeix el símbol i la borsa als paràmetres.
+ * @param {string} endpoint Endpoint de Twelve Data (quote, time_series...).
+ * @param {{symbol: string, mic: string}} stock Instrument.
+ * @param {Record<string, string|number>} [extra] Paràmetres addicionals.
+ * @returns {Promise<any>} Cos JSON del proveïdor.
+ */
 export async function provider(endpoint,stock,extra={}){
+ const params={symbol:stock.symbol};
+ // Segment MICs for Nasdaq vary by listing; use the major exchange label.
+ if(stock.mic==='XNAS')params.exchange='NASDAQ';
+ else if(stock.mic==='XNYS')params.exchange='NYSE';
+ else params.mic_code=stock.mic;
+ return providerRequest(endpoint,{...params,...extra},stock.symbol+' '+stock.mic);
+}
+
+/**
+ * Crida genèrica a Twelve Data, amb pressupost de crèdits, temps límit i
+ * traducció dels errors a codis públics.
+ * @param {string} endpoint Endpoint de Twelve Data.
+ * @param {Record<string, string|number>} params Paràmetres de consulta.
+ * @param {string} label Descripció per als registres (sense secrets).
+ * @returns {Promise<any>} Cos JSON del proveïdor.
+ */
+export async function providerRequest(endpoint,params,label){
  const key=process.env.TWELVE_DATA_API_KEY;
  if(!key){const e=new Error('PROVIDER_NOT_CONFIGURED');e.status=503;throw e}
  // Cada crida real al proveïdor gasta un crèdit: es comprova el pressupost global abans.
  await consumeProviderBudget();
  const url=new URL('https://api.twelvedata.com/'+endpoint);
- url.searchParams.set('symbol',stock.symbol);
- // Segment MICs for Nasdaq vary by listing; use the major exchange label.
- if(stock.mic==='XNAS')url.searchParams.set('exchange','NASDAQ');
- else if(stock.mic==='XNYS')url.searchParams.set('exchange','NYSE');
- else url.searchParams.set('mic_code',stock.mic);
- for(const [k,v] of Object.entries(extra))url.searchParams.set(k,String(v));
+ for(const [k,v] of Object.entries(params))url.searchParams.set(k,String(v));
  // Keep the secret server-side and avoid exposing it in browser URLs or errors.
  const controller=new AbortController();
  const timeout=setTimeout(()=>controller.abort(),9000);
@@ -44,7 +64,7 @@ export async function provider(endpoint,stock,extra={}){
     errorCode===429?'RATE_LIMIT_REACHED':errorCode>=500?'PROVIDER_TEMPORARILY_UNAVAILABLE':'DATA_UNAVAILABLE';
    const e=new Error(code);e.status=errorCode===429?429:errorCode===403?403:errorCode===401?401:502;
    if(e.status===429)e.retryAfter=60;
-   console.warn('[market-data]',endpoint,stock.symbol,stock.mic,code);
+   console.warn('[market-data]',endpoint,label,code);
    throw e;
   }
   return data;
@@ -124,7 +144,7 @@ export async function consumeProviderBudget(){
  }
 }
 export function failure(res,e){
- const known=new Set(['PROVIDER_NOT_CONFIGURED','INVALID_PROVIDER_KEY','MARKET_NOT_INCLUDED_IN_PLAN','INSTRUMENT_NOT_FOUND','INVALID_INSTRUMENT_OR_QUERY','RATE_LIMIT_REACHED','PROVIDER_TEMPORARILY_UNAVAILABLE','PROVIDER_TIMEOUT','PROVIDER_NETWORK_ERROR','UPSTREAM_INVALID_RESPONSE','UNKNOWN_OR_MULTIPLE_SYMBOLS','NON_CANONICAL_QUERY','TOO_MANY_REQUESTS','PROVIDER_BUDGET_EXHAUSTED']);
+ const known=new Set(['PROVIDER_NOT_CONFIGURED','INVALID_PROVIDER_KEY','MARKET_NOT_INCLUDED_IN_PLAN','INSTRUMENT_NOT_FOUND','INVALID_INSTRUMENT_OR_QUERY','RATE_LIMIT_REACHED','PROVIDER_TEMPORARILY_UNAVAILABLE','PROVIDER_TIMEOUT','PROVIDER_NETWORK_ERROR','UPSTREAM_INVALID_RESPONSE','UNKNOWN_OR_MULTIPLE_SYMBOLS','NON_CANONICAL_QUERY','TOO_MANY_REQUESTS','PROVIDER_BUDGET_EXHAUSTED','UNKNOWN_PAIR']);
  if(e.retryAfter)res.setHeader('Retry-After',String(e.retryAfter));
  return res.status(e.status||502).json({error:known.has(e.message)?e.message:'DATA_UNAVAILABLE'});
 }

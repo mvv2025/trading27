@@ -3,6 +3,7 @@
 import {afterEach, beforeEach, describe, expect, it, vi} from 'vitest';
 import quotes from '../api/quotes.js';
 import history from '../api/history.js';
+import fx from '../api/fx.js';
 import {lookup} from '../api/_market.js';
 import {consume, resetMemoryStore, clientIp} from '../api/_ratelimit.js';
 
@@ -199,5 +200,49 @@ describe('limitador', () => {
     expect(clientIp({headers: {'x-vercel-forwarded-for': '1.1.1.1', 'x-forwarded-for': '9.9.9.9'}})).toBe('1.1.1.1');
     expect(clientIp({headers: {'x-forwarded-for': '2.2.2.2, 10.0.0.1'}})).toBe('2.2.2.2');
     expect(clientIp({headers: {}})).toBe('unknown');
+  });
+});
+
+describe('handler de tipus de canvi', () => {
+  /** Resposta vàlida de Twelve Data per a /exchange_rate. */
+  const fxOk = () => new Response(JSON.stringify({symbol: 'USD/EUR', rate: 0.92, timestamp: Math.floor(Date.now() / 1000) - 60}), {status: 200});
+
+  it('retorna el tipus de canvi verificat amb memòria cau CDN', async () => {
+    fetchMock.mockResolvedValueOnce(fxOk());
+    const res = mockRes();
+    await fx(mockReq({pair: 'USD/EUR'}), res);
+    expect(res.statusCode).toBe(200);
+    expect(res.body).toMatchObject({pair: 'USD/EUR', rate: 0.92, source: 'Twelve Data'});
+    expect(res.headers['cache-control']).toContain('s-maxage=300');
+    const url = new URL(fetchMock.mock.calls[0][0]);
+    expect(url.pathname).toBe('/exchange_rate');
+    expect(url.searchParams.get('symbol')).toBe('USD/EUR');
+  });
+
+  it.each([
+    [{pair: 'GBP/EUR'}, 'UNKNOWN_PAIR'],
+    [{pair: 'usd/eur'}, 'UNKNOWN_PAIR'],
+    [{}, 'UNKNOWN_PAIR'],
+    [{pair: 'USD/EUR', x: '1'}, 'NON_CANONICAL_QUERY'],
+  ])('rebutja %j sense cridar el proveïdor', async (query, code) => {
+    const res = mockRes();
+    await fx(mockReq(query), res);
+    expect(res.statusCode).toBe(400);
+    expect(res.body.error).toBe(code);
+    expect(fetchMock).not.toHaveBeenCalled();
+  });
+
+  it.each([
+    ['un altre parell', {symbol: 'EUR/USD', rate: 1.08}],
+    ['tipus zero', {symbol: 'USD/EUR', rate: 0}],
+    ['sense data', {symbol: 'USD/EUR', rate: 0.92, timestamp: null}],
+    ['dada massa antiga', {symbol: 'USD/EUR', rate: 0.92, timestamp: Math.floor(Date.now() / 1000) - 5 * 86400}],
+  ])('no verifica una resposta amb %s', async (_name, body) => {
+    fetchMock.mockResolvedValueOnce(new Response(JSON.stringify({timestamp: Math.floor(Date.now() / 1000), ...body}), {status: 200}));
+    const res = mockRes();
+    await fx(mockReq({pair: 'USD/EUR'}), res);
+    expect(res.statusCode).toBe(502);
+    expect(res.body.error).toBe('FX_NOT_VERIFIED');
+    expect(res.headers['cache-control']).toContain('no-store');
   });
 });

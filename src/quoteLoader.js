@@ -47,53 +47,108 @@ export async function fetchQuote(symbol, fetchImpl) {
   return {quote, source: data.source || 'Twelve Data'};
 }
 
+/** Validesa d'un tipus de canvi correcte a la memòria cau del client (5 min, com el CDN). */
+export const FX_TTL_MS = 5 * 60 * 1000;
+
 /**
- * Crea un carregador de cotitzacions.
+ * @typedef {object} FxRate
+ * @property {string} pair Parell, p. ex. "USD/EUR".
+ * @property {number} rate EUR per unitat de la moneda d'origen.
+ * @property {string} asOf Data ISO del proveïdor.
+ */
+
+/**
+ * Demana el tipus de canvi d'una moneda a EUR i en comprova la resposta.
+ * @param {string} currency Moneda d'origen (p. ex. "USD").
+ * @param {typeof fetch} fetchImpl Implementació de fetch.
+ * @returns {Promise<{fx: FxRate}>}
+ * @throws {import('./apiErrors.js').ApiError}
+ */
+export async function fetchFxRate(currency, fetchImpl) {
+  const pair = currency + '/EUR';
+  let response;
+  try {
+    response = await fetchImpl('/api/fx?pair=' + encodeURIComponent(pair));
+  } catch {
+    throw apiError('DATA_UNAVAILABLE');
+  }
+  const data = await readApiResponse(response);
+  if (data?.pair !== pair || !Number.isFinite(data?.rate) || data.rate <= 0 || !data?.asOf) {
+    throw apiError('FX_NOT_VERIFIED');
+  }
+  return {fx: {pair, rate: data.rate, asOf: data.asOf}};
+}
+
+/**
+ * Crea un carregador genèric amb memòria cau, peticions compartides i espera després d'un error.
  *
- * - Èxit: es reutilitza durant QUOTE_TTL_MS, tret que es forci.
+ * - Èxit: es reutilitza durant `ttlMs`, tret que es forci.
  * - Error: es recorda durant el temps que marca failureWaitMs (també quan es
  *   força: tornar-ho a provar abans no donaria un altre resultat i gastaria crèdits).
- * - Si ja hi ha una petició en curs per al mateix símbol, es comparteix.
+ * - Si ja hi ha una petició en curs per a la mateixa clau, es comparteix.
  *
- * @param {object} [options]
- * @param {typeof fetch} [options.fetchImpl] Implementació de fetch (injectable per a tests).
+ * @template {object} T
+ * @param {object} options
+ * @param {(key: string) => Promise<T>} options.fetchOne Funció que obté una dada.
+ * @param {number} options.ttlMs Validesa d'un èxit en ms.
  * @param {() => number} [options.now] Rellotge en ms (injectable per a tests).
- * @returns {{get: (symbol: string, options?: {force?: boolean}) => Promise<QuoteResult>}}
+ * @returns {{get: (key: string, options?: {force?: boolean}) => Promise<T & {cached: boolean, fetchedAt: number}>}}
  */
-export function createQuoteLoader({fetchImpl = (...args) => fetch(...args), now = Date.now} = {}) {
-  /** @type {Map<string, {at: number, quote: Quote, source: string}>} */
+export function createResourceLoader({fetchOne, ttlMs, now = Date.now}) {
+  /** @type {Map<string, {at: number, value: T}>} */
   const successes = new Map();
   /** @type {Map<string, {until: number, error: Error}>} */
   const failures = new Map();
-  /** @type {Map<string, Promise<QuoteResult>>} */
+  /** @type {Map<string, Promise<any>>} */
   const inFlight = new Map();
 
   return {
-    get(symbol, {force = false} = {}) {
-      const pending = inFlight.get(symbol);
+    get(key, {force = false} = {}) {
+      const pending = inFlight.get(key);
       if (pending) return pending;
 
-      const failure = failures.get(symbol);
+      const failure = failures.get(key);
       if (failure && now() < failure.until) return Promise.reject(failure.error);
 
-      const success = successes.get(symbol);
-      if (!force && success && now() - success.at < QUOTE_TTL_MS) {
-        return Promise.resolve({quote: success.quote, source: success.source, cached: true});
+      const success = successes.get(key);
+      if (!force && success && now() - success.at < ttlMs) {
+        return Promise.resolve({...success.value, cached: true, fetchedAt: success.at});
       }
 
-      const request = fetchQuote(symbol, fetchImpl)
-        .then(({quote, source}) => {
-          successes.set(symbol, {at: now(), quote, source});
-          failures.delete(symbol);
-          return {quote, source, cached: false};
+      const request = fetchOne(key)
+        .then((value) => {
+          const at = now();
+          successes.set(key, {at, value});
+          failures.delete(key);
+          return {...value, cached: false, fetchedAt: at};
         })
         .catch((error) => {
-          failures.set(symbol, {until: now() + failureWaitMs(error.message, error.retryAfter), error});
+          failures.set(key, {until: now() + failureWaitMs(error.message, error.retryAfter), error});
           throw error;
         })
-        .finally(() => inFlight.delete(symbol));
-      inFlight.set(symbol, request);
+        .finally(() => inFlight.delete(key));
+      inFlight.set(key, request);
       return request;
     },
   };
+}
+
+/**
+ * Carregador de cotitzacions (memòria cau de 90 s).
+ * @param {object} [options]
+ * @param {typeof fetch} [options.fetchImpl] Implementació de fetch (injectable per a tests).
+ * @param {() => number} [options.now] Rellotge en ms.
+ */
+export function createQuoteLoader({fetchImpl = (...args) => fetch(...args), now = Date.now} = {}) {
+  return createResourceLoader({fetchOne: (symbol) => fetchQuote(symbol, fetchImpl), ttlMs: QUOTE_TTL_MS, now});
+}
+
+/**
+ * Carregador de tipus de canvi a EUR (memòria cau de 5 min). La clau és la moneda d'origen.
+ * @param {object} [options]
+ * @param {typeof fetch} [options.fetchImpl] Implementació de fetch.
+ * @param {() => number} [options.now] Rellotge en ms.
+ */
+export function createFxLoader({fetchImpl = (...args) => fetch(...args), now = Date.now} = {}) {
+  return createResourceLoader({fetchOne: (currency) => fetchFxRate(currency, fetchImpl), ttlMs: FX_TTL_MS, now});
 }

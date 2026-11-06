@@ -30,6 +30,9 @@ const MAX_NOTE = 10000;
  * @property {string} currency
  * @property {string} at Data ISO.
  * @property {string} reference Origen del preu.
+ * @property {string} [priceAsOf] Data del preu del proveïdor.
+ * @property {number} [fxRate] EUR per unitat de la moneda (1 en EUR).
+ * @property {number} [eurAmount] Import de l'operació en EUR.
  */
 
 /**
@@ -73,7 +76,16 @@ function sanitizeTrade(t) {
     isShortText(t.reference);
   if (!valid) return null;
   const {id, symbol, name, side, qty, price, currency, at, reference} = t;
-  return /** @type {Trade} */ ({id, symbol, name, side, qty, price, currency, at, reference});
+  const trade = {id, symbol, name, side, qty, price, currency, at, reference};
+  // Camps opcionals (operacions fetes des de la versió amb conversió de divises).
+  const positive = (v) => typeof v === 'number' && Number.isFinite(v) && v > 0;
+  if (t.priceAsOf !== undefined) {
+    if (typeof t.priceAsOf !== 'string' || Number.isNaN(Date.parse(t.priceAsOf))) return null;
+    trade.priceAsOf = t.priceAsOf;
+  }
+  if (t.fxRate !== undefined) { if (!positive(t.fxRate)) return null; trade.fxRate = t.fxRate; }
+  if (t.eurAmount !== undefined) { if (!positive(t.eurAmount)) return null; trade.eurAmount = t.eurAmount; }
+  return /** @type {Trade} */ (trade);
 }
 
 /**
