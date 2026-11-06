@@ -1,0 +1,16 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 760 520" role="img" aria-labelledby="title desc">
+<title id="title">Creixement amb perspectiva</title>
+<desc id="desc">Tres barres ascendents i una fletxa elegant en creixement: disciplina, progrés i oportunitat.</desc>
+<defs>
+  <linearGradient id="barOne" x1="0" y1="1" x2="1" y2="0"><stop stop-color="#214BEB"/><stop offset="1" stop-color="#2585F9"/></linearGradient>
+  <linearGradient id="barTwo" x1="0" y1="1" x2="1" y2="0"><stop stop-color="#067EC9"/><stop offset="1" stop-color="#18C9CF"/></linearGradient>
+  <linearGradient id="barThree" x1="0" y1="1" x2="1" y2="0"><stop stop-color="#4038EC"/><stop offset="1" stop-color="#7437FF"/></linearGradient>
+  <linearGradient id="growth" x1="0" y1="1" x2="1" y2="0"><stop stop-color="#00C7BA"/><stop offset=".52" stop-color="#1895ED"/><stop offset="1" stop-color="#7833F5"/></linearGradient>
+</defs>
+<g>
+  <path d="M160 342 L250 314 Q256 313 256 321 L256 450 Q256 460 246 460 H172 Q160 460 160 448Z" fill="url(#barOne)"/>
+  <path d="M281 288 L372 245 Q378 242 378 251 V447 Q378 460 365 460 H292 Q281 460 281 449Z" fill="url(#barTwo)"/>
+  <path d="M405 242 L495 190 Q504 186 504 196 V438 Q504 460 483 460 H415 Q405 460 405 449Z" fill="url(#barThree)"/>
+  <path d="M107 340 C262 313 408 239 554 122 L533 104 Q524 97 536 91 L628 53 Q638 48 636 60 L620 158 Q618 171 609 163 L580 134 C442 253 287 327 107 340Z" fill="url(#growth)"/>
+</g>
+</svg>
