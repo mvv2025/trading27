@@ -6043,5 +6043,194 @@ export const EXTRA = [
     "yield": null,
     "pe": null,
     "mv": null
+  },
+  {
+    "symbol": "SNY",
+    "name": "Sanofi ADR",
+    "mic": "XNYS",
+    "market": "NYSE",
+    "country": "Estats Units",
+    "currency": "USD",
+    "sector": "Farmacèutica",
+    "topics": [
+      "Farmacèutica",
+      "Salut",
+      "Biotecnologia"
+    ],
+    "price": null,
+    "change": null,
+    "high": null,
+    "low": null,
+    "yield": null,
+    "pe": null,
+    "mv": null
+  },
+  {
+    "symbol": "AZN",
+    "name": "AstraZeneca ADR",
+    "mic": "XNAS",
+    "market": "NASDAQ",
+    "country": "Estats Units",
+    "currency": "USD",
+    "sector": "Farmacèutica",
+    "topics": [
+      "Farmacèutica",
+      "Salut",
+      "Biotecnologia"
+    ],
+    "price": null,
+    "change": null,
+    "high": null,
+    "low": null,
+    "yield": null,
+    "pe": null,
+    "mv": null
+  },
+  {
+    "symbol": "NVO",
+    "name": "Novo Nordisk ADR",
+    "mic": "XNYS",
+    "market": "NYSE",
+    "country": "Estats Units",
+    "currency": "USD",
+    "sector": "Farmacèutica",
+    "topics": [
+      "Farmacèutica",
+      "Salut",
+      "Biotecnologia"
+    ],
+    "price": null,
+    "change": null,
+    "high": null,
+    "low": null,
+    "yield": null,
+    "pe": null,
+    "mv": null
+  },
+  {
+    "symbol": "NVS",
+    "name": "Novartis ADR",
+    "mic": "XNYS",
+    "market": "NYSE",
+    "country": "Estats Units",
+    "currency": "USD",
+    "sector": "Farmacèutica",
+    "topics": [
+      "Farmacèutica",
+      "Salut",
+      "Biotecnologia"
+    ],
+    "price": null,
+    "change": null,
+    "high": null,
+    "low": null,
+    "yield": null,
+    "pe": null,
+    "mv": null
+  },
+  {
+    "symbol": "GSK",
+    "name": "GSK ADR",
+    "mic": "XNYS",
+    "market": "NYSE",
+    "country": "Estats Units",
+    "currency": "USD",
+    "sector": "Farmacèutica",
+    "topics": [
+      "Farmacèutica",
+      "Salut",
+      "Biotecnologia"
+    ],
+    "price": null,
+    "change": null,
+    "high": null,
+    "low": null,
+    "yield": null,
+    "pe": null,
+    "mv": null
+  },
+  {
+    "symbol": "TAK",
+    "name": "Takeda Pharmaceutical ADR",
+    "mic": "XNYS",
+    "market": "NYSE",
+    "country": "Estats Units",
+    "currency": "USD",
+    "sector": "Farmacèutica",
+    "topics": [
+      "Farmacèutica",
+      "Salut",
+      "Biotecnologia"
+    ],
+    "price": null,
+    "change": null,
+    "high": null,
+    "low": null,
+    "yield": null,
+    "pe": null,
+    "mv": null
+  },
+  {
+    "symbol": "TEVA",
+    "name": "Teva Pharmaceutical Industries ADR",
+    "mic": "XNYS",
+    "market": "NYSE",
+    "country": "Estats Units",
+    "currency": "USD",
+    "sector": "Farmacèutica",
+    "topics": [
+      "Farmacèutica",
+      "Salut",
+      "Biotecnologia"
+    ],
+    "price": null,
+    "change": null,
+    "high": null,
+    "low": null,
+    "yield": null,
+    "pe": null,
+    "mv": null
+  },
+  {
+    "symbol": "BNTX",
+    "name": "BioNTech ADR",
+    "mic": "XNAS",
+    "market": "NASDAQ",
+    "country": "Estats Units",
+    "currency": "USD",
+    "sector": "Farmacèutica",
+    "topics": [
+      "Farmacèutica",
+      "Salut",
+      "Biotecnologia"
+    ],
+    "price": null,
+    "change": null,
+    "high": null,
+    "low": null,
+    "yield": null,
+    "pe": null,
+    "mv": null
+  },
+  {
+    "symbol": "CRSP",
+    "name": "CRISPR Therapeutics",
+    "mic": "XNAS",
+    "market": "NASDAQ",
+    "country": "Estats Units",
+    "currency": "USD",
+    "sector": "Farmacèutica",
+    "topics": [
+      "Farmacèutica",
+      "Salut",
+      "Biotecnologia"
+    ],
+    "price": null,
+    "change": null,
+    "high": null,
+    "low": null,
+    "yield": null,
+    "pe": null,
+    "mv": null
   }
 ];
