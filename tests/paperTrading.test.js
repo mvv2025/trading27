@@ -1,7 +1,8 @@
 // Tests de les regles del simulador: preu verificat i recent, EUR o USD, conversió a EUR.
 import {describe, expect, it, vi} from 'vitest';
 import {
-  MAX_FX_AGE_MS, MAX_QUOTE_AGE_MS, OrderBlock, checkOrder, executeOrder, holdingsValueEur, priceStatus,
+  MAX_FX_AGE_MS, MAX_QUOTE_AGE_MS, MAX_SHEET_PRICE_AGE_MS, OrderBlock, checkOrder, executeOrder, holdingsValueEur,
+  mergeFxRates, priceStatus,
 } from '../src/paperTrading.js';
 import {createFxLoader} from '../src/quoteLoader.js';
 import {sanitizeSaved} from '../src/storage.js';
@@ -38,20 +39,78 @@ describe('priceStatus', () => {
   });
 
   it('en USD exigeix un tipus de canvi recent', () => {
-    expect(priceStatus(NVDA, FX, NOW)).toEqual({block: null, rate: 0.9});
+    expect(priceStatus(NVDA, FX, NOW)).toEqual({block: null, rate: 0.9, source: 'provider', priceAsOf: NVDA.asOf});
     expect(priceStatus(NVDA, {}, NOW)).toEqual({block: OrderBlock.FX_UNAVAILABLE});
     const oldFx = {USD: {...FX.USD, receivedAt: NOW - MAX_FX_AGE_MS - 1}};
     expect(priceStatus(NVDA, oldFx, NOW)).toEqual({block: OrderBlock.FX_UNAVAILABLE});
   });
 
   it('en EUR no necessita tipus de canvi', () => {
-    expect(priceStatus(ASML, {}, NOW)).toEqual({block: null, rate: 1});
+    expect(priceStatus(ASML, {}, NOW)).toEqual({block: null, rate: 1, source: 'provider', priceAsOf: ASML.asOf});
+  });
+});
+
+describe('priceStatus amb preus del full de Google Finance', () => {
+  /** Empresa amb preu del full: hora del preu fa 1 hora i full rebut ara mateix. */
+  const BNP = {
+    symbol: 'BNP', name: 'BNP Paribas', currency: 'EUR', price: 91.93, source: 'sheet',
+    sheetAsOf: new Date(NOW - 3600_000).toISOString(), sheetReceivedAt: NOW,
+  };
+
+  it('permet operar amb un preu del full recent', () => {
+    expect(priceStatus(BNP, {}, NOW)).toEqual({block: null, rate: 1, source: 'sheet', priceAsOf: BNP.sheetAsOf});
+  });
+
+  it('accepta un preu de fa 3 dies (cap de setmana) però no de fa més de 4', () => {
+    expect(priceStatus({...BNP, sheetAsOf: new Date(NOW - 3 * 86400_000).toISOString()}, {}, NOW).block).toBeNull();
+    const old = {...BNP, sheetAsOf: new Date(NOW - MAX_SHEET_PRICE_AGE_MS - 1).toISOString()};
+    expect(priceStatus(old, {}, NOW)).toEqual({block: OrderBlock.PRICE_TOO_OLD});
+  });
+
+  it('bloqueja un preu sense hora o amb una hora futura', () => {
+    expect(priceStatus({...BNP, sheetAsOf: null}, {}, NOW)).toEqual({block: OrderBlock.PRICE_TIME_INVALID});
+    const future = {...BNP, sheetAsOf: new Date(NOW + 3600_000).toISOString()};
+    expect(priceStatus(future, {}, NOW)).toEqual({block: OrderBlock.PRICE_TIME_INVALID});
+  });
+
+  it('exigeix que el full s\'hagi rebut fa menys de 15 minuts', () => {
+    expect(priceStatus({...BNP, sheetReceivedAt: NOW - MAX_QUOTE_AGE_MS - 1}, {}, NOW)).toEqual({block: OrderBlock.QUOTE_TOO_OLD});
+  });
+
+  it('si també hi ha cotització de Twelve Data, té prioritat', () => {
+    const both = {...BNP, asOf: '2026-11-06T15:00:00.000Z', receivedAt: NOW};
+    expect(priceStatus(both, {}, NOW)).toMatchObject({source: 'provider', priceAsOf: both.asOf});
+  });
+
+  it('els preus del full en USD necessiten tipus de canvi', () => {
+    const msft = {...BNP, symbol: 'MSFT', currency: 'USD'};
+    expect(priceStatus(msft, {}, NOW)).toEqual({block: OrderBlock.FX_UNAVAILABLE});
+    expect(priceStatus(msft, FX, NOW)).toMatchObject({block: null, rate: 0.9, source: 'sheet'});
+  });
+
+  it('registra l\'operació com a Google Finance', () => {
+    const account = executeOrder({cash: 1000, holdings: {}, trades: []}, BNP, 'buy',
+      checkOrder({stock: BNP, side: 'buy', quantity: '2', limit: '92', cash: 1000, held: 0, fxRates: {}, now: NOW}), NOW);
+    expect(account.cash).toBe(816.14);
+    expect(account.trades[0]).toMatchObject({reference: 'google-finance', priceAsOf: BNP.sheetAsOf, fxRate: 1});
+    expect(sanitizeSaved({account}).repaired).toBe(false);
+  });
+});
+
+describe('mergeFxRates', () => {
+  it('es queda el tipus rebut més recentment per a cada moneda', () => {
+    const provider = {USD: {rate: 0.9, receivedAt: NOW - 1000}};
+    const sheet = {USD: {rate: 0.91, receivedAt: NOW}, GBP: {rate: 1.15, receivedAt: NOW}};
+    expect(mergeFxRates(provider, sheet)).toEqual({USD: sheet.USD, GBP: sheet.GBP});
+    expect(mergeFxRates(provider, {})).toEqual(provider);
   });
 });
 
 describe('checkOrder', () => {
   it('calcula l\'import en USD i en EUR', () => {
-    expect(checkOrder(order())).toEqual({ok: true, qty: 2, price: 100, rate: 0.9, total: 200, totalEur: 180});
+    expect(checkOrder(order())).toEqual({
+      ok: true, qty: 2, price: 100, rate: 0.9, total: 200, totalEur: 180, source: 'provider', priceAsOf: NVDA.asOf,
+    });
   });
 
   it.each([

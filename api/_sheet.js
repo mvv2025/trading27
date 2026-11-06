@@ -41,7 +41,82 @@ export const COLUMNS = Object.freeze({
  * @property {number|null} pe
  * @property {number|null} marketCapB Capitalització en milers de milions.
  * @property {string|null} time Hora de l'última cotització, hora local de la borsa.
+ * @property {string|null} asOf La mateixa hora convertida a UTC (ISO), o null si no és vàlida.
  */
+
+/**
+ * Zona horària de cada borsa. GOOGLEFINANCE("tradetime") dona l'hora local de la
+ * borsa sense zona; s'ha comprovat amb dades reals (París 17:35 al tancament,
+ * Toronto i Nova York coherents amb l'hora UTC de la consulta).
+ */
+export const MIC_TIMEZONES = Object.freeze({
+  XPAR: 'Europe/Paris', XAMS: 'Europe/Amsterdam', XETR: 'Europe/Berlin', XMIL: 'Europe/Rome',
+  XMAD: 'Europe/Madrid', XLON: 'Europe/London', XNAS: 'America/New_York', XNYS: 'America/New_York',
+  XHKG: 'Asia/Hong_Kong', XTKS: 'Asia/Tokyo', XTSE: 'America/Toronto',
+});
+
+/**
+ * Diferència en ms entre l'hora local d'una zona i UTC en un instant donat.
+ * @param {number} timestamp Instant en ms.
+ * @param {string} timeZone Zona IANA.
+ * @returns {number}
+ */
+function timeZoneOffsetMs(timestamp, timeZone) {
+  const parts = new Intl.DateTimeFormat('en-US', {
+    timeZone, hourCycle: 'h23', year: 'numeric', month: '2-digit', day: '2-digit',
+    hour: '2-digit', minute: '2-digit', second: '2-digit',
+  }).formatToParts(new Date(timestamp));
+  const get = (type) => Number(parts.find((p) => p.type === type).value);
+  return Date.UTC(get('year'), get('month') - 1, get('day'), get('hour'), get('minute'), get('second')) - timestamp;
+}
+
+/**
+ * Converteix "dd/mm/aaaa hh:mm" (hora local d'una zona) a ISO en UTC.
+ * Té en compte els canvis d'horari d'estiu.
+ * @param {string} text Data i hora locals.
+ * @param {string} timeZone Zona IANA.
+ * @returns {string|null} ISO en UTC, o null si el text no és una data vàlida.
+ */
+export function localToUtcIso(text, timeZone) {
+  const match = /^(\d{2})\/(\d{2})\/(\d{4}) (\d{2}):(\d{2})$/.exec(String(text ?? ''));
+  if (!match || !timeZone) return null;
+  const [day, month, year, hour, minute] = match.slice(1).map(Number);
+  const guess = Date.UTC(year, month - 1, day, hour, minute);
+  const check = new Date(guess);
+  // Rebutja dates impossibles (31/02, 25:00...).
+  if (check.getUTCDate() !== day || check.getUTCMonth() !== month - 1 || check.getUTCHours() !== hour || check.getUTCMinutes() !== minute) return null;
+  let utc = guess - timeZoneOffsetMs(guess, timeZone);
+  const corrected = guess - timeZoneOffsetMs(utc, timeZone);
+  if (corrected !== utc) utc = corrected;
+  return new Date(utc).toISOString();
+}
+
+/** Nom de la pestanya opcional amb tipus de canvi i columnes que ha de tenir. */
+export const FX_TAB = 'Tipus de canvi';
+export const FX_COLUMNS = Object.freeze({pair: 'Parell', rate: 'Tipus de canvi'});
+
+/** Parells admesos i interval raonable (per descartar errors de format o de fórmula). */
+const FX_BOUNDS = Object.freeze({'USD/EUR': [0.5, 2]});
+
+/**
+ * Llegeix la pestanya de tipus de canvi. Si no existeix o no té el format esperat, retorna {}.
+ * @param {string} text CSV de la pestanya.
+ * @returns {Record<string, {rate: number}>} Tipus per moneda d'origen (p. ex. {USD: {rate: 0.92}}).
+ */
+export function parseFxTab(text) {
+  const [header = [], ...lines] = parseCsv(text);
+  const pairIndex = header.indexOf(FX_COLUMNS.pair), rateIndex = header.indexOf(FX_COLUMNS.rate);
+  if (pairIndex < 0 || rateIndex < 0) return {};
+  const fx = {};
+  for (const line of lines) {
+    const pair = String(line[pairIndex] ?? '').trim();
+    const rate = parseLocaleNumber(line[rateIndex]);
+    const bounds = FX_BOUNDS[pair];
+    if (!bounds || rate === null || rate < bounds[0] || rate > bounds[1]) continue;
+    fx[pair.split('/')[0]] = {rate};
+  }
+  return fx;
+}
 
 /**
  * Crea un error amb codi HTTP.
@@ -166,6 +241,7 @@ export function parseSheet(text) {
       // La capitalització de les accions en GBX no és coherent al full (unitats barrejades): es descarta.
       marketCapB: factor === 1 && marketCap !== null && marketCap > 0 ? Math.round(marketCap / 1e7) / 100 : null,
       time: /^\d{2}\/\d{2}\/\d{4} \d{2}:\d{2}$/.test(time) ? time : null,
+      asOf: localToUtcIso(time, MIC_TIMEZONES[INSTRUMENTS[ticker].mic]),
     };
   }
   const withPrice = Object.keys(rows).length;
@@ -177,18 +253,20 @@ export function parseSheet(text) {
 
 /**
  * Descarrega el full com a CSV (endpoint gviz, que no redirigeix a altres dominis).
+ * Sense `tab`, Google retorna la primera pestanya.
  * @param {string} sheetId Identificador del full.
  * @param {typeof fetch} [fetchImpl] Implementació de fetch.
+ * @param {string} [tab] Nom de la pestanya.
  * @returns {Promise<string>} CSV.
  * @throws {Error} 503 SHEET_NOT_CONFIGURED, 502 SHEET_NOT_PUBLIC, 504 SHEET_TIMEOUT o 502 SHEET_UNAVAILABLE.
  */
-export async function fetchSheetCsv(sheetId, fetchImpl = (...args) => fetch(...args)) {
+export async function fetchSheetCsv(sheetId, fetchImpl = (...args) => fetch(...args), tab) {
   if (!/^[A-Za-z0-9_-]{20,100}$/.test(sheetId)) throw sheetError('SHEET_NOT_CONFIGURED', 503);
   const controller = new AbortController();
   const timeout = setTimeout(() => controller.abort(), 9000);
   try {
     const response = await fetchImpl(
-      `https://docs.google.com/spreadsheets/d/${sheetId}/gviz/tq?tqx=out:csv`,
+      `https://docs.google.com/spreadsheets/d/${sheetId}/gviz/tq?tqx=out:csv` + (tab ? '&sheet=' + encodeURIComponent(tab) : ''),
       {headers: {Accept: 'text/csv'}, redirect: 'manual', signal: controller.signal},
     );
     // 401/403 o una redirecció a la pàgina d'inici de sessió: el full ja no és públic.

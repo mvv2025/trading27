@@ -1,7 +1,9 @@
 // Tests de la lectura del full de Google Finance (servidor i client).
 import {afterEach, beforeEach, describe, expect, it, vi} from 'vitest';
 import handler from '../api/sheet.js';
-import {fetchSheetCsv, parseCsv, parseLocaleNumber, parseMultiple, parsePercent, parseSheet} from '../api/_sheet.js';
+import {
+  fetchSheetCsv, localToUtcIso, parseCsv, parseFxTab, parseLocaleNumber, parseMultiple, parsePercent, parseSheet,
+} from '../api/_sheet.js';
 import {resetMemoryStore} from '../api/_ratelimit.js';
 import {applySheetRow, createSheetLoader} from '../src/sheetLoader.js';
 
@@ -52,7 +54,10 @@ describe('parseSheet', () => {
   it('converteix una fila vàlida', () => {
     expect(rows.BNP).toEqual({
       price: 91.93, high52: 113.82, low52: 65.12, changePct: -0.01, pe: 7.7, marketCapB: 101.22, time: '06/11/2026 17:35',
+      asOf: '2026-11-06T16:35:00.000Z', // París al novembre: UTC+1
     });
+    expect(rows.NVDA.asOf).toBe('2026-11-06T17:11:00.000Z'); // Nova York al novembre: UTC−5
+    expect(rows.BARC.asOf).toBe('2026-11-06T16:48:00.000Z'); // Londres al novembre: UTC+0
     expect(rows.NVDA.price).toBe(1188.07);
   });
 
@@ -71,7 +76,7 @@ describe('parseSheet', () => {
   });
 
   it('anul·la un rang anual incoherent i una hora sense format', () => {
-    expect(rows.TTE).toMatchObject({price: 79.73, high52: null, low52: null, pe: null, time: null});
+    expect(rows.TTE).toMatchObject({price: 79.73, high52: null, low52: null, pe: null, time: null, asOf: null});
   });
 
   it('marca els símbols duplicats i no en fa servir cap', () => {
@@ -82,6 +87,36 @@ describe('parseSheet', () => {
 
   it('falla si el full ja no té les columnes esperades', () => {
     expect(() => parseSheet('"Ticker","Preu"\n"BNP","1,00"')).toThrow('SHEET_FORMAT_CHANGED');
+  });
+});
+
+describe('localToUtcIso', () => {
+  it.each([
+    ['06/11/2026 17:35', 'Europe/Paris', '2026-11-06T16:35:00.000Z'],
+    ['06/07/2026 17:35', 'Europe/Paris', '2026-07-06T15:35:00.000Z'], // horari d'estiu: UTC+2
+    ['06/11/2026 16:08', 'Asia/Hong_Kong', '2026-11-06T08:08:00.000Z'],
+    ['06/11/2026 11:48', 'America/Toronto', '2026-11-06T16:48:00.000Z'],
+    ['31/02/2026 10:00', 'Europe/Paris', null],
+    ['06/11/2026 25:00', 'Europe/Paris', null],
+    ['2026-11-06 17:35', 'Europe/Paris', null],
+    ['06/11/2026 17:35', undefined, null],
+  ])('%s a %s → %s', (text, zone, expected) => {
+    expect(localToUtcIso(text, zone)).toBe(expected);
+  });
+});
+
+describe('parseFxTab', () => {
+  it('llegeix el tipus USD/EUR', () => {
+    expect(parseFxTab('"Parell","Tipus de canvi"\n"USD/EUR","0,9234"')).toEqual({USD: {rate: 0.9234}});
+  });
+
+  it.each([
+    ['la pestanya no existeix (Google retorna la primera)', csv(ROWS)],
+    ['un tipus fora de l\'interval raonable', '"Parell","Tipus de canvi"\n"USD/EUR","92,34"'],
+    ['un parell no admès', '"Parell","Tipus de canvi"\n"GBP/EUR","1,15"'],
+    ['un tipus buit', '"Parell","Tipus de canvi"\n"USD/EUR",""'],
+  ])('no retorna res amb %s', (_name, text) => {
+    expect(parseFxTab(text)).toEqual({});
   });
 });
 
@@ -152,18 +187,25 @@ describe('handler /api/sheet', () => {
 
 describe('client: createSheetLoader i applySheetRow', () => {
   it('descarta files sense un preu numèric positiu', async () => {
-    const body = {fetchedAt: '2026-11-06T17:00:00Z', rows: {BNP: {price: 91.93, high52: 113.82, low52: 65.12, changePct: -0.01, pe: 7.7, marketCapB: 101.22, time: '06/11/2026 17:35'}, X: {price: 'abc'}, Y: {price: -1}}};
-    const loader = createSheetLoader({fetchImpl: async () => new Response(JSON.stringify(body))});
+    const body = {
+      fetchedAt: '2026-11-06T17:00:00Z',
+      rows: {BNP: {price: 91.93, high52: 113.82, low52: 65.12, changePct: -0.01, pe: 7.7, marketCapB: 101.22, time: '06/11/2026 17:35', asOf: 'ahir'}, X: {price: 'abc'}, Y: {price: -1}},
+      fx: {USD: {rate: 0.92}, usd: {rate: 1}, GBP: {rate: 'x'}},
+    };
+    const loader = createSheetLoader({fetchImpl: async () => new Response(JSON.stringify(body)), now: () => 42});
     const result = await loader.get();
     expect(Object.keys(result.rows)).toEqual(['BNP']);
+    expect(result.rows.BNP.asOf).toBeNull(); // una hora no vàlida no es fa servir
+    expect(result.fx).toEqual({USD: {rate: 0.92}});
+    expect(result.fetchedAt).toBe(42); // moment de recepció al client
   });
 
   it('substitueix els camps de preu, calcula la variació absoluta i manté el dividend', () => {
     const seed = {symbol: 'BNP', currency: 'EUR', price: 87.65, change: 0.45, high: 113.82, low: 65.12, yield: 6.62, pe: 9.16, mv: 97.89};
-    const row = {price: 101, high52: 120, low52: 60, changePct: 1, pe: null, marketCapB: 100, time: '06/11/2026 17:35'};
-    expect(applySheetRow(seed, row)).toEqual({
+    const row = {price: 101, high52: 120, low52: 60, changePct: 1, pe: null, marketCapB: 100, time: '06/11/2026 17:35', asOf: '2026-11-06T16:35:00.000Z'};
+    expect(applySheetRow(seed, row, 1_800_000_000_000)).toEqual({
       symbol: 'BNP', currency: 'EUR', price: 101, change: 1, high: 120, low: 60, yield: 6.62, pe: null, mv: 100,
-      source: 'sheet', sheetTime: '06/11/2026 17:35',
+      source: 'sheet', sheetTime: '06/11/2026 17:35', sheetAsOf: '2026-11-06T16:35:00.000Z', sheetReceivedAt: 1_800_000_000_000,
     });
     expect(applySheetRow(seed, undefined)).toBe(seed);
   });

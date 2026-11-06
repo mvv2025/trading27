@@ -19,6 +19,7 @@ export const SHEET_TTL_MS = 10 * 60 * 1000;
  * @property {number|null} pe
  * @property {number|null} marketCapB
  * @property {string|null} time Hora local de la borsa ("dd/mm/aaaa hh:mm").
+ * @property {string|null} asOf La mateixa hora en UTC (ISO), calculada pel servidor.
  */
 
 /** @param {unknown} v @returns {number|null} */
@@ -27,7 +28,7 @@ const finiteOrNull = (v) => (typeof v === 'number' && Number.isFinite(v) ? v : n
 /**
  * Descarrega i valida les dades del full.
  * @param {typeof fetch} fetchImpl Implementació de fetch.
- * @returns {Promise<{rows: Record<string, SheetRow>, fetchedAt: string}>}
+ * @returns {Promise<{rows: Record<string, SheetRow>, fx: Record<string, {rate: number}>, fetchedAt: string}>}
  * @throws {import('./apiErrors.js').ApiError}
  */
 export async function fetchSheet(fetchImpl) {
@@ -52,9 +53,16 @@ export async function fetchSheet(fetchImpl) {
       pe: finiteOrNull(row.pe),
       marketCapB: finiteOrNull(row.marketCapB),
       time: typeof row.time === 'string' ? row.time.slice(0, 16) : null,
+      asOf: typeof row.asOf === 'string' && !Number.isNaN(Date.parse(row.asOf)) ? row.asOf : null,
     };
   }
-  return {rows, fetchedAt: typeof data.fetchedAt === 'string' ? data.fetchedAt : ''};
+  /** @type {Record<string, {rate: number}>} */
+  const fx = {};
+  for (const [currency, value] of Object.entries(data.fx || {})) {
+    const rate = finiteOrNull(value?.rate);
+    if (/^[A-Z]{3}$/.test(currency) && rate !== null && rate > 0) fx[currency] = {rate};
+  }
+  return {rows, fx, fetchedAt: typeof data.fetchedAt === 'string' ? data.fetchedAt : ''};
 }
 
 /**
@@ -62,7 +70,9 @@ export async function fetchSheet(fetchImpl) {
  * @param {object} [options]
  * @param {typeof fetch} [options.fetchImpl] Implementació de fetch.
  * @param {() => number} [options.now] Rellotge en ms.
- * @returns {{get: (options?: {force?: boolean}) => Promise<{rows: Record<string, SheetRow>, fetchedAt: string, cached: boolean}>}}
+ * El `fetchedAt` del resultat és el moment (ms) en què el client va rebre les dades
+ * (el carregador genèric substitueix el `fetchedAt` del servidor).
+ * @returns {{get: (options?: {force?: boolean}) => Promise<{rows: Record<string, SheetRow>, fx: Record<string, {rate: number}>, cached: boolean, fetchedAt: number}>}}
  */
 export function createSheetLoader({fetchImpl = (...args) => fetch(...args), now = Date.now} = {}) {
   const loader = createResourceLoader({fetchOne: () => fetchSheet(fetchImpl), ttlMs: SHEET_TTL_MS, now});
@@ -76,9 +86,10 @@ export function createSheetLoader({fetchImpl = (...args) => fetch(...args), now 
  * @template {{price: number|null, change: number|null, high: number|null, low: number|null, pe: number|null, mv: number|null}} S
  * @param {S} stock Empresa del catàleg.
  * @param {SheetRow | undefined} row Fila del full.
- * @returns {S | (S & {source: 'sheet', sheetTime: string|null})}
+ * @param {number} [receivedAt] Moment (ms) en què el client va rebre el full; el simulador el fa servir.
+ * @returns {S | (S & {source: 'sheet', sheetTime: string|null, sheetAsOf: string|null, sheetReceivedAt: number|undefined})}
  */
-export function applySheetRow(stock, row) {
+export function applySheetRow(stock, row, receivedAt) {
   if (!row) return stock;
   const {price, changePct} = row;
   // El full dona la variació en %, l'aplicació la mostra en unitats monetàries.
@@ -93,5 +104,7 @@ export function applySheetRow(stock, row) {
     mv: row.marketCapB,
     source: 'sheet',
     sheetTime: row.time,
+    sheetAsOf: row.asOf ?? null,
+    sheetReceivedAt: receivedAt,
   };
 }

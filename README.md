@@ -72,7 +72,8 @@ Trading27 integra ara **Twelve Data** a través de funcions de servidor de Verce
 
 - `GET /api/sheet`: llegeix el full de càlcul públic del projecte (preus de `GOOGLEFINANCE`), en valida cada fila i el desa **10 minuts** al CDN. L'aplicació el torna a llegir cada 10 minuts mentre està oberta, de manera que els canvis del full arriben sols.
 - **Ordre de preferència dels preus:** Twelve Data (verificat) → Google Finance (full, amb retard de fins a 20 minuts) → Financial Times (01/11/2026, històric). Cada preu porta l'etiqueta del seu origen.
-- **Els preus del full no serveixen per operar al simulador**: no tenen una hora fiable en UTC ni la verificació de borsa de Twelve Data.
+- **Els preus del full també serveixen per operar al simulador** (vegeu les regles més avall). L'hora de cada preu (`GOOGLEFINANCE("tradetime")`) és l'hora local de la borsa; el servidor la converteix a UTC segons la borsa de l'empresa (`MIC_TIMEZONES` a `api/_sheet.js`).
+- **Tipus de canvi (opcional):** per operar amb accions en USD sense Twelve Data, afegeix al full una pestanya anomenada exactament **`Tipus de canvi`** amb les columnes `Parell` i `Tipus de canvi`, i una fila `USD/EUR` amb `=GOOGLEFINANCE("CURRENCY:USDEUR")`. Si la pestanya no existeix, Google retorna la primera pestanya i el servidor ho detecta (no hi troba les columnes) i no fa servir cap tipus.
 - **Validació:** només s'accepten símbols del catàleg (`src/universe.js`); afegir una empresa al full no l'afegeix a l'aplicació. La moneda de Google ha de coincidir amb la de l'empresa; les accions de Londres arriben en penics (GBX) i es divideixen per 100 (la seva capitalització es descarta perquè no és coherent). Les files sense preu (errors de `GOOGLEFINANCE`), amb fórmules o amb valors no numèrics es descarten.
 - **Requisits del full:** ha d'estar compartit com a *Qualsevol persona que tingui l'enllaç → Lector*; ha de mantenir els noms de les columnes i la configuració regional catalana/espanyola (`1.295,95`, `(0,01) %`, `7,7x`). Si deixa de ser públic o canvien les columnes, la ruta retorna `SHEET_NOT_PUBLIC` o `SHEET_FORMAT_CHANGED` i l'aplicació continua amb els altres preus.
 - Un altre full es pot configurar amb `MARKET_SHEET_ID`.
@@ -124,8 +125,8 @@ La variable `TWELVE_DATA_API_KEY` és *server-side*; **mai** s'ha de crear una v
 
 **Només hi ha simulació.** Les operacions de prova es guarden al navegador, sense comissions, i no constitueixen un backtest realista. Regles del simulador (`src/paperTrading.js`):
 
-- Només s'opera amb un **preu confirmat pel proveïdor** i rebut fa menys de 15 minuts. Els preus històrics del Financial Times (01/11/2026) es mostren com a referència però no serveixen per operar.
-- Monedes admeses: **EUR i USD**. El saldo és en EUR; les operacions en USD es converteixen amb el tipus de canvi del proveïdor (`/api/fx`), rebut fa menys de 15 minuts. Cada operació registra el tipus de canvi i l'import en EUR.
+- Fonts de preu admeses, per ordre: **Twelve Data** (verificat) i, si no n'hi ha, **Google Finance del full de càlcul** (amb retard). Les dades s'han d'haver rebut fa menys de 15 minuts, i el preu del full ha de tenir una hora vàlida de **com a màxim 4 dies** (cobreix caps de setmana i festius). Els preus històrics del Financial Times (01/11/2026) es mostren com a referència però no serveixen per operar.
+- Monedes admeses: **EUR i USD**. El saldo és en EUR; les operacions en USD es converteixen amb el tipus de canvi de Twelve Data (`/api/fx`) o de la pestanya `Tipus de canvi` del full, el rebut més recentment (de fa menys de 15 minuts). Cada operació registra l'origen del preu (`provider` o `google-finance`), l'hora del preu, el tipus de canvi i l'import en EUR.
 - Les accions en GBP (Borsa de Londres) encara no s'admeten: el proveïdor pot donar-ne el preu en penics (GBp) i caldria tractar-ho a part.
 - Les ordres són limitades: el preu del proveïdor ha de complir el límit, i el cost màxim d'una compra es calcula amb el límit.
 
