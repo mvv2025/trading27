@@ -13,6 +13,8 @@ const BASE_INSTRUMENTS={
 };
 export const INSTRUMENTS={...BASE_INSTRUMENTS,...Object.fromEntries(EXTRA.map(s=>[s.symbol,{symbol:s.symbol,mic:s.mic,currency:s.currency,market:s.market}]))};
 export function noCache(res){res.setHeader('Cache-Control','private, no-store, max-age=0');res.setHeader('X-Content-Type-Options','nosniff')}
+export function cacheSuccessfulQuote(res){res.setHeader('Cache-Control','public, max-age=0, s-maxage=90, stale-while-revalidate=45')}
+export function cacheSuccessfulHistory(res){res.setHeader('Cache-Control','public, max-age=0, s-maxage=1800, stale-while-revalidate=3600')}
 export const asNumber=x=>{if(x===null||x===undefined||x==='')return null;const n=Number(x);return Number.isFinite(n)?n:null};
 export async function provider(endpoint,stock,extra={}){
  const key=process.env.TWELVE_DATA_API_KEY;
