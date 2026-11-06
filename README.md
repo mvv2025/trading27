@@ -34,27 +34,46 @@ npm run build
 
 Compatible amb Vercel: framework **Vite**, directori de sortida **dist**, construcció **npm run build**. GitHub inclou una comprovació automàtica del build a `.github/workflows/build.yml`.
 
-## Dades de mercat
+## Cotitzacions actuals i dades històriques reals
 
-**Les cotitzacions inicials són històriques, extretes de les taules del Financial Times de l'1 de novembre de 2026.** No són preus negociables ni es presenten com a temps real.
+Trading27 integra ara **Twelve Data** a través de funcions de servidor de Vercel:
 
-Per a dades externes, es pot definir `VITE_QUOTES_ENDPOINT` amb un endpoint HTTPS que retorni:
+- `GET /api/quotes?symbol=NVDA`: cotització del proveïdor, variació, marca temporal i estat de mercat.
+- `GET /api/history?symbol=NVDA&range=6M`: tancaments i OHLC diaris reals, ajustats per desdoblaments. Períodes disponibles: `1M`, `3M`, `6M`, `1Y`, `3Y`, `5Y`.
+- A **Explorar**, la fitxa d'una empresa mostra un gràfic amb dates i el botó per comprovar el preu de referència. Cap punt del gràfic és simulat quan el proveïdor està configurat.
+- Les funcions comproven símbol autoritzat, MIC de la borsa quan el proveïdor el retorna, moneda, rang i validesa del preu. No hi ha cap substitució silenciosa per dades d'una empresa homònima.
+
+### Activar la font real a Vercel
+
+1. Registra't a [Twelve Data](https://twelvedata.com/) i tria un pla que inclogui les borses, les freqüències i **els drets de visualització de dades** que necessita Trading27.
+2. A **Vercel → trading27 → Settings → Environment Variables**, crea `TWELVE_DATA_API_KEY`, amb el valor de la clau privada. No l'enganxis en una conversa ni la posis a GitHub.
+3. Selecciona l'entorn **Production** (i Preview si es necessita). Desa-la i **redeplega** la branca `main` per aplicar-la.
+4. Obre [trading27.com](https://trading27.com), entra a **Explorar** i comprova el gràfic històric i la marca de temps.
+5. Si apareix `PROVIDER_NOT_CONFIGURED` o un error del proveïdor, comprova el secret, els permisos del pla i la correspondència del símbol i la borsa.
+
+**Estat actual:** el codi de les dues integracions està publicat, però encara no hi ha cap variable `TWELVE_DATA_API_KEY` configurada al projecte Vercel. Per tant, **la connexió no pot obtenir cotitzacions externes fins que es completi el pas 2**. L'aplicació continua mostrant clarament que els valors inicials del FT són històrics, i no inventa preus.
+
+**Atenció:** la disponibilitat de cotitzacions realment en temps real, les dades intradia, la profunditat històrica, les borses accessibles i els drets de redistribució depenen del pla contractat. Les dades REST s'actualitzen quan es consulten i **no constitueixen streaming tick a tick**. Un futur servei de subscripció WebSocket autoritzada és necessari per a actualització contínua sense consultes manuals. No s'ha implementat ni habilitat aquest servei.
+
+### Exemple de resposta de l'API
 
 ```json
 {
+  "source": "Twelve Data",
   "quotes": [
     {
-      "symbol": "BNP",
-      "currency": "EUR",
-      "price": 88.12,
-      "change": 0.21,
-      "asOf": "2026-11-06T09:15:00+01:00"
+      "symbol": "NVDA",
+      "currency": "USD",
+      "price": 0,
+      "asOf": "2026-11-06T00:00:00.000Z"
     }
   ]
 }
 ```
 
-**No introduïu claus secretes en variables `VITE_`** perquè són accessibles des del navegador. Per a cotitzacions en streaming i accés protegit, caldrà un servidor de dades autoritzat, subscripcions i gestió de connexions. La consulta actual és manual, no contínua.
+L'exemple anterior només documenta l'estructura de camps (no representa un preu real i no superarà la validació de valors positius). La resposta real s'obté exclusivament del proveïdor.
+
+La variable `TWELVE_DATA_API_KEY` és *server-side*; **mai** s'ha de crear una variable `VITE_TWELVE_DATA_API_KEY` ni exposar el token en JavaScript de client. Els endpoints públics s'han de protegir amb autenticació, quotes i autorització de visualització abans de tenir múltiples usuaris o trànsit considerable.
 
 ## Inversions i integració amb brokers
 
