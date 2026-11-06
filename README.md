@@ -2,6 +2,15 @@
 
 Primera versió funcional de **Trading27**, una aplicació web educativa d'anàlisi borsària i simulació (*paper trading*), preparada per connectar-se a Vercel.
 
+## Disseny poka-yoke (actualització)
+
+- **Camí inicial de tres passos**: aprendre, escollir empresa, practicar sense diners.
+- **Vista senzilla per defecte**: preu i canvi; la resta de columnes s'obren amb «Mostrar totes les dades».
+- **Ajuda a cada capçalera**: explica el concepte quan es prem ⓘ.
+- **Fonts etiquetades**: els preus antics es marquen com a històrics.
+- **Simulació inequívoca**: botó «Confirmar prova fictícia · NO compra real» i confirmació abans del registre.
+- **Errors recuperables**: instruccions específiques quan el saldo o el límit no permeten completar la prova.
+
 ## Què inclou (v0.1.0)
 
 - Terminal responsive inspirat en les taules del Financial Times: **Price, +/Chg, High/Low 52 setmanes, Yld, P/E, MV(b)**.
