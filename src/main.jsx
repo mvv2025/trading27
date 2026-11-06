@@ -122,7 +122,7 @@ function App(){
   if(!force&&cached&&Date.now()-cached.at<90000){return}
   setQuoteLoading(true);if(!quiet)setQuoteError('');
   try{
-   const response=await fetch('/api/quotes?symbol='+encodeURIComponent(symbol),{cache:'no-store'});
+   const response=await fetch('/api/quotes?symbol='+encodeURIComponent(symbol));
    const result=await response.json();
    if(!response.ok)throw Error(result.error||'DATA_UNAVAILABLE');
    if(!Array.isArray(result.quotes)||!result.quotes.length)throw Error('DATA_UNAVAILABLE');
@@ -140,7 +140,7 @@ function App(){
   if(historyCache.current[cacheKey]&&Date.now()-historyCache.current[cacheKey].at<600000){setHistory(historyCache.current[cacheKey].data);setHistoryError('');return}
   setHistoryLoading(true);setHistoryError('');setHistory([]);
   try{
-   const response=await fetch('/api/history?symbol='+encodeURIComponent(symbol)+'&range='+range,{cache:'no-store'});
+   const response=await fetch('/api/history?symbol='+encodeURIComponent(symbol)+'&range='+range);
    const data=await response.json();
    if(!response.ok)throw Error(data.error||'DATA_UNAVAILABLE');
    if(data.symbol!==symbol||!Array.isArray(data.candles))throw Error('HISTORY_NOT_VERIFIED');
