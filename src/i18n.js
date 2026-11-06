@@ -602,4 +602,10 @@ translations["PAPER MODE"] = {"es":"MODO SIMULACIÓN","en":"PAPER MODE"};
 translations["v0.1.0 · Evolució modular"] = {"es":"v0.1.0 · Evolución modular","en":"v0.1.0 · Modular roadmap"};
 translations["WORKSPACE"] = {"es":"ESPACIO DE TRABAJO","en":"WORKSPACE"};
 translations["DEMO / NO LIVE ORDERS"] = {"es":"DEMO / SIN ÓRDENES REALES","en":"DEMO / NO LIVE ORDERS"};
+translations["Salut"] = {"es":"Salud","en":"Healthcare"};
+translations["Farmacèutica"] = {"es":"Farmacéutica","en":"Pharmaceuticals"};
+translations["Petroli i gas"] = {"es":"Petróleo y gas","en":"Oil & gas"};
+translations["Equipament mèdic"] = {"es":"Equipamiento médico","en":"Medical devices"};
+translations["Biotecnologia"] = {"es":"Biotecnología","en":"Biotechnology"};
+translations["Energia"] = {"es":"Energía","en":"Energy"};
 export function translate(language,key){if(language==='ca')return key;return translations[key]?.[language]||key;}
