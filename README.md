@@ -10,7 +10,7 @@
 - Llista inicial de 30 empreses; la resta es poden carregar de 30 en 30 per minimitzar la saturació.
 - Les companyies es registren a `src/universe.js` i les rutes servidor validen el símbol amb `api/_market.js`. La presència al catàleg **no garanteix** cobertura del teu pla de Twelve Data.
 - Cap preu fictici: els valors nous apareixen sense cotització fins que el proveïdor confirma moneda, símbol, borsa i marca temporal.
-- La portada consulta tres empreses dels EUA (NVDA, AAPL i JPM), amb un total de tres peticions; l'explorador consulta el valor seleccionat, i desa temporalment les respostes per evitar duplicats.
+- La portada consulta tres empreses dels EUA (NVDA, AAPL i JPM). L'explorador consulta només l'empresa seleccionada; el client reutilitza cotitzacions durant 90 segons i històrics durant 10 minuts. El servidor autoritza memòria cau CDN durant 90 segons per a cotitzacions verificades i 30 minuts per a històrics, cosa que redueix consum de crèdits compartit entre visites. **Els errors no es desen a la memòria cau.**
 - **No és una llista exhaustiva de totes les companyies mundials**. Per a cobertura completa caldrà integrar la descoberta i classificació sistemàtica del catàleg del proveïdor.
 
 ### Diagnòstic quan falten cotitzacions
@@ -23,7 +23,7 @@
 - **QUOTE_NOT_VERIFIED/HISTORY_NOT_VERIFIED:** les dades retornades no coincideixen amb els camps esperats.
 - Si l'entorn actual és Basic, prova primer **NVDA**, **AAPL**, **JPM** o **LLY**, valors dels EUA que s'han comprovat contra l'API de producció el 6/11/2026.
 
-La clau `TWELVE_DATA_API_KEY` ha de continuar exclusivament al servidor. El pla Basic permet dades d'accions nord-americanes però pot no permetre mostrar dades al públic de manera redistribuïda; cal comprovar les **condicions de llicència i visualització** del pla abans d'obrir el servei a tercers.
+La clau `TWELVE_DATA_API_KEY` ha de continuar exclusivament al servidor. El pla Basic permet dades d'accions nord-americanes però té límits de 8 crèdits API/minut i 800 al dia; pot no permetre mostrar dades al públic de manera redistribuïda; cal comprovar les **condicions de llicència i visualització** del pla abans d'obrir el servei a tercers.
 
 ## Experiència nova
 
