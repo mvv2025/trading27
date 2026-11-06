@@ -68,6 +68,16 @@ Trading27 integra ara **Twelve Data** a través de funcions de servidor de Verce
 - A **Explorar**, la fitxa d'una empresa mostra un gràfic amb dates i el botó per comprovar el preu de referència. Cap punt del gràfic és simulat quan el proveïdor està configurat.
 - Les funcions comproven símbol autoritzat, MIC de la borsa quan el proveïdor el retorna, moneda, rang i validesa del preu. No hi ha cap substitució silenciosa per dades d'una empresa homònima.
 
+### Preus de Google Finance (full de càlcul)
+
+- `GET /api/sheet`: llegeix el full de càlcul públic del projecte (preus de `GOOGLEFINANCE`), en valida cada fila i el desa **10 minuts** al CDN. L'aplicació el torna a llegir cada 10 minuts mentre està oberta, de manera que els canvis del full arriben sols.
+- **Ordre de preferència dels preus:** Twelve Data (verificat) → Google Finance (full, amb retard de fins a 20 minuts) → Financial Times (01/11/2026, històric). Cada preu porta l'etiqueta del seu origen.
+- **Els preus del full no serveixen per operar al simulador**: no tenen una hora fiable en UTC ni la verificació de borsa de Twelve Data.
+- **Validació:** només s'accepten símbols del catàleg (`src/universe.js`); afegir una empresa al full no l'afegeix a l'aplicació. La moneda de Google ha de coincidir amb la de l'empresa; les accions de Londres arriben en penics (GBX) i es divideixen per 100 (la seva capitalització es descarta perquè no és coherent). Les files sense preu (errors de `GOOGLEFINANCE`), amb fórmules o amb valors no numèrics es descarten.
+- **Requisits del full:** ha d'estar compartit com a *Qualsevol persona que tingui l'enllaç → Lector*; ha de mantenir els noms de les columnes i la configuració regional catalana/espanyola (`1.295,95`, `(0,01) %`, `7,7x`). Si deixa de ser públic o canvien les columnes, la ruta retorna `SHEET_NOT_PUBLIC` o `SHEET_FORMAT_CHANGED` i l'aplicació continua amb els altres preus.
+- Un altre full es pot configurar amb `MARKET_SHEET_ID`.
+- El propietari del projecte ha confirmat que es poden mostrar públicament els preus de Google Finance.
+
 ### Protecció dels crèdits de l'API
 
 Les rutes són públiques, de manera que tenen tres capes de protecció:
