@@ -2,6 +2,17 @@
 
 **Una interfície d'inversió que prioritza la comprensió abans de l'acció.** Redisseny integral, editorial i poka-yoke de Trading27. El codi de la versió anterior continua consultable a `archive/terminal-v1.jsx.txt`.
 
+## Catàleg de companyies ampliat
+
+- Catàleg inicial de **190 companyies**: les 16 fitxes històriques inicials i 174 empreses noves repartides en tecnologia, microxips/semiconductors i banca.
+- Filtres de **Tecnologia**, **Microxips**, **Intel·ligència artificial** i **Banca**, combinables amb mercat, cerca textual i llista personal.
+- Una empresa pot encaixar en diverses àrees (p. ex. tecnologia + IA, o microxips + IA). Les etiquetes temàtiques són editorials i no constitueixen recomanacions.
+- La llista mostra 30 empreses inicialment i permet carregar-ne 30 més, evitant saturar la pantalla.
+- El catàleg es defineix a `src/universe.js` i la llista d'instruments del servidor a `api/_market.js` s'alimenta de la mateixa font.
+- **Les companyies afegides no tenen preus ficticis**: es mostra «No disponible» fins que l'API pugui validar-ne la cotització.
+- **Limitació d'exhaustivitat**: 190 companyies representen una selecció àmplia, **no la totalitat** de totes les empreses bancàries, tecnològiques o d'IA cotitzades al món. Per a cobertura exhaustiva per sector, el següent pas és la descoberta paginada de tot el catàleg Twelve Data (`/stocks`) i l'enriquiment sectorial amb metadades verificables. El conjunt d'empreses és dinàmic i les cotitzacions poden variar segons pla i borsa. La presència al catàleg no certifica accés al preu.
+- Per evitar un consum innecessari de crèdits, les peticions de cotització i històrics es fan **només per l'empresa seleccionada**, no per tots els valors a la vegada.
+
 ## Experiència nova
 
 - **Inici**: una portada diferenciada, amb un camí clar d'aprenentatge: entendre → comparar → practicar.
