@@ -50,21 +50,32 @@ Català (predeterminat), castellà i anglès, amb preferència guardada a `local
 ## Com executar el projecte
 
 ```bash
-npm install
+npm ci
 npm run dev
+npm test
 npm run build
 ```
 
-Compatible amb Vercel: framework **Vite**, directori de sortida **dist**, construcció **npm run build**. GitHub inclou una comprovació automàtica del build a `.github/workflows/build.yml`.
+Compatible amb Vercel: framework **Vite**, directori de sortida **dist**, construcció **npm run build**. GitHub executa els tests i el build a `.github/workflows/build.yml` amb `npm ci` (versions fixades a `package-lock.json`). Nota: `npm run dev` només serveix el frontend; per provar les rutes `/api` en local cal `vercel dev`.
 
 ## Cotitzacions actuals i dades històriques reals
 
 Trading27 integra ara **Twelve Data** a través de funcions de servidor de Vercel:
 
 - `GET /api/quotes?symbol=NVDA`: cotització del proveïdor, variació, marca temporal i estat de mercat.
-- `GET /api/history?symbol=NVDA&range=6M`: tancaments i OHLC diaris reals, ajustats per desdoblaments. Períodes disponibles: `1M`, `3M`, `6M`, `1Y`, `3Y`, `5Y`.
+- `GET /api/history?symbol=NVDA&range=6M`: tancaments i OHLC diaris reals, ajustats per desdoblaments. Períodes disponibles: `1M`, `3M`, `6M`, `1Y`, `3Y`, `5Y` (paràmetre obligatori, en majúscules).
 - A **Explorar**, la fitxa d'una empresa mostra un gràfic amb dates i el botó per comprovar el preu de referència. Cap punt del gràfic és simulat quan el proveïdor està configurat.
 - Les funcions comproven símbol autoritzat, MIC de la borsa quan el proveïdor el retorna, moneda, rang i validesa del preu. No hi ha cap substitució silenciosa per dades d'una empresa homònima.
+
+### Protecció dels crèdits de l'API
+
+Les rutes són públiques, de manera que tenen tres capes de protecció:
+
+1. **Consulta canònica.** El CDN de Vercel desa les respostes segons la URL sencera. Per evitar que variants com `?symbol=NVDA&x=1`, `?symbol=nvda` o `?symbols=NVDA` esquivin la memòria cau, només s'accepten `symbol` (exacte, en majúscules) i, a l'històric, `range`. Qualsevol altra forma retorna `400 NON_CANONICAL_QUERY` sense consultar el proveïdor.
+2. **Límit per IP:** 30 peticions/minut per defecte (`RATE_LIMIT_PER_IP_PER_MINUTE`). Si se supera, `429 TOO_MANY_REQUESTS` amb capçalera `Retry-After`. Les respostes servides pel CDN no compten.
+3. **Pressupost global de crèdits:** 8 per minut i 800 per dia UTC per defecte, com el pla Basic (`MARKET_DATA_CREDITS_PER_MINUTE`, `MARKET_DATA_CREDITS_PER_DAY`). Si s'esgota, `503 PROVIDER_BUDGET_EXHAUSTED` amb `Retry-After`, sense gastar crèdits.
+
+Els comptadors es guarden a **Upstash Redis** si hi ha `UPSTASH_REDIS_REST_URL`/`UPSTASH_REDIS_REST_TOKEN` (o `KV_REST_API_URL`/`KV_REST_API_TOKEN`, creades per la integració d'Upstash del Marketplace de Vercel). **Sense Redis, el comptador és en memòria de cada instància serverless i la protecció és només parcial**: per a producció cal configurar Redis. Les IP es desen com a hash, mai en clar. Si Redis falla, es fa servir el comptador local.
 
 ### Activar la font real a Vercel
 

@@ -113,7 +113,9 @@ function App(){
    HISTORY_NOT_VERIFIED:['L’històric no coincideix amb la moneda o la borsa esperada.','El histórico no coincide con la moneda o bolsa esperada.','Historical data does not match the expected currency or exchange.'],
    EMPTY_HISTORY:['El proveïdor no ha retornat dades per al període indicat.','El proveedor no ha devuelto datos para este periodo.','The provider returned no historical data for this period.'],
    PROVIDER_TIMEOUT:['La consulta ha excedit el temps d’espera.','La consulta ha superado el tiempo de espera.','The provider request timed out.'],
-   PROVIDER_NETWORK_ERROR:['No s’ha pogut connectar amb el proveïdor.','No se ha podido conectar con el proveedor.','Cannot connect to the provider.']
+   PROVIDER_NETWORK_ERROR:['No s’ha pogut connectar amb el proveïdor.','No se ha podido conectar con el proveedor.','Cannot connect to the provider.'],
+   TOO_MANY_REQUESTS:['Massa consultes en poc temps. Espera un minut i torna-ho a provar.','Demasiadas consultas en poco tiempo. Espera un minuto e inténtalo de nuevo.','Too many requests in a short time. Wait a minute and try again.'],
+   PROVIDER_BUDGET_EXHAUSTED:['S’ha esgotat temporalment el pressupost de consultes de dades de mercat. Torna-ho a provar més tard.','Se ha agotado temporalmente el presupuesto de consultas de datos de mercado. Inténtalo más tarde.','The market-data request budget is temporarily exhausted. Try again later.']
   };
   return (dict[code]||[l.updateFailed,l.updateFailed,l.updateFailed])[{ca:0,es:1,en:2}[language]];
  };
