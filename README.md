@@ -50,21 +50,44 @@ Català (predeterminat), castellà i anglès, amb preferència guardada a `local
 ## Com executar el projecte
 
 ```bash
-npm install
+npm ci
 npm run dev
+npm test
 npm run build
 ```
 
-Compatible amb Vercel: framework **Vite**, directori de sortida **dist**, construcció **npm run build**. GitHub inclou una comprovació automàtica del build a `.github/workflows/build.yml`.
+Compatible amb Vercel: framework **Vite**, directori de sortida **dist**, construcció **npm run build**. GitHub executa els tests i el build a `.github/workflows/build.yml` amb `npm ci` (versions fixades a `package-lock.json`). Nota: `npm run dev` només serveix el frontend; per provar les rutes `/api` en local cal `vercel dev`.
 
 ## Cotitzacions actuals i dades històriques reals
 
 Trading27 integra ara **Twelve Data** a través de funcions de servidor de Vercel:
 
 - `GET /api/quotes?symbol=NVDA`: cotització del proveïdor, variació, marca temporal i estat de mercat.
-- `GET /api/history?symbol=NVDA&range=6M`: tancaments i OHLC diaris reals, ajustats per desdoblaments. Períodes disponibles: `1M`, `3M`, `6M`, `1Y`, `3Y`, `5Y`.
+- `GET /api/fx?pair=USD/EUR`: tipus de canvi del proveïdor per convertir les operacions simulades en USD a EUR (memòria cau CDN de 5 minuts). Només s'admet `USD/EUR`.
+- `GET /api/history?symbol=NVDA&range=6M`: tancaments i OHLC diaris reals, ajustats per desdoblaments. Períodes disponibles: `1M`, `3M`, `6M`, `1Y`, `3Y`, `5Y` (paràmetre obligatori, en majúscules).
 - A **Explorar**, la fitxa d'una empresa mostra un gràfic amb dates i el botó per comprovar el preu de referència. Cap punt del gràfic és simulat quan el proveïdor està configurat.
 - Les funcions comproven símbol autoritzat, MIC de la borsa quan el proveïdor el retorna, moneda, rang i validesa del preu. No hi ha cap substitució silenciosa per dades d'una empresa homònima.
+
+### Preus de Google Finance (full de càlcul)
+
+- `GET /api/sheet`: llegeix el full de càlcul públic del projecte (preus de `GOOGLEFINANCE`), en valida cada fila i el desa **10 minuts** al CDN. L'aplicació el torna a llegir cada 10 minuts mentre està oberta, de manera que els canvis del full arriben sols.
+- **Ordre de preferència dels preus:** Twelve Data (verificat) → Google Finance (full, amb retard de fins a 20 minuts) → Financial Times (01/11/2026, històric). Cada preu porta l'etiqueta del seu origen.
+- **Els preus del full també serveixen per operar al simulador** (vegeu les regles més avall). L'hora de cada preu (`GOOGLEFINANCE("tradetime")`) és l'hora local de la borsa; el servidor la converteix a UTC segons la borsa de l'empresa (`MIC_TIMEZONES` a `api/_sheet.js`).
+- **Tipus de canvi (opcional):** per operar amb accions en USD sense Twelve Data, afegeix al full una pestanya anomenada exactament **`Tipus de canvi`** amb les columnes `Parell` i `Tipus de canvi`, i una fila `USD/EUR` amb `=GOOGLEFINANCE("CURRENCY:USDEUR")`. Si la pestanya no existeix, Google retorna la primera pestanya i el servidor ho detecta (no hi troba les columnes) i no fa servir cap tipus.
+- **Validació:** només s'accepten símbols del catàleg (`src/universe.js`); afegir una empresa al full no l'afegeix a l'aplicació. La moneda de Google ha de coincidir amb la de l'empresa; les accions de Londres arriben en penics (GBX) i es divideixen per 100 (la seva capitalització es descarta perquè no és coherent). Les files sense preu (errors de `GOOGLEFINANCE`), amb fórmules o amb valors no numèrics es descarten.
+- **Requisits del full:** ha d'estar compartit com a *Qualsevol persona que tingui l'enllaç → Lector*; ha de mantenir els noms de les columnes i la configuració regional catalana/espanyola (`1.295,95`, `(0,01) %`, `7,7x`). Si deixa de ser públic o canvien les columnes, la ruta retorna `SHEET_NOT_PUBLIC` o `SHEET_FORMAT_CHANGED` i l'aplicació continua amb els altres preus.
+- Un altre full es pot configurar amb `MARKET_SHEET_ID`.
+- El propietari del projecte ha confirmat que es poden mostrar públicament els preus de Google Finance.
+
+### Protecció dels crèdits de l'API
+
+Les rutes són públiques, de manera que tenen tres capes de protecció:
+
+1. **Consulta canònica.** El CDN de Vercel desa les respostes segons la URL sencera. Per evitar que variants com `?symbol=NVDA&x=1`, `?symbol=nvda` o `?symbols=NVDA` esquivin la memòria cau, només s'accepten `symbol` (exacte, en majúscules) i, a l'històric, `range`. Qualsevol altra forma retorna `400 NON_CANONICAL_QUERY` sense consultar el proveïdor.
+2. **Límit per IP:** 30 peticions/minut per defecte (`RATE_LIMIT_PER_IP_PER_MINUTE`). Si se supera, `429 TOO_MANY_REQUESTS` amb capçalera `Retry-After`. Les respostes servides pel CDN no compten.
+3. **Pressupost global de crèdits:** 8 per minut i 800 per dia UTC per defecte, com el pla Basic (`MARKET_DATA_CREDITS_PER_MINUTE`, `MARKET_DATA_CREDITS_PER_DAY`). Si s'esgota, `503 PROVIDER_BUDGET_EXHAUSTED` amb `Retry-After`, sense gastar crèdits.
+
+Els comptadors es guarden a **Upstash Redis** si hi ha `UPSTASH_REDIS_REST_URL`/`UPSTASH_REDIS_REST_TOKEN` (o `KV_REST_API_URL`/`KV_REST_API_TOKEN`, creades per la integració d'Upstash del Marketplace de Vercel). **Sense Redis, el comptador és en memòria de cada instància serverless i la protecció és només parcial**: per a producció cal configurar Redis. Les IP es desen com a hash, mai en clar. Si Redis falla, es fa servir el comptador local.
 
 ### Activar la font real a Vercel
 
@@ -100,7 +123,12 @@ La variable `TWELVE_DATA_API_KEY` és *server-side*; **mai** s'ha de crear una v
 
 ## Inversions i integració amb brokers
 
-**Només hi ha simulació.** Les operacions de prova es calculen amb preus de referència i es guarden al navegador, sense comissions ni divises convertides. La simulació no constitueix un backtest realista. Les accions que no cotitzen en EUR o no tenen preu disponible no es poden negociar en mode demo.
+**Només hi ha simulació.** Les operacions de prova es guarden al navegador, sense comissions, i no constitueixen un backtest realista. Regles del simulador (`src/paperTrading.js`):
+
+- Fonts de preu admeses, per ordre: **Twelve Data** (verificat) i, si no n'hi ha, **Google Finance del full de càlcul** (amb retard). Les dades s'han d'haver rebut fa menys de 15 minuts, i el preu del full ha de tenir una hora vàlida de **com a màxim 4 dies** (cobreix caps de setmana i festius). Els preus històrics del Financial Times (01/11/2026) es mostren com a referència però no serveixen per operar.
+- Monedes admeses: **EUR i USD**. El saldo és en EUR; les operacions en USD es converteixen amb el tipus de canvi de Twelve Data (`/api/fx`) o de la pestanya `Tipus de canvi` del full, el rebut més recentment (de fa menys de 15 minuts). Cada operació registra l'origen del preu (`provider` o `google-finance`), l'hora del preu, el tipus de canvi i l'import en EUR.
+- Les accions en GBP (Borsa de Londres) encara no s'admeten: el proveïdor pot donar-ne el preu en penics (GBp) i caldria tractar-ho a part.
+- Les ordres són limitades: el preu del proveïdor ha de complir el límit, i el cost màxim d'una compra es calcula amb el límit.
 
 La integració futura amb Interactive Brokers o altres intermediaris requerirà APIs oficials, autenticació segura, permisos de només lectura inicials, controls d'ordres i comprovació del compliment normatiu. No s'ha habilitat cap accés ni cap execució real.
 
