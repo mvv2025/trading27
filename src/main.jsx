@@ -149,6 +149,9 @@ function App(){
   }catch(e){setHistoryError(labelProviderError(e.message))}finally{setHistoryLoading(false)}
  }
  useEffect(()=>{
+  if(page==='home'){const timer=setTimeout(()=>{['NVDA','AAPL','JPM'].forEach(sym=>refresh(sym,true))},300);return ()=>clearTimeout(timer)}
+ },[page]);
+ useEffect(()=>{
   if(page!=='explore'&&page!=='practice')return;
   const timer=setTimeout(()=>{refresh(selected,true)},400);
   return ()=>clearTimeout(timer);
@@ -180,7 +183,7 @@ function App(){
  const comparisonStocks=comparison.map(sym=>catalog.find(s=>s.symbol===sym)).filter(Boolean);
  const metricRows=[['price',l.price,s=>s.price==null?'—':fm(s.price,s.currency)],['pe',l.pe,s=>fn(s.pe)],['dividend',l.dividend,s=>fn(s.yield)+' %'],['high',l.high,s=>s.high==null?'—':fm(s.high,s.currency)],['low',l.low,s=>s.low==null?'—':fm(s.low,s.currency)],['cap',l.cap,s=>fn(s.mv)]];
  const dataIcon=(s)=><span className={'quality '+(s.asOf?'q-external':s.price==null?'q-missing':'q-old')}>{label(s)}</span>;
- const stockSummary=(s,showAction=true)=><div className="stockLine" key={s.symbol}><div className="stockAvatar">{s.name.split(' ').map(v=>v[0]).join('').slice(0,2)}</div><div className="stockMeta"><strong>{s.name}</strong><span>{s.symbol} · {t(s.country)} · {t(s.sector)}</span></div><div className="stockNumbers"><strong>{fm(s.price,s.currency)}</strong><span className={s.change==null?'':s.change>=0?'up':'down'}>{s.change==null?'—':(s.change>0?'+':'')+fn(s.change)+' '+s.currency}</span></div>{showAction&&<button className="icon-circle" title={l.details} aria-label={l.details+' '+s.name} onClick={()=>goStock(s.symbol)}><ChevronDown size={18}/></button>}</div>;
+ const stockSummary=(s,showAction=true)=><div className="stockLine" key={s.symbol}><div className="stockAvatar">{s.name.split(' ').map(v=>v[0]).join('').slice(0,2)}</div><div className="stockMeta"><strong>{s.name}</strong><span>{s.symbol} · {t(s.country)} · {t(s.sector)}</span></div><div className="stockNumbers"><strong>{fm(s.price,s.currency)}</strong><span className={s.change==null?'':s.change>=0?'up':'down'}>{s.change==null?'—':(s.change>0?'+':'')+fn(s.change)+' '+s.currency}</span><small className="stockQuality">{label(s)}</small></div>{showAction&&<button className="icon-circle" title={l.details} aria-label={l.details+' '+s.name} onClick={()=>goStock(s.symbol)}><ChevronDown size={18}/></button>}</div>;
  const nav=(id,title)=> <button key={id} className={'navItem '+(page===id?'active':'')} onClick={()=>navigate(id)}>{title}</button>;
  const buttons=<div className="globalControls"><label className="langBox"><Globe2 size={15}/><select aria-label={l.language} value={language} onChange={e=>setLanguage(e.target.value)}>{LANGUAGES.map(x=><option key={x.code} value={x.code}>{x.label}</option>)}</select></label><div className="themeBox" role="group" aria-label={l.appearance}><button title={l.day} aria-label={l.day} aria-pressed={theme==='light'} className={theme==='light'?'active':''} onClick={()=>setTheme('light')}><Sun size={17}/></button><button title={l.night} aria-label={l.night} aria-pressed={theme==='dark'} className={theme==='dark'?'active':''} onClick={()=>setTheme('dark')}><Moon size={17}/></button></div></div>;
  return <div className={'canvas theme-'+theme}>
