@@ -43,3 +43,14 @@
 .theme-dark .growthVisual{filter:drop-shadow(0 18px 30px rgba(117,139,253,.09))}
 @media(max-width:860px){.heroArtwork{max-width:440px;width:100%}}
 @media(max-width:620px){.heroArtwork{width:min(100%,360px)}}
+
+/* Expanded investment universe: deliberate filters and progressive disclosure. */
+.universeCount{margin-top:19px;font-size:12px;display:flex;gap:8px;align-items:baseline;flex-wrap:wrap;color:var(--ink2)}
+.universeCount strong{font-size:27px;font-weight:800;letter-spacing:-.05em;color:var(--accent)}.universeCount small{font-size:10px;color:var(--ink2)}
+.topicFilters{padding:15px 20px 12px;display:flex;gap:8px;flex-wrap:wrap;border-bottom:1px solid var(--line)}
+.topicFilters button{border:1px solid var(--line);background:var(--paper);color:var(--ink);border-radius:30px;padding:9px 12px;font-size:11px;white-space:nowrap}
+.topicFilters button:hover,.topicFilters button:focus-visible{border-color:var(--accent)}
+.topicFilters button.chosen{background:var(--accent);border-color:var(--accent);color:var(--accentText)}
+.resultCount{font-size:11px;color:var(--ink2);font-weight:700;letter-spacing:.02em;padding:12px 22px;background:var(--muted)}
+.loadMore{display:block;margin:16px auto 22px;padding:11px 20px;border:1px solid var(--accent);border-radius:9px;background:transparent;color:var(--accent);font-size:12px}.loadMore:hover{background:var(--muted)}
+@media(max-width:620px){.topicFilters{padding:12px;gap:6px}.topicFilters button{font-size:10px;padding:9px 10px}.universeCount small{flex-basis:100%}}
