@@ -1,6 +1,6 @@
 import React, {useEffect,useMemo,useState} from 'react';
 import {createRoot} from 'react-dom/client';
-import {Activity, BarChart3, BookOpen, Bot, ChevronDown, CircleAlert, Clock3, ExternalLink, Filter, Globe2, GraduationCap, LayoutDashboard, LockKeyhole, Plus, Radio, RefreshCw, Search, ShieldCheck, TrendingDown, TrendingUp, Wallet, X} from 'lucide-react';
+import {Activity, BarChart3, BookOpen, Bot, ChevronDown, CircleAlert, Clock3, ExternalLink, Filter, Globe2, GraduationCap, LayoutDashboard, LockKeyhole, Plus, Radio, RefreshCw, Search, ShieldCheck, Sun, Moon, TrendingDown, TrendingUp, Wallet, X} from 'lucide-react';
 import './styles.css';
 
 const SEED=[
@@ -48,6 +48,8 @@ function App(){
  const [paperAmount,setPaperAmount]=useState('5000');
  const [simple,setSimple]=useState(true);
  const [help,setHelp]=useState('');
+ const [theme,setTheme]=useState(()=>{try{return localStorage.getItem('trading27-theme')==='light'?'light':'dark'}catch{return 'dark'}});
+ useEffect(()=>{try{localStorage.setItem('trading27-theme',theme)}catch{}},[theme]);
  const account=saved.account||{cash:5000,holdings:{},trades:[]};
  const watch=saved.watch||['BNP','SU','AIR','TTE','RACE','GOOGL','9988'];
  const notes=saved.notes||{};
@@ -92,10 +94,10 @@ function App(){
  function resetPaper(){if(!window.confirm('Vols reiniciar tota la cartera de simulació i el registre d’operacions?'))return;persist({...saved,account:{cash:Math.max(0,Number(paperAmount)||5000),holdings:{},trades:[]}})}
  const safePercent=(stock.price!=null&&stock.low!=null&&stock.high!=null&&stock.high>stock.low)?Math.min(100,Math.max(0,100*(stock.price-stock.low)/(stock.high-stock.low))):null;
  const nav=[['terminal','Explorar accions',LayoutDashboard],['academy','Aprendre',GraduationCap],['agents','Controls de risc',Bot],['portfolio','Practicar sense diners',Wallet],['journal','Historial de proves',BookOpen]];
- return <div className="app">
+ return <div className={`app theme-${theme}`}>
   <aside className="sidebar"><div className="brand"><div className="brandmark"><Activity size={23}/></div><div><strong>TRADING<span>27</span></strong><small>INVESTMENT INTELLIGENCE</small></div></div><div className="sidenav">{nav.map(([id,label,Icon])=><button key={id} className={tab===id?'active':''} onClick={()=>setTab(id)}><Icon size={19}/>{label}</button>)}</div><div className="sidefoot"><div className="safe"><ShieldCheck size={17}/> PAPER MODE</div><p>Cap ordre real. Sense connexió a comptes bancaris.</p><p className="tiny">v0.1.0 · Evolució modular</p></div></aside>
   <main className="main">
-   <header className="top"><div className="crumb">WORKSPACE <span>/</span> {nav.find(n=>n[0]===tab)?.[1].toUpperCase()}</div><div className="topright"><span className="status"><span className="dot"/> {Object.keys(live).length?'API externa':'Dades FT històriques'}</span><span className="clock"><Clock3 size={14}/> {new Date().toLocaleDateString('ca-ES')}</span></div></header>
+   <header className="top"><div className="crumb">WORKSPACE <span>/</span> {nav.find(n=>n[0]===tab)?.[1].toUpperCase()}</div><div className="topright"><div className="theme-switch" role="group" aria-label="Visualització dia o nit"><button type="button" aria-label="Activar mode de dia" aria-pressed={theme==='light'} className={theme==='light'?'chosen':''} onClick={()=>setTheme('light')}><Sun size={16}/> <span>Dia</span></button><button type="button" aria-label="Activar mode de nit" aria-pressed={theme==='dark'} className={theme==='dark'?'chosen':''} onClick={()=>setTheme('dark')}><Moon size={16}/> <span>Nit</span></button></div><span className="status"><span className="dot"/> {Object.keys(live).length?'API externa':'Dades FT històriques'}</span><span className="clock"><Clock3 size={14}/> {new Date().toLocaleDateString('ca-ES')}</span></div></header>
    <div className="content">
     <div className="headline"><div><div className="eyebrow">ANALITZA · APRÈN · SIMULA</div><h1>{tab==='terminal'?'Terminal de mercats':tab==='academy'?'Acadèmia borsària':tab==='agents'?'Sis agents de control':tab==='portfolio'?'Cartera de simulació':'Diari de decisions'}</h1><p>{tab==='terminal'?'Entén les cotitzacions, explora empreses i posa a prova hipòtesis.':tab==='academy'?'Cada columna de la taula, explicada sense tecnicismes innecessaris.':tab==='agents'?'Arquitectura inspirada en el flux de les captures. Regles transparents, no promeses de rendiment.':tab==='portfolio'?'Simulador separat dels diners reals: aprèn a gestionar posicions i riscos.':'Traçabilitat de les operacions simulades i les notes d’anàlisi.'}</p></div><div className="headline-actions"><span className="pill"><LockKeyhole size={14}/> DEMO / NO LIVE ORDERS</span></div></div>
     {help&&<div className="helpbox" role="dialog" aria-label="Explicació"><div><strong>{help}</strong><p>{GLOSSARY[help]||'Aquesta funció t’ajuda a entendre les dades abans de decidir. No executa operacions reals.'}</p></div><button className="outline" onClick={()=>setHelp('')}>Entès <X size={14}/></button></div>}
