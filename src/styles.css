@@ -71,3 +71,14 @@
 .theme-light .primary:hover{background:#0b755e}
 @media(max-width:680px){.theme-switch button{padding:8px 9px}.topright{gap:10px}.status{font-size:10px}}
 @media(max-width:480px){.theme-switch button span{display:none}.theme-switch button{width:35px;padding:7px}.topright .status{font-size:0;gap:0}.topright .status .dot{display:block}}
+
+
+/* Language selector: usable on desktop and mobile, in both themes */
+.language-select{display:inline-flex;align-items:center;gap:7px;background:#122637;border:1px solid #385064;color:#b7d7e0;border-radius:10px;padding:0 10px;min-height:44px;white-space:nowrap}
+.language-select select{border:0;background:transparent;color:inherit;font-size:12px;font-weight:700;outline:0;padding:7px 0;cursor:pointer;max-width:105px}
+.language-select select option{color:#163043;background:#f6fafb}
+.language-select:focus-within{outline:2px solid #62d6c4;outline-offset:2px}
+.theme-light .language-select{background:#edf3f6;border-color:#cfdae3;color:#284c61}
+.sr-only{position:absolute!important;width:1px;height:1px;padding:0;margin:-1px;overflow:hidden;clip:rect(0,0,0,0);white-space:nowrap;border:0}
+@media(max-width:680px){.language-select{padding:0 6px;gap:3px;min-height:38px}.language-select select{max-width:88px;font-size:11px}}
+@media(max-width:400px){.topright{gap:4px}.language-select svg{display:none}.language-select select{max-width:76px}}
