@@ -1,5 +1,5 @@
-// Curated discovery universe. A listing is not proof that a Twelve Data subscription covers its quotes.
-// Never assign market prices here; missing quotes must remain null until verified by the provider.
+// Curated company discovery universe. All added prices start unavailable until a provider verifies them.
+// Presence in this list does not guarantee that the user's Twelve Data plan covers this exchange.
 export const EXTRA = [
   {
     "symbol": "AAPL",
@@ -3442,6 +3442,2600 @@ export const EXTRA = [
       "Banca"
     ],
     "mic": "XLON",
+    "price": null,
+    "change": null,
+    "high": null,
+    "low": null,
+    "yield": null,
+    "pe": null,
+    "mv": null
+  },
+  {
+    "symbol": "MRNA",
+    "name": "Moderna",
+    "market": "NASDAQ",
+    "country": "Estats Units",
+    "currency": "USD",
+    "sector": "Farmacèutica",
+    "topics": [
+      "Farmacèutica",
+      "Salut"
+    ],
+    "mic": "XNAS",
+    "price": null,
+    "change": null,
+    "high": null,
+    "low": null,
+    "yield": null,
+    "pe": null,
+    "mv": null
+  },
+  {
+    "symbol": "VRTX",
+    "name": "Vertex Pharmaceuticals",
+    "market": "NASDAQ",
+    "country": "Estats Units",
+    "currency": "USD",
+    "sector": "Farmacèutica",
+    "topics": [
+      "Farmacèutica",
+      "Salut"
+    ],
+    "mic": "XNAS",
+    "price": null,
+    "change": null,
+    "high": null,
+    "low": null,
+    "yield": null,
+    "pe": null,
+    "mv": null
+  },
+  {
+    "symbol": "REGN",
+    "name": "Regeneron Pharmaceuticals",
+    "market": "NASDAQ",
+    "country": "Estats Units",
+    "currency": "USD",
+    "sector": "Farmacèutica",
+    "topics": [
+      "Farmacèutica",
+      "Salut"
+    ],
+    "mic": "XNAS",
+    "price": null,
+    "change": null,
+    "high": null,
+    "low": null,
+    "yield": null,
+    "pe": null,
+    "mv": null
+  },
+  {
+    "symbol": "BIIB",
+    "name": "Biogen",
+    "market": "NASDAQ",
+    "country": "Estats Units",
+    "currency": "USD",
+    "sector": "Farmacèutica",
+    "topics": [
+      "Farmacèutica",
+      "Salut"
+    ],
+    "mic": "XNAS",
+    "price": null,
+    "change": null,
+    "high": null,
+    "low": null,
+    "yield": null,
+    "pe": null,
+    "mv": null
+  },
+  {
+    "symbol": "ALNY",
+    "name": "Alnylam Pharmaceuticals",
+    "market": "NASDAQ",
+    "country": "Estats Units",
+    "currency": "USD",
+    "sector": "Farmacèutica",
+    "topics": [
+      "Farmacèutica",
+      "Salut"
+    ],
+    "mic": "XNAS",
+    "price": null,
+    "change": null,
+    "high": null,
+    "low": null,
+    "yield": null,
+    "pe": null,
+    "mv": null
+  },
+  {
+    "symbol": "BMRN",
+    "name": "BioMarin Pharmaceutical",
+    "market": "NASDAQ",
+    "country": "Estats Units",
+    "currency": "USD",
+    "sector": "Farmacèutica",
+    "topics": [
+      "Farmacèutica",
+      "Salut"
+    ],
+    "mic": "XNAS",
+    "price": null,
+    "change": null,
+    "high": null,
+    "low": null,
+    "yield": null,
+    "pe": null,
+    "mv": null
+  },
+  {
+    "symbol": "INCY",
+    "name": "Incyte",
+    "market": "NASDAQ",
+    "country": "Estats Units",
+    "currency": "USD",
+    "sector": "Farmacèutica",
+    "topics": [
+      "Farmacèutica",
+      "Salut"
+    ],
+    "mic": "XNAS",
+    "price": null,
+    "change": null,
+    "high": null,
+    "low": null,
+    "yield": null,
+    "pe": null,
+    "mv": null
+  },
+  {
+    "symbol": "IONS",
+    "name": "Ionis Pharmaceuticals",
+    "market": "NASDAQ",
+    "country": "Estats Units",
+    "currency": "USD",
+    "sector": "Farmacèutica",
+    "topics": [
+      "Farmacèutica",
+      "Salut"
+    ],
+    "mic": "XNAS",
+    "price": null,
+    "change": null,
+    "high": null,
+    "low": null,
+    "yield": null,
+    "pe": null,
+    "mv": null
+  },
+  {
+    "symbol": "UTHR",
+    "name": "United Therapeutics",
+    "market": "NASDAQ",
+    "country": "Estats Units",
+    "currency": "USD",
+    "sector": "Farmacèutica",
+    "topics": [
+      "Farmacèutica",
+      "Salut"
+    ],
+    "mic": "XNAS",
+    "price": null,
+    "change": null,
+    "high": null,
+    "low": null,
+    "yield": null,
+    "pe": null,
+    "mv": null
+  },
+  {
+    "symbol": "NBIX",
+    "name": "Neurocrine Biosciences",
+    "market": "NASDAQ",
+    "country": "Estats Units",
+    "currency": "USD",
+    "sector": "Farmacèutica",
+    "topics": [
+      "Farmacèutica",
+      "Salut"
+    ],
+    "mic": "XNAS",
+    "price": null,
+    "change": null,
+    "high": null,
+    "low": null,
+    "yield": null,
+    "pe": null,
+    "mv": null
+  },
+  {
+    "symbol": "EXEL",
+    "name": "Exelixis",
+    "market": "NASDAQ",
+    "country": "Estats Units",
+    "currency": "USD",
+    "sector": "Farmacèutica",
+    "topics": [
+      "Farmacèutica",
+      "Salut"
+    ],
+    "mic": "XNAS",
+    "price": null,
+    "change": null,
+    "high": null,
+    "low": null,
+    "yield": null,
+    "pe": null,
+    "mv": null
+  },
+  {
+    "symbol": "SRPT",
+    "name": "Sarepta Therapeutics",
+    "market": "NASDAQ",
+    "country": "Estats Units",
+    "currency": "USD",
+    "sector": "Farmacèutica",
+    "topics": [
+      "Farmacèutica",
+      "Salut"
+    ],
+    "mic": "XNAS",
+    "price": null,
+    "change": null,
+    "high": null,
+    "low": null,
+    "yield": null,
+    "pe": null,
+    "mv": null
+  },
+  {
+    "symbol": "HALO",
+    "name": "Halozyme Therapeutics",
+    "market": "NASDAQ",
+    "country": "Estats Units",
+    "currency": "USD",
+    "sector": "Farmacèutica",
+    "topics": [
+      "Farmacèutica",
+      "Salut"
+    ],
+    "mic": "XNAS",
+    "price": null,
+    "change": null,
+    "high": null,
+    "low": null,
+    "yield": null,
+    "pe": null,
+    "mv": null
+  },
+  {
+    "symbol": "JAZZ",
+    "name": "Jazz Pharmaceuticals",
+    "market": "NASDAQ",
+    "country": "Estats Units",
+    "currency": "USD",
+    "sector": "Farmacèutica",
+    "topics": [
+      "Farmacèutica",
+      "Salut"
+    ],
+    "mic": "XNAS",
+    "price": null,
+    "change": null,
+    "high": null,
+    "low": null,
+    "yield": null,
+    "pe": null,
+    "mv": null
+  },
+  {
+    "symbol": "RARE",
+    "name": "Ultragenyx Pharmaceutical",
+    "market": "NASDAQ",
+    "country": "Estats Units",
+    "currency": "USD",
+    "sector": "Farmacèutica",
+    "topics": [
+      "Farmacèutica",
+      "Salut"
+    ],
+    "mic": "XNAS",
+    "price": null,
+    "change": null,
+    "high": null,
+    "low": null,
+    "yield": null,
+    "pe": null,
+    "mv": null
+  },
+  {
+    "symbol": "INSM",
+    "name": "Insmed",
+    "market": "NASDAQ",
+    "country": "Estats Units",
+    "currency": "USD",
+    "sector": "Farmacèutica",
+    "topics": [
+      "Farmacèutica",
+      "Salut"
+    ],
+    "mic": "XNAS",
+    "price": null,
+    "change": null,
+    "high": null,
+    "low": null,
+    "yield": null,
+    "pe": null,
+    "mv": null
+  },
+  {
+    "symbol": "LLY",
+    "name": "Eli Lilly",
+    "market": "NYSE",
+    "country": "Estats Units",
+    "currency": "USD",
+    "sector": "Farmacèutica",
+    "topics": [
+      "Farmacèutica",
+      "Salut"
+    ],
+    "mic": "XNYS",
+    "price": null,
+    "change": null,
+    "high": null,
+    "low": null,
+    "yield": null,
+    "pe": null,
+    "mv": null
+  },
+  {
+    "symbol": "PFE",
+    "name": "Pfizer",
+    "market": "NYSE",
+    "country": "Estats Units",
+    "currency": "USD",
+    "sector": "Farmacèutica",
+    "topics": [
+      "Farmacèutica",
+      "Salut"
+    ],
+    "mic": "XNYS",
+    "price": null,
+    "change": null,
+    "high": null,
+    "low": null,
+    "yield": null,
+    "pe": null,
+    "mv": null
+  },
+  {
+    "symbol": "MRK",
+    "name": "Merck & Co",
+    "market": "NYSE",
+    "country": "Estats Units",
+    "currency": "USD",
+    "sector": "Farmacèutica",
+    "topics": [
+      "Farmacèutica",
+      "Salut"
+    ],
+    "mic": "XNYS",
+    "price": null,
+    "change": null,
+    "high": null,
+    "low": null,
+    "yield": null,
+    "pe": null,
+    "mv": null
+  },
+  {
+    "symbol": "BMY",
+    "name": "Bristol Myers Squibb",
+    "market": "NYSE",
+    "country": "Estats Units",
+    "currency": "USD",
+    "sector": "Farmacèutica",
+    "topics": [
+      "Farmacèutica",
+      "Salut"
+    ],
+    "mic": "XNYS",
+    "price": null,
+    "change": null,
+    "high": null,
+    "low": null,
+    "yield": null,
+    "pe": null,
+    "mv": null
+  },
+  {
+    "symbol": "ABBV",
+    "name": "AbbVie",
+    "market": "NYSE",
+    "country": "Estats Units",
+    "currency": "USD",
+    "sector": "Farmacèutica",
+    "topics": [
+      "Farmacèutica",
+      "Salut"
+    ],
+    "mic": "XNYS",
+    "price": null,
+    "change": null,
+    "high": null,
+    "low": null,
+    "yield": null,
+    "pe": null,
+    "mv": null
+  },
+  {
+    "symbol": "VTRS",
+    "name": "Viatris",
+    "market": "NYSE",
+    "country": "Estats Units",
+    "currency": "USD",
+    "sector": "Farmacèutica",
+    "topics": [
+      "Farmacèutica",
+      "Salut"
+    ],
+    "mic": "XNYS",
+    "price": null,
+    "change": null,
+    "high": null,
+    "low": null,
+    "yield": null,
+    "pe": null,
+    "mv": null
+  },
+  {
+    "symbol": "OGN",
+    "name": "Organon",
+    "market": "NYSE",
+    "country": "Estats Units",
+    "currency": "USD",
+    "sector": "Farmacèutica",
+    "topics": [
+      "Farmacèutica",
+      "Salut"
+    ],
+    "mic": "XNYS",
+    "price": null,
+    "change": null,
+    "high": null,
+    "low": null,
+    "yield": null,
+    "pe": null,
+    "mv": null
+  },
+  {
+    "symbol": "ZTS",
+    "name": "Zoetis",
+    "market": "NYSE",
+    "country": "Estats Units",
+    "currency": "USD",
+    "sector": "Farmacèutica",
+    "topics": [
+      "Farmacèutica",
+      "Salut"
+    ],
+    "mic": "XNYS",
+    "price": null,
+    "change": null,
+    "high": null,
+    "low": null,
+    "yield": null,
+    "pe": null,
+    "mv": null
+  },
+  {
+    "symbol": "ELAN",
+    "name": "Elanco Animal Health",
+    "market": "NYSE",
+    "country": "Estats Units",
+    "currency": "USD",
+    "sector": "Farmacèutica",
+    "topics": [
+      "Farmacèutica",
+      "Salut"
+    ],
+    "mic": "XNYS",
+    "price": null,
+    "change": null,
+    "high": null,
+    "low": null,
+    "yield": null,
+    "pe": null,
+    "mv": null
+  },
+  {
+    "symbol": "PRGO",
+    "name": "Perrigo",
+    "market": "NYSE",
+    "country": "Estats Units",
+    "currency": "USD",
+    "sector": "Farmacèutica",
+    "topics": [
+      "Farmacèutica",
+      "Salut"
+    ],
+    "mic": "XNYS",
+    "price": null,
+    "change": null,
+    "high": null,
+    "low": null,
+    "yield": null,
+    "pe": null,
+    "mv": null
+  },
+  {
+    "symbol": "ISRG",
+    "name": "Intuitive Surgical",
+    "market": "NASDAQ",
+    "country": "Estats Units",
+    "currency": "USD",
+    "sector": "Salut",
+    "topics": [
+      "Salut",
+      "Biotecnologia"
+    ],
+    "mic": "XNAS",
+    "price": null,
+    "change": null,
+    "high": null,
+    "low": null,
+    "yield": null,
+    "pe": null,
+    "mv": null
+  },
+  {
+    "symbol": "DXCM",
+    "name": "DexCom",
+    "market": "NASDAQ",
+    "country": "Estats Units",
+    "currency": "USD",
+    "sector": "Salut",
+    "topics": [
+      "Salut",
+      "Biotecnologia"
+    ],
+    "mic": "XNAS",
+    "price": null,
+    "change": null,
+    "high": null,
+    "low": null,
+    "yield": null,
+    "pe": null,
+    "mv": null
+  },
+  {
+    "symbol": "IDXX",
+    "name": "IDEXX Laboratories",
+    "market": "NASDAQ",
+    "country": "Estats Units",
+    "currency": "USD",
+    "sector": "Salut",
+    "topics": [
+      "Salut",
+      "Biotecnologia"
+    ],
+    "mic": "XNAS",
+    "price": null,
+    "change": null,
+    "high": null,
+    "low": null,
+    "yield": null,
+    "pe": null,
+    "mv": null
+  },
+  {
+    "symbol": "PODD",
+    "name": "Insulet",
+    "market": "NASDAQ",
+    "country": "Estats Units",
+    "currency": "USD",
+    "sector": "Salut",
+    "topics": [
+      "Salut",
+      "Biotecnologia"
+    ],
+    "mic": "XNAS",
+    "price": null,
+    "change": null,
+    "high": null,
+    "low": null,
+    "yield": null,
+    "pe": null,
+    "mv": null
+  },
+  {
+    "symbol": "HOLX",
+    "name": "Hologic",
+    "market": "NASDAQ",
+    "country": "Estats Units",
+    "currency": "USD",
+    "sector": "Salut",
+    "topics": [
+      "Salut",
+      "Biotecnologia"
+    ],
+    "mic": "XNAS",
+    "price": null,
+    "change": null,
+    "high": null,
+    "low": null,
+    "yield": null,
+    "pe": null,
+    "mv": null
+  },
+  {
+    "symbol": "EXAS",
+    "name": "Exact Sciences",
+    "market": "NASDAQ",
+    "country": "Estats Units",
+    "currency": "USD",
+    "sector": "Salut",
+    "topics": [
+      "Salut",
+      "Biotecnologia"
+    ],
+    "mic": "XNAS",
+    "price": null,
+    "change": null,
+    "high": null,
+    "low": null,
+    "yield": null,
+    "pe": null,
+    "mv": null
+  },
+  {
+    "symbol": "TECH",
+    "name": "Bio-Techne",
+    "market": "NASDAQ",
+    "country": "Estats Units",
+    "currency": "USD",
+    "sector": "Salut",
+    "topics": [
+      "Salut",
+      "Biotecnologia"
+    ],
+    "mic": "XNAS",
+    "price": null,
+    "change": null,
+    "high": null,
+    "low": null,
+    "yield": null,
+    "pe": null,
+    "mv": null
+  },
+  {
+    "symbol": "MEDP",
+    "name": "Medpace",
+    "market": "NASDAQ",
+    "country": "Estats Units",
+    "currency": "USD",
+    "sector": "Salut",
+    "topics": [
+      "Salut",
+      "Biotecnologia"
+    ],
+    "mic": "XNAS",
+    "price": null,
+    "change": null,
+    "high": null,
+    "low": null,
+    "yield": null,
+    "pe": null,
+    "mv": null
+  },
+  {
+    "symbol": "ICUI",
+    "name": "ICU Medical",
+    "market": "NASDAQ",
+    "country": "Estats Units",
+    "currency": "USD",
+    "sector": "Salut",
+    "topics": [
+      "Salut",
+      "Biotecnologia"
+    ],
+    "mic": "XNAS",
+    "price": null,
+    "change": null,
+    "high": null,
+    "low": null,
+    "yield": null,
+    "pe": null,
+    "mv": null
+  },
+  {
+    "symbol": "NTRA",
+    "name": "Natera",
+    "market": "NASDAQ",
+    "country": "Estats Units",
+    "currency": "USD",
+    "sector": "Salut",
+    "topics": [
+      "Salut",
+      "Biotecnologia"
+    ],
+    "mic": "XNAS",
+    "price": null,
+    "change": null,
+    "high": null,
+    "low": null,
+    "yield": null,
+    "pe": null,
+    "mv": null
+  },
+  {
+    "symbol": "VEEV",
+    "name": "Veeva Systems",
+    "market": "NASDAQ",
+    "country": "Estats Units",
+    "currency": "USD",
+    "sector": "Salut",
+    "topics": [
+      "Salut",
+      "Biotecnologia"
+    ],
+    "mic": "XNAS",
+    "price": null,
+    "change": null,
+    "high": null,
+    "low": null,
+    "yield": null,
+    "pe": null,
+    "mv": null
+  },
+  {
+    "symbol": "GMED",
+    "name": "Globus Medical",
+    "market": "NASDAQ",
+    "country": "Estats Units",
+    "currency": "USD",
+    "sector": "Salut",
+    "topics": [
+      "Salut",
+      "Biotecnologia"
+    ],
+    "mic": "XNAS",
+    "price": null,
+    "change": null,
+    "high": null,
+    "low": null,
+    "yield": null,
+    "pe": null,
+    "mv": null
+  },
+  {
+    "symbol": "MASI",
+    "name": "Masimo",
+    "market": "NASDAQ",
+    "country": "Estats Units",
+    "currency": "USD",
+    "sector": "Salut",
+    "topics": [
+      "Salut",
+      "Biotecnologia"
+    ],
+    "mic": "XNAS",
+    "price": null,
+    "change": null,
+    "high": null,
+    "low": null,
+    "yield": null,
+    "pe": null,
+    "mv": null
+  },
+  {
+    "symbol": "TNDM",
+    "name": "Tandem Diabetes Care",
+    "market": "NASDAQ",
+    "country": "Estats Units",
+    "currency": "USD",
+    "sector": "Salut",
+    "topics": [
+      "Salut",
+      "Biotecnologia"
+    ],
+    "mic": "XNAS",
+    "price": null,
+    "change": null,
+    "high": null,
+    "low": null,
+    "yield": null,
+    "pe": null,
+    "mv": null
+  },
+  {
+    "symbol": "GH",
+    "name": "Guardant Health",
+    "market": "NASDAQ",
+    "country": "Estats Units",
+    "currency": "USD",
+    "sector": "Salut",
+    "topics": [
+      "Salut",
+      "Biotecnologia"
+    ],
+    "mic": "XNAS",
+    "price": null,
+    "change": null,
+    "high": null,
+    "low": null,
+    "yield": null,
+    "pe": null,
+    "mv": null
+  },
+  {
+    "symbol": "CORT",
+    "name": "Corcept Therapeutics",
+    "market": "NASDAQ",
+    "country": "Estats Units",
+    "currency": "USD",
+    "sector": "Salut",
+    "topics": [
+      "Salut",
+      "Biotecnologia"
+    ],
+    "mic": "XNAS",
+    "price": null,
+    "change": null,
+    "high": null,
+    "low": null,
+    "yield": null,
+    "pe": null,
+    "mv": null
+  },
+  {
+    "symbol": "NTLA",
+    "name": "Intellia Therapeutics",
+    "market": "NASDAQ",
+    "country": "Estats Units",
+    "currency": "USD",
+    "sector": "Salut",
+    "topics": [
+      "Salut",
+      "Biotecnologia"
+    ],
+    "mic": "XNAS",
+    "price": null,
+    "change": null,
+    "high": null,
+    "low": null,
+    "yield": null,
+    "pe": null,
+    "mv": null
+  },
+  {
+    "symbol": "BEAM",
+    "name": "Beam Therapeutics",
+    "market": "NASDAQ",
+    "country": "Estats Units",
+    "currency": "USD",
+    "sector": "Salut",
+    "topics": [
+      "Salut",
+      "Biotecnologia"
+    ],
+    "mic": "XNAS",
+    "price": null,
+    "change": null,
+    "high": null,
+    "low": null,
+    "yield": null,
+    "pe": null,
+    "mv": null
+  },
+  {
+    "symbol": "EDIT",
+    "name": "Editas Medicine",
+    "market": "NASDAQ",
+    "country": "Estats Units",
+    "currency": "USD",
+    "sector": "Salut",
+    "topics": [
+      "Salut",
+      "Biotecnologia"
+    ],
+    "mic": "XNAS",
+    "price": null,
+    "change": null,
+    "high": null,
+    "low": null,
+    "yield": null,
+    "pe": null,
+    "mv": null
+  },
+  {
+    "symbol": "UNH",
+    "name": "UnitedHealth Group",
+    "market": "NYSE",
+    "country": "Estats Units",
+    "currency": "USD",
+    "sector": "Salut",
+    "topics": [
+      "Salut",
+      "Equipament mèdic"
+    ],
+    "mic": "XNYS",
+    "price": null,
+    "change": null,
+    "high": null,
+    "low": null,
+    "yield": null,
+    "pe": null,
+    "mv": null
+  },
+  {
+    "symbol": "JNJ",
+    "name": "Johnson & Johnson",
+    "market": "NYSE",
+    "country": "Estats Units",
+    "currency": "USD",
+    "sector": "Salut",
+    "topics": [
+      "Salut",
+      "Equipament mèdic"
+    ],
+    "mic": "XNYS",
+    "price": null,
+    "change": null,
+    "high": null,
+    "low": null,
+    "yield": null,
+    "pe": null,
+    "mv": null
+  },
+  {
+    "symbol": "ABT",
+    "name": "Abbott Laboratories",
+    "market": "NYSE",
+    "country": "Estats Units",
+    "currency": "USD",
+    "sector": "Salut",
+    "topics": [
+      "Salut",
+      "Equipament mèdic"
+    ],
+    "mic": "XNYS",
+    "price": null,
+    "change": null,
+    "high": null,
+    "low": null,
+    "yield": null,
+    "pe": null,
+    "mv": null
+  },
+  {
+    "symbol": "MDT",
+    "name": "Medtronic",
+    "market": "NYSE",
+    "country": "Estats Units",
+    "currency": "USD",
+    "sector": "Salut",
+    "topics": [
+      "Salut",
+      "Equipament mèdic"
+    ],
+    "mic": "XNYS",
+    "price": null,
+    "change": null,
+    "high": null,
+    "low": null,
+    "yield": null,
+    "pe": null,
+    "mv": null
+  },
+  {
+    "symbol": "SYK",
+    "name": "Stryker",
+    "market": "NYSE",
+    "country": "Estats Units",
+    "currency": "USD",
+    "sector": "Salut",
+    "topics": [
+      "Salut",
+      "Equipament mèdic"
+    ],
+    "mic": "XNYS",
+    "price": null,
+    "change": null,
+    "high": null,
+    "low": null,
+    "yield": null,
+    "pe": null,
+    "mv": null
+  },
+  {
+    "symbol": "BSX",
+    "name": "Boston Scientific",
+    "market": "NYSE",
+    "country": "Estats Units",
+    "currency": "USD",
+    "sector": "Salut",
+    "topics": [
+      "Salut",
+      "Equipament mèdic"
+    ],
+    "mic": "XNYS",
+    "price": null,
+    "change": null,
+    "high": null,
+    "low": null,
+    "yield": null,
+    "pe": null,
+    "mv": null
+  },
+  {
+    "symbol": "BDX",
+    "name": "Becton Dickinson",
+    "market": "NYSE",
+    "country": "Estats Units",
+    "currency": "USD",
+    "sector": "Salut",
+    "topics": [
+      "Salut",
+      "Equipament mèdic"
+    ],
+    "mic": "XNYS",
+    "price": null,
+    "change": null,
+    "high": null,
+    "low": null,
+    "yield": null,
+    "pe": null,
+    "mv": null
+  },
+  {
+    "symbol": "BAX",
+    "name": "Baxter International",
+    "market": "NYSE",
+    "country": "Estats Units",
+    "currency": "USD",
+    "sector": "Salut",
+    "topics": [
+      "Salut",
+      "Equipament mèdic"
+    ],
+    "mic": "XNYS",
+    "price": null,
+    "change": null,
+    "high": null,
+    "low": null,
+    "yield": null,
+    "pe": null,
+    "mv": null
+  },
+  {
+    "symbol": "HCA",
+    "name": "HCA Healthcare",
+    "market": "NYSE",
+    "country": "Estats Units",
+    "currency": "USD",
+    "sector": "Salut",
+    "topics": [
+      "Salut",
+      "Equipament mèdic"
+    ],
+    "mic": "XNYS",
+    "price": null,
+    "change": null,
+    "high": null,
+    "low": null,
+    "yield": null,
+    "pe": null,
+    "mv": null
+  },
+  {
+    "symbol": "CI",
+    "name": "The Cigna Group",
+    "market": "NYSE",
+    "country": "Estats Units",
+    "currency": "USD",
+    "sector": "Salut",
+    "topics": [
+      "Salut",
+      "Equipament mèdic"
+    ],
+    "mic": "XNYS",
+    "price": null,
+    "change": null,
+    "high": null,
+    "low": null,
+    "yield": null,
+    "pe": null,
+    "mv": null
+  },
+  {
+    "symbol": "CVS",
+    "name": "CVS Health",
+    "market": "NYSE",
+    "country": "Estats Units",
+    "currency": "USD",
+    "sector": "Salut",
+    "topics": [
+      "Salut",
+      "Equipament mèdic"
+    ],
+    "mic": "XNYS",
+    "price": null,
+    "change": null,
+    "high": null,
+    "low": null,
+    "yield": null,
+    "pe": null,
+    "mv": null
+  },
+  {
+    "symbol": "HUM",
+    "name": "Humana",
+    "market": "NYSE",
+    "country": "Estats Units",
+    "currency": "USD",
+    "sector": "Salut",
+    "topics": [
+      "Salut",
+      "Equipament mèdic"
+    ],
+    "mic": "XNYS",
+    "price": null,
+    "change": null,
+    "high": null,
+    "low": null,
+    "yield": null,
+    "pe": null,
+    "mv": null
+  },
+  {
+    "symbol": "ELV",
+    "name": "Elevance Health",
+    "market": "NYSE",
+    "country": "Estats Units",
+    "currency": "USD",
+    "sector": "Salut",
+    "topics": [
+      "Salut",
+      "Equipament mèdic"
+    ],
+    "mic": "XNYS",
+    "price": null,
+    "change": null,
+    "high": null,
+    "low": null,
+    "yield": null,
+    "pe": null,
+    "mv": null
+  },
+  {
+    "symbol": "CNC",
+    "name": "Centene",
+    "market": "NYSE",
+    "country": "Estats Units",
+    "currency": "USD",
+    "sector": "Salut",
+    "topics": [
+      "Salut",
+      "Equipament mèdic"
+    ],
+    "mic": "XNYS",
+    "price": null,
+    "change": null,
+    "high": null,
+    "low": null,
+    "yield": null,
+    "pe": null,
+    "mv": null
+  },
+  {
+    "symbol": "DVA",
+    "name": "DaVita",
+    "market": "NYSE",
+    "country": "Estats Units",
+    "currency": "USD",
+    "sector": "Salut",
+    "topics": [
+      "Salut",
+      "Equipament mèdic"
+    ],
+    "mic": "XNYS",
+    "price": null,
+    "change": null,
+    "high": null,
+    "low": null,
+    "yield": null,
+    "pe": null,
+    "mv": null
+  },
+  {
+    "symbol": "TMO",
+    "name": "Thermo Fisher Scientific",
+    "market": "NYSE",
+    "country": "Estats Units",
+    "currency": "USD",
+    "sector": "Salut",
+    "topics": [
+      "Salut",
+      "Equipament mèdic"
+    ],
+    "mic": "XNYS",
+    "price": null,
+    "change": null,
+    "high": null,
+    "low": null,
+    "yield": null,
+    "pe": null,
+    "mv": null
+  },
+  {
+    "symbol": "DHR",
+    "name": "Danaher",
+    "market": "NYSE",
+    "country": "Estats Units",
+    "currency": "USD",
+    "sector": "Salut",
+    "topics": [
+      "Salut",
+      "Equipament mèdic"
+    ],
+    "mic": "XNYS",
+    "price": null,
+    "change": null,
+    "high": null,
+    "low": null,
+    "yield": null,
+    "pe": null,
+    "mv": null
+  },
+  {
+    "symbol": "IQV",
+    "name": "IQVIA Holdings",
+    "market": "NYSE",
+    "country": "Estats Units",
+    "currency": "USD",
+    "sector": "Salut",
+    "topics": [
+      "Salut",
+      "Equipament mèdic"
+    ],
+    "mic": "XNYS",
+    "price": null,
+    "change": null,
+    "high": null,
+    "low": null,
+    "yield": null,
+    "pe": null,
+    "mv": null
+  },
+  {
+    "symbol": "RMD",
+    "name": "ResMed",
+    "market": "NYSE",
+    "country": "Estats Units",
+    "currency": "USD",
+    "sector": "Salut",
+    "topics": [
+      "Salut",
+      "Equipament mèdic"
+    ],
+    "mic": "XNYS",
+    "price": null,
+    "change": null,
+    "high": null,
+    "low": null,
+    "yield": null,
+    "pe": null,
+    "mv": null
+  },
+  {
+    "symbol": "WST",
+    "name": "West Pharmaceutical Services",
+    "market": "NYSE",
+    "country": "Estats Units",
+    "currency": "USD",
+    "sector": "Salut",
+    "topics": [
+      "Salut",
+      "Equipament mèdic"
+    ],
+    "mic": "XNYS",
+    "price": null,
+    "change": null,
+    "high": null,
+    "low": null,
+    "yield": null,
+    "pe": null,
+    "mv": null
+  },
+  {
+    "symbol": "STE",
+    "name": "STERIS",
+    "market": "NYSE",
+    "country": "Estats Units",
+    "currency": "USD",
+    "sector": "Salut",
+    "topics": [
+      "Salut",
+      "Equipament mèdic"
+    ],
+    "mic": "XNYS",
+    "price": null,
+    "change": null,
+    "high": null,
+    "low": null,
+    "yield": null,
+    "pe": null,
+    "mv": null
+  },
+  {
+    "symbol": "LH",
+    "name": "Labcorp",
+    "market": "NYSE",
+    "country": "Estats Units",
+    "currency": "USD",
+    "sector": "Salut",
+    "topics": [
+      "Salut",
+      "Equipament mèdic"
+    ],
+    "mic": "XNYS",
+    "price": null,
+    "change": null,
+    "high": null,
+    "low": null,
+    "yield": null,
+    "pe": null,
+    "mv": null
+  },
+  {
+    "symbol": "DGX",
+    "name": "Quest Diagnostics",
+    "market": "NYSE",
+    "country": "Estats Units",
+    "currency": "USD",
+    "sector": "Salut",
+    "topics": [
+      "Salut",
+      "Equipament mèdic"
+    ],
+    "mic": "XNYS",
+    "price": null,
+    "change": null,
+    "high": null,
+    "low": null,
+    "yield": null,
+    "pe": null,
+    "mv": null
+  },
+  {
+    "symbol": "CAH",
+    "name": "Cardinal Health",
+    "market": "NYSE",
+    "country": "Estats Units",
+    "currency": "USD",
+    "sector": "Salut",
+    "topics": [
+      "Salut",
+      "Equipament mèdic"
+    ],
+    "mic": "XNYS",
+    "price": null,
+    "change": null,
+    "high": null,
+    "low": null,
+    "yield": null,
+    "pe": null,
+    "mv": null
+  },
+  {
+    "symbol": "MCK",
+    "name": "McKesson",
+    "market": "NYSE",
+    "country": "Estats Units",
+    "currency": "USD",
+    "sector": "Salut",
+    "topics": [
+      "Salut",
+      "Equipament mèdic"
+    ],
+    "mic": "XNYS",
+    "price": null,
+    "change": null,
+    "high": null,
+    "low": null,
+    "yield": null,
+    "pe": null,
+    "mv": null
+  },
+  {
+    "symbol": "COR",
+    "name": "Cencora",
+    "market": "NYSE",
+    "country": "Estats Units",
+    "currency": "USD",
+    "sector": "Salut",
+    "topics": [
+      "Salut",
+      "Equipament mèdic"
+    ],
+    "mic": "XNYS",
+    "price": null,
+    "change": null,
+    "high": null,
+    "low": null,
+    "yield": null,
+    "pe": null,
+    "mv": null
+  },
+  {
+    "symbol": "SHL",
+    "name": "Siemens Healthineers",
+    "market": "GER",
+    "country": "Alemanya",
+    "currency": "EUR",
+    "sector": "Salut",
+    "topics": [
+      "Salut"
+    ],
+    "mic": "XETR",
+    "price": null,
+    "change": null,
+    "high": null,
+    "low": null,
+    "yield": null,
+    "pe": null,
+    "mv": null
+  },
+  {
+    "symbol": "FRE",
+    "name": "Fresenius",
+    "market": "GER",
+    "country": "Alemanya",
+    "currency": "EUR",
+    "sector": "Salut",
+    "topics": [
+      "Salut"
+    ],
+    "mic": "XETR",
+    "price": null,
+    "change": null,
+    "high": null,
+    "low": null,
+    "yield": null,
+    "pe": null,
+    "mv": null
+  },
+  {
+    "symbol": "FME",
+    "name": "Fresenius Medical Care",
+    "market": "GER",
+    "country": "Alemanya",
+    "currency": "EUR",
+    "sector": "Salut",
+    "topics": [
+      "Salut"
+    ],
+    "mic": "XETR",
+    "price": null,
+    "change": null,
+    "high": null,
+    "low": null,
+    "yield": null,
+    "pe": null,
+    "mv": null
+  },
+  {
+    "symbol": "BAYN",
+    "name": "Bayer",
+    "market": "GER",
+    "country": "Alemanya",
+    "currency": "EUR",
+    "sector": "Salut",
+    "topics": [
+      "Salut"
+    ],
+    "mic": "XETR",
+    "price": null,
+    "change": null,
+    "high": null,
+    "low": null,
+    "yield": null,
+    "pe": null,
+    "mv": null
+  },
+  {
+    "symbol": "DIM",
+    "name": "Sartorius Stedim Biotech",
+    "market": "PAR",
+    "country": "França",
+    "currency": "EUR",
+    "sector": "Salut",
+    "topics": [
+      "Salut"
+    ],
+    "mic": "XPAR",
+    "price": null,
+    "change": null,
+    "high": null,
+    "low": null,
+    "yield": null,
+    "pe": null,
+    "mv": null
+  },
+  {
+    "symbol": "ERF",
+    "name": "Eurofins Scientific",
+    "market": "PAR",
+    "country": "França",
+    "currency": "EUR",
+    "sector": "Salut",
+    "topics": [
+      "Salut"
+    ],
+    "mic": "XPAR",
+    "price": null,
+    "change": null,
+    "high": null,
+    "low": null,
+    "yield": null,
+    "pe": null,
+    "mv": null
+  },
+  {
+    "symbol": "PHIA",
+    "name": "Philips",
+    "market": "AMS",
+    "country": "Països Baixos",
+    "currency": "EUR",
+    "sector": "Salut",
+    "topics": [
+      "Salut",
+      "Equipament mèdic"
+    ],
+    "mic": "XAMS",
+    "price": null,
+    "change": null,
+    "high": null,
+    "low": null,
+    "yield": null,
+    "pe": null,
+    "mv": null
+  },
+  {
+    "symbol": "FANG",
+    "name": "Diamondback Energy",
+    "market": "NASDAQ",
+    "country": "Estats Units",
+    "currency": "USD",
+    "sector": "Petroli i gas",
+    "topics": [
+      "Petroli i gas",
+      "Energia"
+    ],
+    "mic": "XNAS",
+    "price": null,
+    "change": null,
+    "high": null,
+    "low": null,
+    "yield": null,
+    "pe": null,
+    "mv": null
+  },
+  {
+    "symbol": "DVN",
+    "name": "Devon Energy",
+    "market": "NASDAQ",
+    "country": "Estats Units",
+    "currency": "USD",
+    "sector": "Petroli i gas",
+    "topics": [
+      "Petroli i gas",
+      "Energia"
+    ],
+    "mic": "XNAS",
+    "price": null,
+    "change": null,
+    "high": null,
+    "low": null,
+    "yield": null,
+    "pe": null,
+    "mv": null
+  },
+  {
+    "symbol": "APA",
+    "name": "APA Corporation",
+    "market": "NASDAQ",
+    "country": "Estats Units",
+    "currency": "USD",
+    "sector": "Petroli i gas",
+    "topics": [
+      "Petroli i gas",
+      "Energia"
+    ],
+    "mic": "XNAS",
+    "price": null,
+    "change": null,
+    "high": null,
+    "low": null,
+    "yield": null,
+    "pe": null,
+    "mv": null
+  },
+  {
+    "symbol": "MTDR",
+    "name": "Matador Resources",
+    "market": "NASDAQ",
+    "country": "Estats Units",
+    "currency": "USD",
+    "sector": "Petroli i gas",
+    "topics": [
+      "Petroli i gas",
+      "Energia"
+    ],
+    "mic": "XNAS",
+    "price": null,
+    "change": null,
+    "high": null,
+    "low": null,
+    "yield": null,
+    "pe": null,
+    "mv": null
+  },
+  {
+    "symbol": "AR",
+    "name": "Antero Resources",
+    "market": "NASDAQ",
+    "country": "Estats Units",
+    "currency": "USD",
+    "sector": "Petroli i gas",
+    "topics": [
+      "Petroli i gas",
+      "Energia"
+    ],
+    "mic": "XNAS",
+    "price": null,
+    "change": null,
+    "high": null,
+    "low": null,
+    "yield": null,
+    "pe": null,
+    "mv": null
+  },
+  {
+    "symbol": "EQT",
+    "name": "EQT Corporation",
+    "market": "NASDAQ",
+    "country": "Estats Units",
+    "currency": "USD",
+    "sector": "Petroli i gas",
+    "topics": [
+      "Petroli i gas",
+      "Energia"
+    ],
+    "mic": "XNAS",
+    "price": null,
+    "change": null,
+    "high": null,
+    "low": null,
+    "yield": null,
+    "pe": null,
+    "mv": null
+  },
+  {
+    "symbol": "CNX",
+    "name": "CNX Resources",
+    "market": "NASDAQ",
+    "country": "Estats Units",
+    "currency": "USD",
+    "sector": "Petroli i gas",
+    "topics": [
+      "Petroli i gas",
+      "Energia"
+    ],
+    "mic": "XNAS",
+    "price": null,
+    "change": null,
+    "high": null,
+    "low": null,
+    "yield": null,
+    "pe": null,
+    "mv": null
+  },
+  {
+    "symbol": "RRC",
+    "name": "Range Resources",
+    "market": "NASDAQ",
+    "country": "Estats Units",
+    "currency": "USD",
+    "sector": "Petroli i gas",
+    "topics": [
+      "Petroli i gas",
+      "Energia"
+    ],
+    "mic": "XNAS",
+    "price": null,
+    "change": null,
+    "high": null,
+    "low": null,
+    "yield": null,
+    "pe": null,
+    "mv": null
+  },
+  {
+    "symbol": "GPOR",
+    "name": "Gulfport Energy",
+    "market": "NASDAQ",
+    "country": "Estats Units",
+    "currency": "USD",
+    "sector": "Petroli i gas",
+    "topics": [
+      "Petroli i gas",
+      "Energia"
+    ],
+    "mic": "XNAS",
+    "price": null,
+    "change": null,
+    "high": null,
+    "low": null,
+    "yield": null,
+    "pe": null,
+    "mv": null
+  },
+  {
+    "symbol": "MGY",
+    "name": "Magnolia Oil & Gas",
+    "market": "NASDAQ",
+    "country": "Estats Units",
+    "currency": "USD",
+    "sector": "Petroli i gas",
+    "topics": [
+      "Petroli i gas",
+      "Energia"
+    ],
+    "mic": "XNAS",
+    "price": null,
+    "change": null,
+    "high": null,
+    "low": null,
+    "yield": null,
+    "pe": null,
+    "mv": null
+  },
+  {
+    "symbol": "CHRD",
+    "name": "Chord Energy",
+    "market": "NASDAQ",
+    "country": "Estats Units",
+    "currency": "USD",
+    "sector": "Petroli i gas",
+    "topics": [
+      "Petroli i gas",
+      "Energia"
+    ],
+    "mic": "XNAS",
+    "price": null,
+    "change": null,
+    "high": null,
+    "low": null,
+    "yield": null,
+    "pe": null,
+    "mv": null
+  },
+  {
+    "symbol": "OVV",
+    "name": "Ovintiv",
+    "market": "NASDAQ",
+    "country": "Estats Units",
+    "currency": "USD",
+    "sector": "Petroli i gas",
+    "topics": [
+      "Petroli i gas",
+      "Energia"
+    ],
+    "mic": "XNAS",
+    "price": null,
+    "change": null,
+    "high": null,
+    "low": null,
+    "yield": null,
+    "pe": null,
+    "mv": null
+  },
+  {
+    "symbol": "XOM",
+    "name": "Exxon Mobil",
+    "market": "NYSE",
+    "country": "Estats Units",
+    "currency": "USD",
+    "sector": "Petroli i gas",
+    "topics": [
+      "Petroli i gas",
+      "Energia"
+    ],
+    "mic": "XNYS",
+    "price": null,
+    "change": null,
+    "high": null,
+    "low": null,
+    "yield": null,
+    "pe": null,
+    "mv": null
+  },
+  {
+    "symbol": "CVX",
+    "name": "Chevron",
+    "market": "NYSE",
+    "country": "Estats Units",
+    "currency": "USD",
+    "sector": "Petroli i gas",
+    "topics": [
+      "Petroli i gas",
+      "Energia"
+    ],
+    "mic": "XNYS",
+    "price": null,
+    "change": null,
+    "high": null,
+    "low": null,
+    "yield": null,
+    "pe": null,
+    "mv": null
+  },
+  {
+    "symbol": "COP",
+    "name": "ConocoPhillips",
+    "market": "NYSE",
+    "country": "Estats Units",
+    "currency": "USD",
+    "sector": "Petroli i gas",
+    "topics": [
+      "Petroli i gas",
+      "Energia"
+    ],
+    "mic": "XNYS",
+    "price": null,
+    "change": null,
+    "high": null,
+    "low": null,
+    "yield": null,
+    "pe": null,
+    "mv": null
+  },
+  {
+    "symbol": "OXY",
+    "name": "Occidental Petroleum",
+    "market": "NYSE",
+    "country": "Estats Units",
+    "currency": "USD",
+    "sector": "Petroli i gas",
+    "topics": [
+      "Petroli i gas",
+      "Energia"
+    ],
+    "mic": "XNYS",
+    "price": null,
+    "change": null,
+    "high": null,
+    "low": null,
+    "yield": null,
+    "pe": null,
+    "mv": null
+  },
+  {
+    "symbol": "EOG",
+    "name": "EOG Resources",
+    "market": "NYSE",
+    "country": "Estats Units",
+    "currency": "USD",
+    "sector": "Petroli i gas",
+    "topics": [
+      "Petroli i gas",
+      "Energia"
+    ],
+    "mic": "XNYS",
+    "price": null,
+    "change": null,
+    "high": null,
+    "low": null,
+    "yield": null,
+    "pe": null,
+    "mv": null
+  },
+  {
+    "symbol": "SLB",
+    "name": "SLB",
+    "market": "NYSE",
+    "country": "Estats Units",
+    "currency": "USD",
+    "sector": "Petroli i gas",
+    "topics": [
+      "Petroli i gas",
+      "Energia"
+    ],
+    "mic": "XNYS",
+    "price": null,
+    "change": null,
+    "high": null,
+    "low": null,
+    "yield": null,
+    "pe": null,
+    "mv": null
+  },
+  {
+    "symbol": "HAL",
+    "name": "Halliburton",
+    "market": "NYSE",
+    "country": "Estats Units",
+    "currency": "USD",
+    "sector": "Petroli i gas",
+    "topics": [
+      "Petroli i gas",
+      "Energia"
+    ],
+    "mic": "XNYS",
+    "price": null,
+    "change": null,
+    "high": null,
+    "low": null,
+    "yield": null,
+    "pe": null,
+    "mv": null
+  },
+  {
+    "symbol": "BKR",
+    "name": "Baker Hughes",
+    "market": "NYSE",
+    "country": "Estats Units",
+    "currency": "USD",
+    "sector": "Petroli i gas",
+    "topics": [
+      "Petroli i gas",
+      "Energia"
+    ],
+    "mic": "XNYS",
+    "price": null,
+    "change": null,
+    "high": null,
+    "low": null,
+    "yield": null,
+    "pe": null,
+    "mv": null
+  },
+  {
+    "symbol": "VLO",
+    "name": "Valero Energy",
+    "market": "NYSE",
+    "country": "Estats Units",
+    "currency": "USD",
+    "sector": "Petroli i gas",
+    "topics": [
+      "Petroli i gas",
+      "Energia"
+    ],
+    "mic": "XNYS",
+    "price": null,
+    "change": null,
+    "high": null,
+    "low": null,
+    "yield": null,
+    "pe": null,
+    "mv": null
+  },
+  {
+    "symbol": "MPC",
+    "name": "Marathon Petroleum",
+    "market": "NYSE",
+    "country": "Estats Units",
+    "currency": "USD",
+    "sector": "Petroli i gas",
+    "topics": [
+      "Petroli i gas",
+      "Energia"
+    ],
+    "mic": "XNYS",
+    "price": null,
+    "change": null,
+    "high": null,
+    "low": null,
+    "yield": null,
+    "pe": null,
+    "mv": null
+  },
+  {
+    "symbol": "PSX",
+    "name": "Phillips 66",
+    "market": "NYSE",
+    "country": "Estats Units",
+    "currency": "USD",
+    "sector": "Petroli i gas",
+    "topics": [
+      "Petroli i gas",
+      "Energia"
+    ],
+    "mic": "XNYS",
+    "price": null,
+    "change": null,
+    "high": null,
+    "low": null,
+    "yield": null,
+    "pe": null,
+    "mv": null
+  },
+  {
+    "symbol": "PBF",
+    "name": "PBF Energy",
+    "market": "NYSE",
+    "country": "Estats Units",
+    "currency": "USD",
+    "sector": "Petroli i gas",
+    "topics": [
+      "Petroli i gas",
+      "Energia"
+    ],
+    "mic": "XNYS",
+    "price": null,
+    "change": null,
+    "high": null,
+    "low": null,
+    "yield": null,
+    "pe": null,
+    "mv": null
+  },
+  {
+    "symbol": "MUR",
+    "name": "Murphy Oil",
+    "market": "NYSE",
+    "country": "Estats Units",
+    "currency": "USD",
+    "sector": "Petroli i gas",
+    "topics": [
+      "Petroli i gas",
+      "Energia"
+    ],
+    "mic": "XNYS",
+    "price": null,
+    "change": null,
+    "high": null,
+    "low": null,
+    "yield": null,
+    "pe": null,
+    "mv": null
+  },
+  {
+    "symbol": "CTRA",
+    "name": "Coterra Energy",
+    "market": "NYSE",
+    "country": "Estats Units",
+    "currency": "USD",
+    "sector": "Petroli i gas",
+    "topics": [
+      "Petroli i gas",
+      "Energia"
+    ],
+    "mic": "XNYS",
+    "price": null,
+    "change": null,
+    "high": null,
+    "low": null,
+    "yield": null,
+    "pe": null,
+    "mv": null
+  },
+  {
+    "symbol": "KMI",
+    "name": "Kinder Morgan",
+    "market": "NYSE",
+    "country": "Estats Units",
+    "currency": "USD",
+    "sector": "Petroli i gas",
+    "topics": [
+      "Petroli i gas",
+      "Energia"
+    ],
+    "mic": "XNYS",
+    "price": null,
+    "change": null,
+    "high": null,
+    "low": null,
+    "yield": null,
+    "pe": null,
+    "mv": null
+  },
+  {
+    "symbol": "WMB",
+    "name": "Williams Companies",
+    "market": "NYSE",
+    "country": "Estats Units",
+    "currency": "USD",
+    "sector": "Petroli i gas",
+    "topics": [
+      "Petroli i gas",
+      "Energia"
+    ],
+    "mic": "XNYS",
+    "price": null,
+    "change": null,
+    "high": null,
+    "low": null,
+    "yield": null,
+    "pe": null,
+    "mv": null
+  },
+  {
+    "symbol": "OKE",
+    "name": "ONEOK",
+    "market": "NYSE",
+    "country": "Estats Units",
+    "currency": "USD",
+    "sector": "Petroli i gas",
+    "topics": [
+      "Petroli i gas",
+      "Energia"
+    ],
+    "mic": "XNYS",
+    "price": null,
+    "change": null,
+    "high": null,
+    "low": null,
+    "yield": null,
+    "pe": null,
+    "mv": null
+  },
+  {
+    "symbol": "TRGP",
+    "name": "Targa Resources",
+    "market": "NYSE",
+    "country": "Estats Units",
+    "currency": "USD",
+    "sector": "Petroli i gas",
+    "topics": [
+      "Petroli i gas",
+      "Energia"
+    ],
+    "mic": "XNYS",
+    "price": null,
+    "change": null,
+    "high": null,
+    "low": null,
+    "yield": null,
+    "pe": null,
+    "mv": null
+  },
+  {
+    "symbol": "ET",
+    "name": "Energy Transfer",
+    "market": "NYSE",
+    "country": "Estats Units",
+    "currency": "USD",
+    "sector": "Petroli i gas",
+    "topics": [
+      "Petroli i gas",
+      "Energia"
+    ],
+    "mic": "XNYS",
+    "price": null,
+    "change": null,
+    "high": null,
+    "low": null,
+    "yield": null,
+    "pe": null,
+    "mv": null
+  },
+  {
+    "symbol": "EPD",
+    "name": "Enterprise Products Partners",
+    "market": "NYSE",
+    "country": "Estats Units",
+    "currency": "USD",
+    "sector": "Petroli i gas",
+    "topics": [
+      "Petroli i gas",
+      "Energia"
+    ],
+    "mic": "XNYS",
+    "price": null,
+    "change": null,
+    "high": null,
+    "low": null,
+    "yield": null,
+    "pe": null,
+    "mv": null
+  },
+  {
+    "symbol": "MPLX",
+    "name": "MPLX",
+    "market": "NYSE",
+    "country": "Estats Units",
+    "currency": "USD",
+    "sector": "Petroli i gas",
+    "topics": [
+      "Petroli i gas",
+      "Energia"
+    ],
+    "mic": "XNYS",
+    "price": null,
+    "change": null,
+    "high": null,
+    "low": null,
+    "yield": null,
+    "pe": null,
+    "mv": null
+  },
+  {
+    "symbol": "PAA",
+    "name": "Plains All American Pipeline",
+    "market": "NYSE",
+    "country": "Estats Units",
+    "currency": "USD",
+    "sector": "Petroli i gas",
+    "topics": [
+      "Petroli i gas",
+      "Energia"
+    ],
+    "mic": "XNYS",
+    "price": null,
+    "change": null,
+    "high": null,
+    "low": null,
+    "yield": null,
+    "pe": null,
+    "mv": null
+  },
+  {
+    "symbol": "ENB",
+    "name": "Enbridge",
+    "market": "NYSE",
+    "country": "Estats Units",
+    "currency": "USD",
+    "sector": "Petroli i gas",
+    "topics": [
+      "Petroli i gas",
+      "Energia"
+    ],
+    "mic": "XNYS",
+    "price": null,
+    "change": null,
+    "high": null,
+    "low": null,
+    "yield": null,
+    "pe": null,
+    "mv": null
+  },
+  {
+    "symbol": "TRP",
+    "name": "TC Energy",
+    "market": "NYSE",
+    "country": "Estats Units",
+    "currency": "USD",
+    "sector": "Petroli i gas",
+    "topics": [
+      "Petroli i gas",
+      "Energia"
+    ],
+    "mic": "XNYS",
+    "price": null,
+    "change": null,
+    "high": null,
+    "low": null,
+    "yield": null,
+    "pe": null,
+    "mv": null
+  },
+  {
+    "symbol": "CNQ",
+    "name": "Canadian Natural Resources",
+    "market": "NYSE",
+    "country": "Estats Units",
+    "currency": "USD",
+    "sector": "Petroli i gas",
+    "topics": [
+      "Petroli i gas",
+      "Energia"
+    ],
+    "mic": "XNYS",
+    "price": null,
+    "change": null,
+    "high": null,
+    "low": null,
+    "yield": null,
+    "pe": null,
+    "mv": null
+  },
+  {
+    "symbol": "IMO",
+    "name": "Imperial Oil",
+    "market": "NYSE",
+    "country": "Estats Units",
+    "currency": "USD",
+    "sector": "Petroli i gas",
+    "topics": [
+      "Petroli i gas",
+      "Energia"
+    ],
+    "mic": "XNYS",
+    "price": null,
+    "change": null,
+    "high": null,
+    "low": null,
+    "yield": null,
+    "pe": null,
+    "mv": null
+  },
+  {
+    "symbol": "CVE",
+    "name": "Cenovus Energy",
+    "market": "NYSE",
+    "country": "Estats Units",
+    "currency": "USD",
+    "sector": "Petroli i gas",
+    "topics": [
+      "Petroli i gas",
+      "Energia"
+    ],
+    "mic": "XNYS",
+    "price": null,
+    "change": null,
+    "high": null,
+    "low": null,
+    "yield": null,
+    "pe": null,
+    "mv": null
+  },
+  {
+    "symbol": "EQNR",
+    "name": "Equinor ADR",
+    "market": "NYSE",
+    "country": "Estats Units",
+    "currency": "USD",
+    "sector": "Petroli i gas",
+    "topics": [
+      "Petroli i gas",
+      "Energia"
+    ],
+    "mic": "XNYS",
+    "price": null,
+    "change": null,
+    "high": null,
+    "low": null,
+    "yield": null,
+    "pe": null,
+    "mv": null
+  },
+  {
+    "symbol": "SHEL",
+    "name": "Shell ADR",
+    "market": "NYSE",
+    "country": "Estats Units",
+    "currency": "USD",
+    "sector": "Petroli i gas",
+    "topics": [
+      "Petroli i gas",
+      "Energia"
+    ],
+    "mic": "XNYS",
+    "price": null,
+    "change": null,
+    "high": null,
+    "low": null,
+    "yield": null,
+    "pe": null,
+    "mv": null
+  },
+  {
+    "symbol": "BP",
+    "name": "BP ADR",
+    "market": "NYSE",
+    "country": "Estats Units",
+    "currency": "USD",
+    "sector": "Petroli i gas",
+    "topics": [
+      "Petroli i gas",
+      "Energia"
+    ],
+    "mic": "XNYS",
+    "price": null,
+    "change": null,
+    "high": null,
+    "low": null,
+    "yield": null,
+    "pe": null,
+    "mv": null
+  },
+  {
+    "symbol": "PBR",
+    "name": "Petróleo Brasileiro Petrobras ADR",
+    "market": "NYSE",
+    "country": "Estats Units",
+    "currency": "USD",
+    "sector": "Petroli i gas",
+    "topics": [
+      "Petroli i gas",
+      "Energia"
+    ],
+    "mic": "XNYS",
+    "price": null,
+    "change": null,
+    "high": null,
+    "low": null,
+    "yield": null,
+    "pe": null,
+    "mv": null
+  },
+  {
+    "symbol": "EC",
+    "name": "Ecopetrol ADR",
+    "market": "NYSE",
+    "country": "Estats Units",
+    "currency": "USD",
+    "sector": "Petroli i gas",
+    "topics": [
+      "Petroli i gas",
+      "Energia"
+    ],
+    "mic": "XNYS",
+    "price": null,
+    "change": null,
+    "high": null,
+    "low": null,
+    "yield": null,
+    "pe": null,
+    "mv": null
+  },
+  {
+    "symbol": "ENOG",
+    "name": "Energean",
+    "market": "LSE",
+    "country": "Regne Unit",
+    "currency": "GBP",
+    "sector": "Petroli i gas",
+    "topics": [
+      "Petroli i gas",
+      "Energia"
+    ],
+    "mic": "XLON",
+    "price": null,
+    "change": null,
+    "high": null,
+    "low": null,
+    "yield": null,
+    "pe": null,
+    "mv": null
+  },
+  {
+    "symbol": "HBR",
+    "name": "Harbour Energy",
+    "market": "LSE",
+    "country": "Regne Unit",
+    "currency": "GBP",
+    "sector": "Petroli i gas",
+    "topics": [
+      "Petroli i gas",
+      "Energia"
+    ],
+    "mic": "XLON",
+    "price": null,
+    "change": null,
+    "high": null,
+    "low": null,
+    "yield": null,
+    "pe": null,
+    "mv": null
+  },
+  {
+    "symbol": "REP",
+    "name": "Repsol",
+    "market": "MAD",
+    "country": "Espanya",
+    "currency": "EUR",
+    "sector": "Petroli i gas",
+    "topics": [
+      "Petroli i gas",
+      "Energia"
+    ],
+    "mic": "XMAD",
+    "price": null,
+    "change": null,
+    "high": null,
+    "low": null,
+    "yield": null,
+    "pe": null,
+    "mv": null
+  },
+  {
+    "symbol": "ENI",
+    "name": "Eni",
+    "market": "MIL",
+    "country": "Itàlia",
+    "currency": "EUR",
+    "sector": "Petroli i gas",
+    "topics": [
+      "Petroli i gas",
+      "Energia"
+    ],
+    "mic": "XMIL",
+    "price": null,
+    "change": null,
+    "high": null,
+    "low": null,
+    "yield": null,
+    "pe": null,
+    "mv": null
+  },
+  {
+    "symbol": "TEN",
+    "name": "Tenaris",
+    "market": "MIL",
+    "country": "Itàlia",
+    "currency": "EUR",
+    "sector": "Petroli i gas",
+    "topics": [
+      "Petroli i gas",
+      "Energia"
+    ],
+    "mic": "XMIL",
+    "price": null,
+    "change": null,
+    "high": null,
+    "low": null,
+    "yield": null,
+    "pe": null,
+    "mv": null
+  },
+  {
+    "symbol": "WFRD",
+    "name": "Weatherford International",
+    "market": "NASDAQ",
+    "country": "Estats Units",
+    "currency": "USD",
+    "sector": "Petroli i gas",
+    "topics": [
+      "Petroli i gas",
+      "Energia"
+    ],
+    "mic": "XNAS",
+    "price": null,
+    "change": null,
+    "high": null,
+    "low": null,
+    "yield": null,
+    "pe": null,
+    "mv": null
+  },
+  {
+    "symbol": "NOV",
+    "name": "NOV",
+    "market": "NASDAQ",
+    "country": "Estats Units",
+    "currency": "USD",
+    "sector": "Petroli i gas",
+    "topics": [
+      "Petroli i gas",
+      "Energia"
+    ],
+    "mic": "XNAS",
+    "price": null,
+    "change": null,
+    "high": null,
+    "low": null,
+    "yield": null,
+    "pe": null,
+    "mv": null
+  },
+  {
+    "symbol": "PTEN",
+    "name": "Patterson-UTI Energy",
+    "market": "NASDAQ",
+    "country": "Estats Units",
+    "currency": "USD",
+    "sector": "Petroli i gas",
+    "topics": [
+      "Petroli i gas",
+      "Energia"
+    ],
+    "mic": "XNAS",
     "price": null,
     "change": null,
     "high": null,
