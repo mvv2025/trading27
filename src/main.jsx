@@ -1,4 +1,4 @@
-import React, {useEffect,useMemo,useState} from 'react';
+import React, {useEffect,useMemo,useRef,useState} from 'react';
 import {createRoot} from 'react-dom/client';
 import {Activity, BarChart3, BookOpen, Bot, ChevronDown, CircleAlert, Clock3, ExternalLink, Filter, Globe2, GraduationCap, LayoutDashboard, LockKeyhole, Plus, Radio, RefreshCw, Search, ShieldCheck, Sun, Moon, TrendingDown, TrendingUp, Wallet, X} from 'lucide-react';
 import './decision.css';
@@ -54,11 +54,12 @@ function App(){
  const [theme,setTheme]=useState(()=>{try{return localStorage.getItem('trading27-theme')==='light'?'light':'dark'}catch{return 'light'}});
  const [search,setSearch]=useState(''),[country,setCountry]=useState('all'),[onlySaved,setOnlySaved]=useState(false),[detail,setDetail]=useState(false);
  const [topic,setTopic]=useState('all'),[visibleCount,setVisibleCount]=useState(30);
- const [selected,setSelected]=useState('BNP'),[comparison,setComparison]=useState(['BNP','SU']),[expanded,setExpanded]=useState(false);
+ const [selected,setSelected]=useState('NVDA'),[comparison,setComparison]=useState(['NVDA','MSFT']),[expanded,setExpanded]=useState(false);
  const [orderType,setOrderType]=useState('buy'),[quantity,setQuantity]=useState('1'),[limit,setLimit]=useState(''),[review,setReview]=useState(false),[initial,setInitial]=useState('5000');
  const [error,setError]=useState(''),[notice,setNotice]=useState(''),[feed,setFeed]=useState({}),[loading,setLoading]=useState(false);
  const [history,setHistory]=useState([]),[historyRange,setHistoryRange]=useState('6M'),[historyLoading,setHistoryLoading]=useState(false),[historyError,setHistoryError]=useState(''),[quoteError,setQuoteError]=useState(''),[quoteLoading,setQuoteLoading]=useState(false);
  const [marketMeta,setMarketMeta]=useState({});
+ const quoteCache=useRef({}),historyCache=useRef({});
  const l=COPY[language], t=(v)=>translate(language,v),locale=language==='en'?'en-US':language==='es'?'es-ES':'ca-ES';
  const fm=(v,c='EUR')=>money(v,c,locale),fn=(v,d=2)=>num(v,d,locale);
  const account=saved.account||{cash:5000,holdings:{},trades:[]},watch=saved.watch||['BNP','SU','AIR','TTE','RACE'];
@@ -67,7 +68,17 @@ function App(){
  const stock=catalog.find(s=>s.symbol===selected)||catalog[0];
  const persist=next=>{setSaved(next);try{localStorage.setItem(KEY,JSON.stringify(next))}catch{}};
  const markets=[...new Set(catalog.map(s=>s.country))];
- const matchesTopic=(s)=>topic==='all'||(topic==='Tecnologia'?(s.sector==='Tecnologia'||s.topics?.includes('Tecnologia')):topic==='Microxips'?(s.sector==='Semiconductors'||s.topics?.includes('Microxips')):topic==='IA'?(s.topics?.includes('IA')||['NVDA','MSFT','GOOGL','ASML'].includes(s.symbol)):topic==='Banca'?(s.sector==='Banca'||s.topics?.includes('Banca')):true);
+ const matchesTopic=(s)=>{
+  if(topic==='all')return true;
+  if(topic==='Tecnologia')return s.sector==='Tecnologia'||s.topics?.includes('Tecnologia');
+  if(topic==='Microxips')return s.sector==='Semiconductors'||s.topics?.includes('Microxips');
+  if(topic==='IA')return s.topics?.includes('IA')||['NVDA','MSFT','GOOGL','ASML'].includes(s.symbol);
+  if(topic==='Banca')return s.sector==='Banca'||s.topics?.includes('Banca');
+  if(topic==='Salut')return ['Salut','Farmacèutica'].includes(s.sector)||s.topics?.includes('Salut');
+  if(topic==='Farmacèutica')return s.sector==='Farmacèutica'||s.topics?.includes('Farmacèutica');
+  if(topic==='Petroli i gas')return ['Petroli i gas','Energia'].includes(s.sector)||s.topics?.includes('Petroli i gas');
+  return true;
+ };
  const filtered=catalog.filter(s=>matchesTopic(s)&&(country==='all'||s.country===country)&&(!onlySaved||watch.includes(s.symbol))&&[s.name,s.symbol,s.sector,...(s.topics||[])].join(' ').toLocaleLowerCase().includes(search.toLocaleLowerCase()));
  const shown=filtered.slice(0,visibleCount);
  useEffect(()=>{setVisibleCount(30)},[search,country,topic,onlySaved]);
@@ -90,34 +101,63 @@ function App(){
  const toggleCompare=sym=>{setNotice('');if(comparison.includes(sym)){setComparison(comparison.filter(s=>s!==sym));return}if(comparison.length>=3){setNotice(l.selectedMax);return}setComparison([...comparison,sym])};
  const toggleWatch=sym=>persist({...saved,watch:watch.includes(sym)?watch.filter(s=>s!==sym):[...watch,sym]});
  const navigate=target=>{setPage(target);setError('');setReview(false);window.scrollTo({top:0,behavior:'smooth'})};
- const labelProviderError=(code)=>code==='PROVIDER_NOT_CONFIGURED'?l.noProvider:code?.startsWith('PROVIDER_')?l.updateFailed+' ('+code+')':l.updateFailed;
- async function refresh(symbol=selected,quiet=false){
+ const labelProviderError=(code)=>{
+  const dict={
+   PROVIDER_NOT_CONFIGURED:['No hi ha cap clau Twelve Data configurada a Vercel.','No hay clave Twelve Data configurada en Vercel.','No Twelve Data key is configured in Vercel.'],
+   INVALID_PROVIDER_KEY:['La clau de Twelve Data no és vàlida. Revisa-la a Vercel.','La clave de Twelve Data no es válida. Revísala en Vercel.','Your Twelve Data key is invalid. Check it in Vercel.'],
+   MARKET_NOT_INCLUDED_IN_PLAN:['Aquesta borsa no està inclosa en el teu pla de Twelve Data. Prova una empresa dels EUA (NVDA o AAPL).','Esta bolsa no está incluida en tu plan de Twelve Data. Prueba una empresa de EE. UU. (NVDA o AAPL).','This exchange is not included in your Twelve Data plan. Try a US stock (NVDA or AAPL).'],
+   RATE_LIMIT_REACHED:['Has arribat al límit de consultes de Twelve Data. Torna-ho a provar després d’un minut.','Has llegado al límite de consultas de Twelve Data. Inténtalo de nuevo en un minuto.','Twelve Data rate limit reached. Try again after a minute.'],
+   INSTRUMENT_NOT_FOUND:['El proveïdor no reconeix aquest símbol o mercat.','El proveedor no reconoce este símbolo o mercado.','The provider could not find this symbol on that exchange.'],
+   INVALID_INSTRUMENT_OR_QUERY:['La borsa o el símbol no és admès pel proveïdor.','El mercado o el símbolo no está admitido por el proveedor.','The provider does not accept this symbol or exchange.'],
+   QUOTE_NOT_VERIFIED:['La cotització rebuda no s’ha pogut verificar (moneda, borsa o data).','No se ha podido verificar la cotización (moneda, bolsa o fecha).','Quote verification failed (currency, exchange or timestamp).'],
+   HISTORY_NOT_VERIFIED:['L’històric no coincideix amb la moneda o la borsa esperada.','El histórico no coincide con la moneda o bolsa esperada.','Historical data does not match the expected currency or exchange.'],
+   EMPTY_HISTORY:['El proveïdor no ha retornat dades per al període indicat.','El proveedor no ha devuelto datos para este periodo.','The provider returned no historical data for this period.'],
+   PROVIDER_TIMEOUT:['La consulta ha excedit el temps d’espera.','La consulta ha superado el tiempo de espera.','The provider request timed out.'],
+   PROVIDER_NETWORK_ERROR:['No s’ha pogut connectar amb el proveïdor.','No se ha podido conectar con el proveedor.','Cannot connect to the provider.']
+  };
+  return (dict[code]||[l.updateFailed,l.updateFailed,l.updateFailed])[{ca:0,es:1,en:2}[language]];
+ };
+ async function refresh(symbol=selected,quiet=false,force=false){
+  const cached=quoteCache.current[symbol];
+  if(!force&&cached&&Date.now()-cached.at<90000){return}
   setQuoteLoading(true);if(!quiet)setQuoteError('');
   try{
-    const response=await fetch('/api/quotes?symbol='+encodeURIComponent(symbol),{cache:'no-store'});
-    const result=await response.json();
-    if(!response.ok)throw Error(result.error||'DATA_UNAVAILABLE');
-    if(!Array.isArray(result.quotes)||!result.quotes.length)throw Error('DATA_UNAVAILABLE');
-    const q=result.quotes[0];
-    if(q.symbol!==symbol||!Number.isFinite(q.price)||q.price<=0||!q.asOf)throw Error('INVALID_QUOTE');
-    setFeed(old=>({...old,[symbol]:{price:q.price,change:q.change,asOf:q.asOf,high:q.high52??old[symbol]?.high,low:q.low52??old[symbol]?.low}}));
-    setMarketMeta(old=>({...old,[symbol]:{provider:result.source||'Twelve Data',lastReceived:q.asOf,isMarketOpen:q.isMarketOpen,quality:q.quality}}));
-    setQuoteError('');
-    if(!quiet)setNotice(l.newData);
+   const response=await fetch('/api/quotes?symbol='+encodeURIComponent(symbol),{cache:'no-store'});
+   const result=await response.json();
+   if(!response.ok)throw Error(result.error||'DATA_UNAVAILABLE');
+   if(!Array.isArray(result.quotes)||!result.quotes.length)throw Error('DATA_UNAVAILABLE');
+   const q=result.quotes[0];
+   if(q.symbol!==symbol||!Number.isFinite(q.price)||q.price<=0||!q.asOf)throw Error('QUOTE_NOT_VERIFIED');
+   quoteCache.current[symbol]={at:Date.now()};
+   setFeed(old=>({...old,[symbol]:{price:q.price,change:q.change,asOf:q.asOf,high:q.high52??old[symbol]?.high,low:q.low52??old[symbol]?.low}}));
+   setMarketMeta(old=>({...old,[symbol]:{provider:result.source||'Twelve Data',lastReceived:q.asOf,isMarketOpen:q.isMarketOpen,quality:q.quality}}));
+   setQuoteError('');
+   if(!quiet)setNotice(l.newData);
   }catch(e){setQuoteError(labelProviderError(e.message));if(!quiet)setError(labelProviderError(e.message))}finally{setQuoteLoading(false)}
  }
  async function loadHistory(symbol=selected,range=historyRange){
+  const cacheKey=symbol+'|'+range;
+  if(historyCache.current[cacheKey]&&Date.now()-historyCache.current[cacheKey].at<600000){setHistory(historyCache.current[cacheKey].data);setHistoryError('');return}
   setHistoryLoading(true);setHistoryError('');setHistory([]);
   try{
-    const response=await fetch('/api/history?symbol='+encodeURIComponent(symbol)+'&range='+range,{cache:'no-store'});
-    const data=await response.json();
-    if(!response.ok)throw Error(data.error||'DATA_UNAVAILABLE');
-    if(data.symbol!==symbol||!Array.isArray(data.candles))throw Error('INVALID_HISTORY');
-    setHistory(data.candles);
+   const response=await fetch('/api/history?symbol='+encodeURIComponent(symbol)+'&range='+range,{cache:'no-store'});
+   const data=await response.json();
+   if(!response.ok)throw Error(data.error||'DATA_UNAVAILABLE');
+   if(data.symbol!==symbol||!Array.isArray(data.candles))throw Error('HISTORY_NOT_VERIFIED');
+   historyCache.current[cacheKey]={at:Date.now(),data:data.candles};
+   setHistory(data.candles);
   }catch(e){setHistoryError(labelProviderError(e.message))}finally{setHistoryLoading(false)}
  }
- useEffect(()=>{refresh(selected,true)},[selected]);
- useEffect(()=>{loadHistory(selected,historyRange)},[selected,historyRange]);
+ useEffect(()=>{
+  if(page!=='explore'&&page!=='practice')return;
+  const timer=setTimeout(()=>{refresh(selected,true)},400);
+  return ()=>clearTimeout(timer);
+ },[selected,page]);
+ useEffect(()=>{
+  if(page!=='explore')return;
+  const timer=setTimeout(()=>loadHistory(selected,historyRange),500);
+  return ()=>clearTimeout(timer);
+ },[selected,historyRange,page]);
 
  function validate(){
   const q=Number(quantity),p=Number(limit);
@@ -153,13 +193,22 @@ function App(){
     <section className="compactStatus"><div><span className="smallCaps">{l.data}</span><strong><span className="statusCircle"/> {Object.keys(feed).length?l.api:l.historical}</strong><p>{l.dataInfo}</p></div><div className="statusDivider"/><div><span className="smallCaps">{l.realZero}</span><strong>0,00 €</strong><p>{l.paper} · {account.trades.length} {l.records}</p></div></section>
     <div className="sectionTop"><div><span className="smallCaps">{l.workshop}</span><h2>{l.route}</h2></div></div>
     <section className="pathGrid">{[[l.step1,l.desc1,'learn','01'],[l.step2,l.desc2,'compare','02'],[l.step3,l.desc3,'practice','03']].map(([title,desc,id,n])=><button className="pathCard" key={id} onClick={()=>navigate(id)}><span className="pathNumber">{n}</span><div><h3>{title}</h3><p>{desc}</p></div><span className="pathArrow">↗</span></button>)}</section>
-    <section className="featured"><div className="featureLabel"><span className="smallCaps">{l.focus}</span><h2>{l.focusDesc}</h2><p>{l.focusInfo}</p><button className="underButton" onClick={()=>navigate('explore')}>{l.start} ↗</button></div><div className="featuredStocks">{catalog.slice(0,3).map(s=>stockSummary(s))}</div></section>
+    <section className="featured"><div className="featureLabel"><span className="smallCaps">{l.focus}</span><h2>{l.focusDesc}</h2><p>{l.focusInfo}</p><button className="underButton" onClick={()=>navigate('explore')}>{l.start} ↗</button></div><div className="featuredStocks">{['NVDA','AAPL','JPM'].map(sym=>catalog.find(s=>s.symbol===sym)).filter(Boolean).map(s=>stockSummary(s))}</div></section>
    </>}
    {page==='explore'&&<>
     <div className="pageHead"><span className="smallCaps">01 / DISCOVER</span><h1>{l.explore}</h1><p>{l.exploreIntro}</p><div className="universeCount"><strong>{catalog.length}</strong> {language==='ca'?'empreses al catàleg':language==='es'?'empresas en el catálogo':'companies in the catalog'} <small>· {language==='ca'?'Cobertura de preus subjecta al proveïdor':language==='es'?'Cobertura de precios según proveedor':'Price coverage depends on provider'}</small></div></div>
-    <section className="exploreLayout"><div className="paperPane"><div className="filterRow"><label className="searchInput"><Search size={18}/><input value={search} onChange={e=>setSearch(e.target.value)} placeholder={l.find} aria-label={l.find}/></label><select aria-label={l.market} value={country} onChange={e=>setCountry(e.target.value)}><option value="all">{l.all}</option>{markets.map(c=><option value={c} key={c}>{t(c)}</option>)}</select></div><div className="topicFilters" role="group" aria-label={language==='ca'?'Sector d’activitat':language==='es'?'Sector de actividad':'Industry sector'}>{[['all',language==='ca'?'Tots':language==='es'?'Todos':'All'],['Tecnologia',language==='ca'?'Tecnologia':language==='es'?'Tecnología':'Technology'],['Microxips',language==='ca'?'Microxips':language==='es'?'Microchips':'Semiconductors'],['IA',language==='ca'?'Intel·ligència artificial':language==='es'?'Inteligencia artificial':'Artificial intelligence'],['Banca',language==='ca'?'Banca':language==='es'?'Banca':'Banking']].map(([id,label])=><button key={id} className={topic===id?'chosen':''} aria-pressed={topic===id} onClick={()=>setTopic(id)}>{label}</button>)}</div><div className="toggleRow"><button className={!onlySaved?'on':''} onClick={()=>setOnlySaved(false)}>{l.allStocks}</button><button className={onlySaved?'on':''} onClick={()=>setOnlySaved(true)}>{l.saved} · {watch.length}</button><button className="clearFilter" onClick={()=>{setSearch('');setCountry('all');setTopic('all');setOnlySaved(false)}}>{l.clear}</button></div><div className="results"><div className="resultCount">{filtered.length} {language==='ca'?'empreses trobades':language==='es'?'empresas encontradas':'matching companies'}</div>{shown.map(s=><button key={s.symbol} className={'resultRow '+(selected===s.symbol?'resultActive':'')} onClick={()=>{selectStock(s.symbol);setDetail(true)}}><span className="resultInfo"><strong>{s.name}</strong><small>{s.symbol} · {t(s.country)}</small></span><span className="resultPrice"><b>{fm(s.price,s.currency)}</b><small>{label(s)}</small></span><span className="resultArrow">↗</span></button>)}{!filtered.length&&<p className="emptyState">{l.emptySearch}</p>}{visibleCount<filtered.length&&<button className="loadMore" onClick={()=>setVisibleCount(n=>n+30)}>{language==='ca'?'Carregar 30 empreses més':language==='es'?'Cargar 30 empresas más':'Load 30 more companies'} · {filtered.length-visibleCount} {language==='ca'?'pendents':language==='es'?'pendientes':'remaining'}</button>}</div></div>
+    <section className="exploreLayout"><div className="paperPane"><div className="filterRow"><label className="searchInput"><Search size={18}/><input value={search} onChange={e=>setSearch(e.target.value)} placeholder={l.find} aria-label={l.find}/></label><select aria-label={l.market} value={country} onChange={e=>setCountry(e.target.value)}><option value="all">{l.all}</option>{markets.map(c=><option value={c} key={c}>{t(c)}</option>)}</select></div><div className="topicFilters" role="group" aria-label={language==='ca'?'Sector d’activitat':language==='es'?'Sector de actividad':'Industry sector'}>{[
+ ['all',language==='ca'?'Tots':language==='es'?'Todos':'All'],
+ ['Tecnologia',language==='ca'?'Tecnologia':language==='es'?'Tecnología':'Technology'],
+ ['Microxips',language==='ca'?'Microxips':language==='es'?'Microchips':'Semiconductors'],
+ ['IA',language==='ca'?'Intel·ligència artificial':language==='es'?'Inteligencia artificial':'Artificial intelligence'],
+ ['Banca',language==='ca'?'Banca':language==='es'?'Banca':'Banking'],
+ ['Salut',language==='ca'?'Salut':language==='es'?'Salud':'Healthcare'],
+ ['Farmacèutica',language==='ca'?'Farmacèutica':language==='es'?'Farmacéutica':'Pharmaceuticals'],
+ ['Petroli i gas',language==='ca'?'Petroli i gas':language==='es'?'Petróleo y gas':'Oil & gas']
+ ].map(([id,label])=><button key={id} className={topic===id?'chosen':''} aria-pressed={topic===id} onClick={()=>setTopic(id)}>{label}</button>)}</div><div className="toggleRow"><button className={!onlySaved?'on':''} onClick={()=>setOnlySaved(false)}>{l.allStocks}</button><button className={onlySaved?'on':''} onClick={()=>setOnlySaved(true)}>{l.saved} · {watch.length}</button><button className="clearFilter" onClick={()=>{setSearch('');setCountry('all');setTopic('all');setOnlySaved(false)}}>{l.clear}</button></div><div className="results"><div className="resultCount">{filtered.length} {language==='ca'?'empreses trobades':language==='es'?'empresas encontradas':'matching companies'}</div>{shown.map(s=><button key={s.symbol} className={'resultRow '+(selected===s.symbol?'resultActive':'')} onClick={()=>{selectStock(s.symbol);setDetail(true)}}><span className="resultInfo"><strong>{s.name}</strong><small>{s.symbol} · {t(s.country)}</small></span><span className="resultPrice"><b>{fm(s.price,s.currency)}</b><small>{label(s)}</small></span><span className="resultArrow">↗</span></button>)}{!filtered.length&&<p className="emptyState">{l.emptySearch}</p>}{visibleCount<filtered.length&&<button className="loadMore" onClick={()=>setVisibleCount(n=>n+30)}>{language==='ca'?'Carregar 30 empreses més':language==='es'?'Cargar 30 empresas más':'Load 30 more companies'} · {filtered.length-visibleCount} {language==='ca'?'pendents':language==='es'?'pendientes':'remaining'}</button>}</div></div>
     <aside className="detailPane"><span className="smallCaps">{l.selected}</span><div className="detailHeading"><h2>{stock.name}</h2><button onClick={()=>toggleWatch(selected)} aria-label={watch.includes(selected)?l.remove:l.add} className="bookmark">{watch.includes(selected)?'★':'☆'}</button></div><div className="detailSub">{stock.symbol} · {stock.market} · {t(stock.sector)}</div><div className="bigPrice">{fm(stock.price,stock.currency)}</div>{dataIcon(stock)}<p className="microText">{stock.asOf?(language==='ca'?'Última dada: ':language==='es'?'Último dato: ':'Last quote: ')+lastQuoteText:l.dataInfo}</p>
- <div className="marketUpdate"><button className="outlineButton" onClick={()=>refresh(selected)} disabled={quoteLoading}>{quoteLoading?l.busy:l.checkPrices}</button>{quoteError&&<span className="microText">{quoteError}</span>}</div><div className="detailDivider"/><span className="smallCaps">{l.check}</span><div className="metricStack">{metricRows.slice(1,expanded?metricRows.length:3).map(([key,label,format])=><div className="metricLine" key={key}><button onClick={()=>setNotice(t(key==='pe'?GLOSSARY['P/E']:key==='dividend'?GLOSSARY['Yld %']:key==='cap'?GLOSSARY['MV(b)']:key==='high'?GLOSSARY['52W High']:GLOSSARY['52W Low']))} aria-label={l.explain+' '+label}><span>{label} <span className="questionMark">ⓘ</span></span></button><strong>{format(stock)}</strong></div>)}</div><button className="underButton" onClick={()=>setExpanded(v=>!v)}>{expanded?l.less:l.readMore} <ChevronDown size={15}/></button><section className="historyBlock">
+ <div className="marketUpdate"><button className="outlineButton" onClick={()=>refresh(selected,false,true)} disabled={quoteLoading}>{quoteLoading?l.busy:l.checkPrices}</button>{quoteError&&<span className="microText">{quoteError}</span>}</div><div className="detailDivider"/><span className="smallCaps">{l.check}</span><div className="metricStack">{metricRows.slice(1,expanded?metricRows.length:3).map(([key,label,format])=><div className="metricLine" key={key}><button onClick={()=>setNotice(t(key==='pe'?GLOSSARY['P/E']:key==='dividend'?GLOSSARY['Yld %']:key==='cap'?GLOSSARY['MV(b)']:key==='high'?GLOSSARY['52W High']:GLOSSARY['52W Low']))} aria-label={l.explain+' '+label}><span>{label} <span className="questionMark">ⓘ</span></span></button><strong>{format(stock)}</strong></div>)}</div><button className="underButton" onClick={()=>setExpanded(v=>!v)}>{expanded?l.less:l.readMore} <ChevronDown size={15}/></button><section className="historyBlock">
   <div className="historyHeader"><div><span className="smallCaps">{language==='ca'?'HISTÒRIC VERIFICABLE':language==='es'?'HISTÓRICO VERIFICABLE':'VERIFIABLE PRICE HISTORY'}</span><h3>{language==='ca'?'Evolució de la cotització':language==='es'?'Evolución de la cotización':'Share price history'}</h3><p>{language==='ca'?'Preus de tancament diaris reals del proveïdor, ajustats per desdoblaments.':language==='es'?'Cierres diarios reales del proveedor, ajustados por desdoblamientos.':'Provider daily closes, split-adjusted.'}</p></div><div className="rangeButtons" role="group" aria-label="History period">{['1M','3M','6M','1Y','3Y','5Y'].map(v=><button key={v} className={historyRange===v?'active':''} onClick={()=>setHistoryRange(v)}>{v}</button>)}</div></div>
   {historyLoading?<p className="historyState">{l.busy}</p>:historyError?<div className="historyState"><CircleAlert size={18}/> <span>{historyError}</span><button onClick={()=>loadHistory()}>{l.refresh}</button></div>:historyPrices.length>1?<><div className="chartStat"><strong>{fm(historyPrices[historyPrices.length-1],stock.currency)}</strong><span className={historyReturns>=0?'up':'down'}>{historyReturns>=0?'+':''}{fn(historyReturns)} % · {historyRange}</span></div><svg className="historyChart" viewBox="0 0 800 200" role="img" aria-label={language==='ca'?'Gràfic històric de tancaments':language==='es'?'Gráfico histórico de cierres':'Historical daily closing price chart'} preserveAspectRatio="none"><line x1="20" y1="175" x2="780" y2="175" stroke="currentColor" opacity=".17"/><line x1="20" y1="105" x2="780" y2="105" stroke="currentColor" opacity=".1"/><line x1="20" y1="35" x2="780" y2="35" stroke="currentColor" opacity=".1"/><polyline points={historyPoints} fill="none" stroke="var(--accent)" strokeWidth="3.5" strokeLinejoin="round" strokeLinecap="round"/></svg><div className="chartAxis"><span>{history[0]?.date}</span><span>{history[history.length-1]?.date}</span></div><p className="microText">{language==='ca'?'Font: Twelve Data · dades de mercat històriques, no prediccions.':language==='es'?'Fuente: Twelve Data · datos históricos de mercado, no predicciones.':'Source: Twelve Data · historical market data, not predictions.'}</p></>:<p className="historyState">{l.noData}</p>}
  </section><div className="detailDivider"/><span className="smallCaps">{l.riskTitle}</span><div className="riskNotes">{risk(stock).slice(0,3).map((v,i)=><p key={i}><span>!</span>{t(v)}</p>)}</div><div className="detailActions"><button className="filled" onClick={()=>{if(!comparison.includes(selected))toggleCompare(selected);navigate('compare')}}>{l.goCompare} ↗</button><button className="outlineButton" onClick={()=>navigate('practice')}>{l.goPractice} →</button></div></aside></section>
@@ -175,7 +224,7 @@ function App(){
    </>}
    {page==='learn'&&<><div className="pageHead"><span className="smallCaps">{l.learning}</span><h1>{l.learn}</h1><p>{l.learnIntro}</p></div><section className="lessonList">{LESSONS.map((v,i)=><details className="lessonItem" key={i}><summary><span className="lessonIndex">{String(i+1).padStart(2,'0')}</span><strong>{t(v.title)}</strong><span className="lessonPlus">+</span></summary><div className="lessonBody">{t(v.body)}</div></details>)}</section><div className="learnBottom"><p>{l.step1} → {l.step2} → {l.step3}</p><button className="filled" onClick={()=>navigate('explore')}>{l.stepAction} →</button></div></>}
    {page==='journal'&&<><div className="pageHead"><span className="smallCaps">04 / REFLECT</span><h1>{l.journal}</h1><p>{l.journalIntro}</p></div><div className="historyStats"><div><span className="smallCaps">{l.balance}</span><strong>{fm(account.cash)}</strong></div><div><span className="smallCaps">{l.paperTotal}</span><strong>{fm(paperTotal)}</strong></div><div><span className="smallCaps">{l.realZero}</span><strong>0,00 €</strong></div></div><div className="historyList">{account.trades.map(o=><div className="historyRow" key={o.id}><div className="historyStamp">{new Date(o.at).toLocaleDateString(locale)}</div><div><strong>{o.name}</strong><small>{o.symbol} · {o.reference}</small></div><div className="historyAmount"><strong>{o.side==='buy'?l.buy:l.sell}</strong><small>{o.qty} × {fm(o.price,o.currency)}</small></div></div>)}{!account.trades.length&&<div className="emptyIllustrated"><span>○</span><h2>{l.noTrades}</h2><button className="filled" onClick={()=>navigate('practice')}>{l.practice} →</button></div>}</div><div className="myNotes"><label className="formField"><span>{l.noteLabel} · {stock.name}</span><textarea rows="4" placeholder={l.notePlaceholder} value={notes[selected]||''} onChange={e=>persist({...saved,notes:{...notes,[selected]:e.target.value}})}/><small>{l.noteHelp}</small></label></div></>}
-   {page==='settings'&&<><div className="pageHead"><span className="smallCaps">PERSONALIZE</span><h1>{l.settings}</h1><p>{l.settingsIntro}</p></div><div className="settingsGrid"><div className="settingCard"><h2>{l.appearance}</h2><div className="largeTheme"><button className={theme==='light'?'chosen':''} onClick={()=>setTheme('light')}><Sun size={20}/>{l.day}</button><button className={theme==='dark'?'chosen':''} onClick={()=>setTheme('dark')}><Moon size={20}/>{l.night}</button></div></div><div className="settingCard"><h2>{l.language}</h2><div className="langButtons">{LANGUAGES.map(x=><button key={x.code} className={language===x.code?'chosen':''} onClick={()=>setLanguage(x.code)}>{x.label}</button>)}</div></div><div className="settingCard"><h2>{l.initial}</h2><input type="number" value={initial} min="1" onChange={e=>setInitial(e.target.value)}/><button className="outlineButton" onClick={resetPortfolio}>{l.reset}</button></div><div className="settingCard"><h2>{l.data}</h2><p>{l.dataInfo}</p><button className="outlineButton" onClick={()=>refresh()} disabled={loading||quoteLoading}>{loading?l.busy:l.checkPrices}</button></div></div></>}
+   {page==='settings'&&<><div className="pageHead"><span className="smallCaps">PERSONALIZE</span><h1>{l.settings}</h1><p>{l.settingsIntro}</p></div><div className="settingsGrid"><div className="settingCard"><h2>{l.appearance}</h2><div className="largeTheme"><button className={theme==='light'?'chosen':''} onClick={()=>setTheme('light')}><Sun size={20}/>{l.day}</button><button className={theme==='dark'?'chosen':''} onClick={()=>setTheme('dark')}><Moon size={20}/>{l.night}</button></div></div><div className="settingCard"><h2>{l.language}</h2><div className="langButtons">{LANGUAGES.map(x=><button key={x.code} className={language===x.code?'chosen':''} onClick={()=>setLanguage(x.code)}>{x.label}</button>)}</div></div><div className="settingCard"><h2>{l.initial}</h2><input type="number" value={initial} min="1" onChange={e=>setInitial(e.target.value)}/><button className="outlineButton" onClick={resetPortfolio}>{l.reset}</button></div><div className="settingCard"><h2>{l.data}</h2><p>{l.dataInfo}</p><button className="outlineButton" onClick={()=>refresh('AAPL',false,true)} disabled={loading||quoteLoading}>{loading?l.busy:l.checkPrices}</button></div></div></>}
   </main>
   <footer className="canvasFooter"><button onClick={()=>navigate('settings')}>{l.settings}</button><p>{l.notice}</p><span>© Trading27 · Decision Canvas</span></footer>
  </div>;
