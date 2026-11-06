@@ -2,6 +2,16 @@
 
 Primera versió funcional de **Trading27**, una aplicació web educativa d'anàlisi borsària i simulació (*paper trading*), preparada per connectar-se a Vercel.
 
+## Idiomes i internacionalització (i18n)
+
+- **Català (ca)**, **castellà (es)** i **anglès (en)** disponibles des del selector visible de la capçalera.
+- Català per defecte; preferència persistent a `localStorage` (`trading27-language`).
+- Catàleg centralitzat a `src/i18n.js`. El codi de mercat (ticker, ISO de moneda, API i identitat d’empreses) és independent de l’idioma.
+- Traduccions de menús, ajuda contextual, glossari financer, lliçons, agents, missatges de risc i confirmacions de simulació.
+- Imports i números formatats segons les convencions de `ca-ES`, `es-ES` i `en-US` sense convertir la moneda de les accions.
+- Les notes de l’usuari no es tradueixen automàticament; es conserven tal com s’han escrit.
+- Per afegir traduccions, afegeix una entrada amb el text català i els seus equivalents `es`/`en` a `src/i18n.js`.
+
 ## Visualització de dia i de nit
 
 - A la capçalera de l'aplicació hi ha el selector visible **☀ Dia / ☾ Nit**.
