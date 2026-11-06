@@ -4,14 +4,26 @@
 
 ## Catàleg de companyies ampliat
 
-- Catàleg inicial de **190 companyies**: les 16 fitxes històriques inicials i 174 empreses noves repartides en tecnologia, microxips/semiconductors i banca.
-- Filtres de **Tecnologia**, **Microxips**, **Intel·ligència artificial** i **Banca**, combinables amb mercat, cerca textual i llista personal.
-- Una empresa pot encaixar en diverses àrees (p. ex. tecnologia + IA, o microxips + IA). Les etiquetes temàtiques són editorials i no constitueixen recomanacions.
-- La llista mostra 30 empreses inicialment i permet carregar-ne 30 més, evitant saturar la pantalla.
-- El catàleg es defineix a `src/universe.js` i la llista d'instruments del servidor a `api/_market.js` s'alimenta de la mateixa font.
-- **Les companyies afegides no tenen preus ficticis**: es mostra «No disponible» fins que l'API pugui validar-ne la cotització.
-- **Limitació d'exhaustivitat**: 190 companyies representen una selecció àmplia, **no la totalitat** de totes les empreses bancàries, tecnològiques o d'IA cotitzades al món. Per a cobertura exhaustiva per sector, el següent pas és la descoberta paginada de tot el catàleg Twelve Data (`/stocks`) i l'enriquiment sectorial amb metadades verificables. El conjunt d'empreses és dinàmic i les cotitzacions poden variar segons pla i borsa. La presència al catàleg no certifica accés al preu.
-- Per evitar un consum innecessari de crèdits, les peticions de cotització i històrics es fan **només per l'empresa seleccionada**, no per tots els valors a la vegada.
+- **329 empreses** incorporades: 16 fitxes de referència originals, 174 empreses de tecnologia/microxips/banca i 139 empreses de salut, farmacèutiques, biotecnologia, equipament mèdic i petroli i gas.
+- Filtres sectorials **Tecnologia, Microxips, Intel·ligència artificial, Banca, Salut, Farmacèutica i Petroli i gas**. Els filtres són compatibles amb cerca de text, país i valors desats.
+- Els sectors se superposen quan té sentit: empreses farmacèutiques formen part també de l'univers de salut.
+- Llista inicial de 30 empreses; la resta es poden carregar de 30 en 30 per minimitzar la saturació.
+- Les companyies es registren a `src/universe.js` i les rutes servidor validen el símbol amb `api/_market.js`. La presència al catàleg **no garanteix** cobertura del teu pla de Twelve Data.
+- Cap preu fictici: els valors nous apareixen sense cotització fins que el proveïdor confirma moneda, símbol, borsa i marca temporal.
+- La portada consulta tres empreses dels EUA (NVDA, AAPL i JPM), amb un total de tres peticions; l'explorador consulta el valor seleccionat, i desa temporalment les respostes per evitar duplicats.
+- **No és una llista exhaustiva de totes les companyies mundials**. Per a cobertura completa caldrà integrar la descoberta i classificació sistemàtica del catàleg del proveïdor.
+
+### Diagnòstic quan falten cotitzacions
+
+- **Empresa europea sense dades:** la subscripció pot no incloure aquella borsa o el proveïdor pot necessitar una identificació diferent de l'instrument. No s'han de mostrar preus d'una altra borsa o divisa com a substitució.
+- **MARKET_NOT_INCLUDED_IN_PLAN:** aquesta borsa no està coberta pel pla actiu.
+- **INSTRUMENT_NOT_FOUND:** cal revisar el símbol i el mercat, no pressuposar que falten permisos.
+- **RATE_LIMIT_REACHED:** s'han exhaurit els crèdits de consulta disponibles per minut.
+- **INVALID_PROVIDER_KEY:** clau no vàlida o desactivada.
+- **QUOTE_NOT_VERIFIED/HISTORY_NOT_VERIFIED:** les dades retornades no coincideixen amb els camps esperats.
+- Si l'entorn actual és Basic, prova primer **NVDA**, **AAPL**, **JPM** o **LLY**, valors dels EUA que s'han comprovat contra l'API de producció el 6/11/2026.
+
+La clau `TWELVE_DATA_API_KEY` ha de continuar exclusivament al servidor. El pla Basic permet dades d'accions nord-americanes però pot no permetre mostrar dades al públic de manera redistribuïda; cal comprovar les **condicions de llicència i visualització** del pla abans d'obrir el servei a tercers.
 
 ## Experiència nova
 
