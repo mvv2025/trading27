@@ -14,8 +14,9 @@
 
 ## Identitat visual
 
-- **Dia**: marfil, paper, verd petroli, terracota i or apagat.
-- **Nit**: tinta blavosa, pissarra profunda, jade i corall fumat.
+- **Dia**: fons `#F8F9FA`, text `#212529`, blau primari `#4361EE`, turquesa `#2EC4B6`, èmfasi porpra `#7209B7`.
+- **Nit**: fons `#121212`, text `#E9ECEF`, blau primari `#758BFD`, turquesa `#71DFE7`, èmfasi orquídia `#B5179E`.
+- Els colors primaris indiquen controls i accions, els secundaris donen suport i el porpra assenyala l'èmfasi. Els missatges de risc mantenen etiquetes textuals, mai només colors.
 - Una jerarquia editorial, sense widgets decoratius ni múltiples mètriques sense context.
 - Responsive: navegació adaptada a pantalles tàctils, taules comparatives desplaçables i controls accessibles.
 
