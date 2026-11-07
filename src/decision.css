@@ -58,7 +58,7 @@
 /* Trading27 homepage wordmark: flat, responsive and readable in both appearances. */
 .heroArtwork:has(.tradingBrandVisual){width:100%;max-width:690px;aspect-ratio:1400/560;overflow:visible;min-height:0;display:flex;align-items:center;justify-content:center}
 .tradingBrandVisual{display:block;width:100%;height:auto;max-height:none;object-fit:contain;filter:none}
-.theme-dark .heroArtwork:has(.tradingBrandVisual){background:#FFFFFF;border-radius:18px;padding:15px}
+.theme-dark .heroArtwork:has(.tradingBrandVisual){background:transparent;border-radius:0;padding:0}
 .theme-dark .tradingBrandVisual{filter:none}
 @media(max-width:860px){.heroArtwork:has(.tradingBrandVisual){max-width:620px;width:100%;margin:20px auto}}
 @media(max-width:620px){.heroArtwork:has(.tradingBrandVisual){width:100%;max-width:100%;margin:15px auto}}
@@ -76,3 +76,7 @@
 
 /* Original supplied brand artwork is a 1050 × 405 horizontal mark. */
 .heroArtwork:has(.tradingBrandVisual){aspect-ratio:1050/405}
+
+/* Keep the supplied transparent logo free of frames in both themes. */
+.canvas .heroArtwork:has(.tradingBrandVisual){background:transparent!important;border:0!important;box-shadow:none!important;padding:0!important}
+.canvas .tradingBrandVisual{background:transparent!important;object-fit:contain}
