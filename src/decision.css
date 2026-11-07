@@ -62,3 +62,14 @@
 .theme-dark .tradingBrandVisual{filter:none}
 @media(max-width:860px){.heroArtwork:has(.tradingBrandVisual){max-width:620px;width:100%;margin:20px auto}}
 @media(max-width:620px){.heroArtwork:has(.tradingBrandVisual){width:100%;max-width:100%;margin:15px auto}}
+
+/* Homepage visual alignment to the supplied Trading27 reference image (2026-11-07). */
+.canvas:not(.theme-dark) .heroWords h1{color:#102B91}
+.canvas:not(.theme-dark) .heroWords h1 em{color:#0764F5}
+.canvas:not(.theme-dark) .eyebrow{color:#075BEF}
+.canvas:not(.theme-dark) .navItem.active{background:#102CA0;color:#FFFFFF}
+.canvas .mark{background:linear-gradient(135deg,#1235B5 0%,#0758E5 55%,#009FFF 100%);color:#FFFFFF}
+.canvas .heroButtons .filled{background:linear-gradient(105deg,#0846DC 0%,#086DF5 55%,#00C2EB 100%);border-color:transparent;color:#FFFFFF}
+.canvas:not(.theme-dark) .themeBox button.active{background:linear-gradient(135deg,#0753E8,#009DFA);color:#FFFFFF}
+.canvas:not(.theme-dark) .bannerInfo{background:#EAF5FF;border-color:#0788FF;color:#0E246A}
+.canvas:not(.theme-dark) .heroWords p{color:#112659}
