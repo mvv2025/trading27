@@ -1,6 +1,6 @@
 <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 1400 560" role="img" aria-labelledby="title desc">
 <title id="title">Trading27 — marca de mercats</title>
-<desc id="desc">t amb 27 en superíndex, nom Trading en blau turquesa, espelmes borsàries ascendents i fletxa cap amunt</desc>
+<desc id="desc">t amb 27 en superíndex, nom Trading en blau turquesa, fletxa fina ascendent sobre les lletres r i i, sense tocar el text</desc>
 <defs>
  <linearGradient id="word" x1="0" y1="0" x2="1" y2="0"><stop offset="0" stop-color="#0C2D9E"/><stop offset=".45" stop-color="#126BD1"/><stop offset="1" stop-color="#17D6DB"/></linearGradient>
  <linearGradient id="arrow" x1="0" y1="0" x2="1" y2="0"><stop offset="0" stop-color="#1638A8"/><stop offset=".62" stop-color="#129AE6"/><stop offset="1" stop-color="#19DBE1"/></linearGradient>
@@ -11,15 +11,9 @@
  <text x="192" y="276" font-size="154" letter-spacing="-7" fill="url(#sup)">27</text>
  <text x="440" y="443" font-size="250" letter-spacing="-13" fill="url(#word)">Trading</text>
 </g>
-<g stroke-linejoin="round">
- <g stroke="#1638A8" fill="#1638A8"><path d="M580 262v-102" stroke-width="7"/><rect x="566" y="183" width="28" height="51" rx="1"/></g>
- <g stroke="#1547B7" fill="#1547B7"><path d="M642 221V112" stroke-width="7"/><rect x="628" y="146" width="28" height="54" rx="1"/></g>
- <g stroke="#1ACCD5" fill="#1ACCD5"><path d="M704 191V63" stroke-width="7"/><rect x="690" y="99" width="28" height="66" rx="1"/></g>
- <g stroke="#1650A9" fill="#1650A9"><path d="M765 207V100" stroke-width="7"/><rect x="751" y="123" width="28" height="64" rx="1"/></g>
- <g stroke="#1DD1DA" fill="#1DD1DA"><path d="M825 226V126" stroke-width="7"/><rect x="811" y="151" width="28" height="57" rx="1"/></g>
- <g stroke="#1487C6" fill="#1487C6"><path d="M886 255V155" stroke-width="7"/><rect x="872" y="186" width="28" height="54" rx="1"/></g>
- <g stroke="#16B3D4" fill="#16B3D4"><path d="M948 212V89" stroke-width="7"/><rect x="934" y="124" width="28" height="65" rx="1"/></g>
- <g stroke="#1DD8E0" fill="#1DD8E0"><path d="M1011 155V40" stroke-width="7"/><rect x="997" y="79" width="28" height="57" rx="1"/></g>
- <path d="M1044 125 1121 48 1092 18 1220 4 1197 133 1168 103 1091 183 1091 136Z" fill="url(#arrow)"/>
+<g aria-hidden="true" fill="none" stroke-linecap="round" stroke-linejoin="round">
+ <!-- Thin upward trajectory: starts above 'r', ends above 'i', never touches the lettering. -->
+ <path d="M 603 218 C 716 172, 865 161, 1042 109" stroke="url(#arrow)" stroke-width="9"/>
+ <path d="M 1023 91 L 1070 98 L 1038 137 L 1042 110 Z" fill="#19CFE0" stroke="none"/>
 </g>
 </svg>
