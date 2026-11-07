@@ -54,3 +54,11 @@
 .resultCount{font-size:11px;color:var(--ink2);font-weight:700;letter-spacing:.02em;padding:12px 22px;background:var(--muted)}
 .loadMore{display:block;margin:16px auto 22px;padding:11px 20px;border:1px solid var(--accent);border-radius:9px;background:transparent;color:var(--accent);font-size:12px}.loadMore:hover{background:var(--muted)}
 @media(max-width:620px){.topicFilters{padding:12px;gap:6px}.topicFilters button{font-size:10px;padding:9px 10px}.universeCount small{flex-basis:100%}}
+
+/* Trading27 homepage wordmark: flat, responsive and readable in both appearances. */
+.heroArtwork:has(.tradingBrandVisual){width:100%;max-width:690px;aspect-ratio:1400/560;overflow:visible;min-height:0;display:flex;align-items:center;justify-content:center}
+.tradingBrandVisual{display:block;width:100%;height:auto;max-height:none;object-fit:contain;filter:none}
+.theme-dark .heroArtwork:has(.tradingBrandVisual){background:#FFFFFF;border-radius:18px;padding:15px}
+.theme-dark .tradingBrandVisual{filter:none}
+@media(max-width:860px){.heroArtwork:has(.tradingBrandVisual){max-width:620px;width:100%;margin:20px auto}}
+@media(max-width:620px){.heroArtwork:has(.tradingBrandVisual){width:100%;max-width:100%;margin:15px auto}}
