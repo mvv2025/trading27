@@ -73,3 +73,6 @@
 .canvas:not(.theme-dark) .themeBox button.active{background:linear-gradient(135deg,#0753E8,#009DFA);color:#FFFFFF}
 .canvas:not(.theme-dark) .bannerInfo{background:#EAF5FF;border-color:#0788FF;color:#0E246A}
 .canvas:not(.theme-dark) .heroWords p{color:#112659}
+
+/* Original supplied brand artwork is a 1050 × 405 horizontal mark. */
+.heroArtwork:has(.tradingBrandVisual){aspect-ratio:1050/405}
