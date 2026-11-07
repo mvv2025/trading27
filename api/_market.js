@@ -11,7 +11,7 @@ const BASE_INSTRUMENTS={
  SHOP:{symbol:'SHOP',mic:'XTSE',currency:'CAD'},NVDA:{symbol:'NVDA',mic:'XNAS',currency:'USD'},
  GOOGL:{symbol:'GOOGL',mic:'XNAS',currency:'USD'},MSFT:{symbol:'MSFT',mic:'XNAS',currency:'USD'}
 };
-export const INSTRUMENTS={...BASE_INSTRUMENTS,...Object.fromEntries(EXTRA.map(s=>[s.symbol,{symbol:s.symbol,mic:s.mic,currency:s.currency,market:s.market}]))};
+export const INSTRUMENTS={...BASE_INSTRUMENTS,...Object.fromEntries(EXTRA.map(s=>[s.symbol,{symbol:s.symbol,mic:s.mic,currency:s.currency,market:s.market,listingStatus:s.listingStatus||'active'}]))};
 export function noCache(res){res.setHeader('Cache-Control','private, no-store, max-age=0');res.setHeader('X-Content-Type-Options','nosniff')}
 export function cacheSuccessfulQuote(res){res.setHeader('Cache-Control','public, max-age=0, s-maxage=90, stale-while-revalidate=45')}
 export function cacheSuccessfulHistory(res){res.setHeader('Cache-Control','public, max-age=0, s-maxage=1800, stale-while-revalidate=3600')}
@@ -52,8 +52,8 @@ export async function provider(endpoint,stock,extra={}){
 }
 export function verifiedCurrency(data,stock){return String(data.currency||data.meta?.currency||'').toUpperCase()===stock.currency}
 export function verifiedMic(data,stock){const given=String(data.mic_code||data.meta?.mic_code||'').toUpperCase();return !given||given===stock.mic||(stock.mic==='XNAS'&&['XNGS','XNCM','XNMS'].includes(given))}
-export function lookup(req){const symbols=String(req.query.symbol||req.query.symbols||'').split(',').map(x=>x.trim().toUpperCase()).filter(Boolean);if(symbols.length!==1||!INSTRUMENTS[symbols[0]]){const e=new Error('UNKNOWN_OR_MULTIPLE_SYMBOLS');e.status=400;throw e}return {ticker:symbols[0],stock:INSTRUMENTS[symbols[0]]}}
+export function lookup(req){const symbols=String(req.query.symbol||req.query.symbols||'').split(',').map(x=>x.trim().toUpperCase()).filter(Boolean);if(symbols.length!==1||!INSTRUMENTS[symbols[0]]){const e=new Error('UNKNOWN_OR_MULTIPLE_SYMBOLS');e.status=400;throw e}if(INSTRUMENTS[symbols[0]].listingStatus==='delisted'){const e=new Error('INSTRUMENT_DELISTED');e.status=410;throw e}return {ticker:symbols[0],stock:INSTRUMENTS[symbols[0]]}}
 export function failure(res,e){
- const known=new Set(['PROVIDER_NOT_CONFIGURED','INVALID_PROVIDER_KEY','MARKET_NOT_INCLUDED_IN_PLAN','INSTRUMENT_NOT_FOUND','INVALID_INSTRUMENT_OR_QUERY','RATE_LIMIT_REACHED','PROVIDER_TEMPORARILY_UNAVAILABLE','PROVIDER_TIMEOUT','PROVIDER_NETWORK_ERROR','UPSTREAM_INVALID_RESPONSE','UNKNOWN_OR_MULTIPLE_SYMBOLS']);
+ const known=new Set(['PROVIDER_NOT_CONFIGURED','INVALID_PROVIDER_KEY','MARKET_NOT_INCLUDED_IN_PLAN','INSTRUMENT_NOT_FOUND','INVALID_INSTRUMENT_OR_QUERY','RATE_LIMIT_REACHED','PROVIDER_TEMPORARILY_UNAVAILABLE','PROVIDER_TIMEOUT','PROVIDER_NETWORK_ERROR','UPSTREAM_INVALID_RESPONSE','UNKNOWN_OR_MULTIPLE_SYMBOLS','INSTRUMENT_DELISTED']);
  return res.status(e.status||502).json({error:known.has(e.message)?e.message:'DATA_UNAVAILABLE'});
 }
