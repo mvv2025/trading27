@@ -1,17 +1,18 @@
 <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 1400 560" role="img" aria-labelledby="title desc">
 <title id="title">Trading27 — marca de mercats</title>
-<desc id="desc">t amb 27 en superíndex, nom Trading en blau reial sòlid, fletxa sòlida ascendent que neix a la dreta de la T, s'eleva sobre les lletres i acaba amb una punta destacada</desc>
+<desc id="desc">t amb 27 en superíndex, nom Trading amb degradat de blau reial a cian com a la referència, fletxa sòlida ascendent que neix a la dreta de la T, s'eleva sobre les lletres i acaba amb una punta destacada</desc>
 <defs>
+ <linearGradient id="word" x1="0%" y1="0%" x2="100%" y2="0%"><stop offset="0%" stop-color="#102FAD"/><stop offset="35%" stop-color="#0759D8"/><stop offset="70%" stop-color="#00A2FF"/><stop offset="100%" stop-color="#00DCE9"/></linearGradient>
  <linearGradient id="arrow" x1="0" y1="0" x2="1" y2="0"><stop offset="0" stop-color="#1D2A99"/><stop offset=".55" stop-color="#107CFF"/><stop offset=".82" stop-color="#00A2FF"/><stop offset="1" stop-color="#00E5FF"/></linearGradient>
  <linearGradient id="sup" x1="0" y1="0" x2="1" y2="0"><stop offset="0" stop-color="#1D2A99"/><stop offset="1" stop-color="#107CFF"/></linearGradient>
 </defs>
 <g font-family="Manrope,Arial,Helvetica,sans-serif" font-weight="800" letter-spacing="-9">
- <text x="40" y="447" font-size="330" fill="#1D2A99">t</text>
+ <text x="40" y="447" font-size="330" fill="#102DAB">t</text>
  <text x="192" y="276" font-size="154" letter-spacing="-7" fill="url(#sup)">27</text>
- <text x="440" y="443" font-size="250" letter-spacing="-13" fill="#1A3EB5">Trading</text>
+ <text x="440" y="443" font-size="250" letter-spacing="-13" fill="url(#word)">Trading</text>
 </g>
 <g aria-hidden="true">
- <!-- Separate solid growth arrow: starts right of T, rises clearly away from the lettering. -->
+ <!-- Bold blue-to-cyan rising arrow above Trading, matching the supplied homepage reference. -->
  <path d="M 668 236 C 795 220, 927 160, 1082 72 L 1060 50 L 1146 18 L 1121 116 L 1095 92 C 954 192, 807 244, 668 244 Z" fill="url(#arrow)"/>
 </g>
 </svg>
