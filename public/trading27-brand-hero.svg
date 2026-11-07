@@ -1,15 +1,14 @@
 <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 1400 560" role="img" aria-labelledby="title desc">
 <title id="title">Trading27 — marca de mercats</title>
-<desc id="desc">t amb 27 en superíndex, nom Trading en blau turquesa, fletxa sòlida ascendent que neix a la dreta de la T, s'eleva sobre les lletres i acaba amb una punta destacada</desc>
+<desc id="desc">t amb 27 en superíndex, nom Trading en blau reial sòlid, fletxa sòlida ascendent que neix a la dreta de la T, s'eleva sobre les lletres i acaba amb una punta destacada</desc>
 <defs>
- <linearGradient id="word" x1="0" y1="0" x2="1" y2="0"><stop offset="0" stop-color="#0C2D9E"/><stop offset=".45" stop-color="#126BD1"/><stop offset="1" stop-color="#17D6DB"/></linearGradient>
- <linearGradient id="arrow" x1="0" y1="0" x2="1" y2="0"><stop offset="0" stop-color="#1638A8"/><stop offset=".62" stop-color="#129AE6"/><stop offset="1" stop-color="#19DBE1"/></linearGradient>
- <linearGradient id="sup" x1="0" y1="0" x2="1" y2="0"><stop offset="0" stop-color="#0873D8"/><stop offset="1" stop-color="#17DDE0"/></linearGradient>
+ <linearGradient id="arrow" x1="0" y1="0" x2="1" y2="0"><stop offset="0" stop-color="#1D2A99"/><stop offset=".55" stop-color="#107CFF"/><stop offset=".82" stop-color="#00A2FF"/><stop offset="1" stop-color="#00E5FF"/></linearGradient>
+ <linearGradient id="sup" x1="0" y1="0" x2="1" y2="0"><stop offset="0" stop-color="#1D2A99"/><stop offset="1" stop-color="#107CFF"/></linearGradient>
 </defs>
 <g font-family="Manrope,Arial,Helvetica,sans-serif" font-weight="800" letter-spacing="-9">
- <text x="40" y="447" font-size="330" fill="#0C2D9E">t</text>
+ <text x="40" y="447" font-size="330" fill="#1D2A99">t</text>
  <text x="192" y="276" font-size="154" letter-spacing="-7" fill="url(#sup)">27</text>
- <text x="440" y="443" font-size="250" letter-spacing="-13" fill="url(#word)">Trading</text>
+ <text x="440" y="443" font-size="250" letter-spacing="-13" fill="#1A3EB5">Trading</text>
 </g>
 <g aria-hidden="true">
  <!-- Separate solid growth arrow: starts right of T, rises clearly away from the lettering. -->
