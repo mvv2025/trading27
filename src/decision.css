@@ -117,3 +117,38 @@
 .helpFoot{font-size:12px;color:var(--ink2);margin:15px 0 0}
 @media(max-width:860px){.helpLaunch span{display:none}.helpLaunch{width:41px;padding:0}}
 @media(max-width:620px){.helpOverlay{padding:8px;align-items:center}.helpDialog{max-height:95dvh;border-radius:16px}.helpDialogHeader{padding:18px 16px 13px}.helpDialogBody{padding:15px 12px 18px}.helpStep{grid-template-columns:32px minmax(0,1fr);gap:10px;padding:12px}.helpStepNo{width:30px;height:30px;font-size:11px}.helpStep h3{font-size:14px}.helpGo{grid-column:2;justify-self:start;padding:7px 10px}.helpImportant{padding:13px}.helpLaunch{width:36px;min-height:36px}.wordmark{min-width:0}.masthead{gap:8px}.globalControls{gap:4px}}
+
+/* Trading27 comparison: evidence-based interpretation above the raw metrics table. */
+.compareMeaning{margin:22px 0 26px;display:grid;gap:18px}
+.compareMeaningHeading h2{font-size:clamp(23px,3vw,30px);margin:8px 0 6px}
+.compareMeaningHeading p{font-size:13px;color:var(--ink2);margin:0;max-width:800px}
+.compareInsightsGrid{display:grid;grid-template-columns:repeat(3,minmax(0,1fr));gap:12px}
+.compareInsight{background:var(--paper);border:1px solid var(--line);border-radius:15px;padding:20px 19px;min-width:0}
+.compareInsightNumber{display:inline-flex;color:var(--accent);font-size:11px;font-weight:900;letter-spacing:.12em}
+.compareInsight h3{font-size:17px;line-height:1.3;margin:9px 0 8px}
+.compareInsight p{font-size:13px;color:var(--ink2);line-height:1.6;margin:0}
+.compareRangeBox{border:1px solid var(--line);background:var(--paper);border-radius:16px;padding:22px}
+.compareRangeBox h3{font-size:18px;margin:0 0 5px}
+.compareRangeBox>p{font-size:12px;color:var(--ink2);margin:0 0 18px}
+.compareRangeItems{display:grid;grid-template-columns:repeat(3,minmax(0,1fr));gap:22px}
+.compareRangeItem{min-width:0}.compareRangeLabel{display:flex;justify-content:space-between;gap:8px;align-items:center;font-size:13px;margin-bottom:10px}
+.compareRangeLabel strong{overflow-wrap:anywhere}.compareRangeLabel span{font-size:17px;font-weight:800;color:var(--accent);white-space:nowrap}
+.compareRangeTrack{height:12px;border-radius:30px;background:var(--muted);border:1px solid var(--line);overflow:hidden}
+.compareRangeFill{height:100%;background:linear-gradient(90deg,#1A3EB5,#107CFF,#00A2FF);border-radius:inherit;min-width:2px}
+.compareRangeLimits{display:flex;justify-content:space-between;gap:8px;margin-top:8px;color:var(--ink2);font-size:11px}
+.compareRangeLimits small{font-size:11px}
+.compareCompanyGrid{display:grid;grid-template-columns:repeat(3,minmax(0,1fr));gap:12px}
+.compareCompanyCard{background:var(--paper);border:1px solid var(--line);border-radius:15px;padding:19px;min-width:0}
+.compareCardTitle{border-bottom:1px solid var(--line);padding-bottom:12px;margin-bottom:14px}
+.compareCardTitle h3{font-size:17px;line-height:1.3;margin:0 0 4px;overflow-wrap:anywhere}
+.compareCardTitle span{font-size:11px;font-weight:800;color:var(--accent)}
+.compareCardSubheading{font-size:12px;display:block;margin:12px 0 8px}
+.compareCompanyCard ul{padding-left:18px;margin:0;color:var(--ink2);font-size:12px;line-height:1.65}
+.compareCompanyCard li+li{margin-top:6px}
+.compareWarnings{border:1px solid var(--line);border-radius:13px;padding:17px 20px;background:var(--muted)}
+.compareWarnings>strong{display:flex;align-items:center;gap:8px;font-size:13px}
+.compareWarnings ul{padding-left:23px;margin:10px 0;color:var(--ink2);font-size:12px;line-height:1.65}
+.compareWarnings li+li{margin-top:5px}
+.compareWarnings p{font-size:12px;color:var(--ink2);margin:10px 0 0}
+@media(max-width:1050px){.compareInsightsGrid,.compareCompanyGrid{grid-template-columns:repeat(2,minmax(0,1fr))}.compareRangeItems{grid-template-columns:repeat(2,minmax(0,1fr))}}
+@media(max-width:650px){.compareInsightsGrid,.compareCompanyGrid,.compareRangeItems{grid-template-columns:1fr}.compareMeaning{gap:13px}.compareRangeBox,.compareInsight,.compareCompanyCard{padding:16px}.compareRangeItems{gap:16px}}
