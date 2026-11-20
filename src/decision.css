@@ -152,3 +152,34 @@
 .compareWarnings p{font-size:12px;color:var(--ink2);margin:10px 0 0}
 @media(max-width:1050px){.compareInsightsGrid,.compareCompanyGrid{grid-template-columns:repeat(2,minmax(0,1fr))}.compareRangeItems{grid-template-columns:repeat(2,minmax(0,1fr))}}
 @media(max-width:650px){.compareInsightsGrid,.compareCompanyGrid,.compareRangeItems{grid-template-columns:1fr}.compareMeaning{gap:13px}.compareRangeBox,.compareInsight,.compareCompanyCard{padding:16px}.compareRangeItems{gap:16px}}
+
+/* Recovery radar · explicit 52-week drawdown and evidence classification */
+.recovery{max-width:1260px;margin:0 auto;padding:42px 0 65px}
+.recoveryIntro h1{font-size:clamp(32px,4.2vw,56px);letter-spacing:-.055em;margin:14px 0}
+.recoveryIntro p{max-width:800px;color:var(--ink2);line-height:1.7}
+.recoveryControls{display:grid;grid-template-columns:repeat(4,minmax(0,1fr));gap:12px;margin:28px 0 15px}
+.recoveryControls label{display:flex;flex-direction:column;gap:7px;font-size:12px;font-weight:700;color:var(--ink2)}
+.recoveryControls select,.recoveryControls input{width:100%;min-height:44px;border:1px solid var(--line);border-radius:9px;padding:9px 12px;background:var(--paper);color:var(--ink);font-size:13px}
+.recoveryCaveat,.recoveryWarning{display:flex;align-items:flex-start;gap:10px;font-size:12px;line-height:1.65;color:var(--ink2);padding:13px 16px;border:1px solid var(--line);background:var(--paper);border-radius:10px}
+.recoveryCaveat svg,.recoveryWarning svg{flex:none;color:var(--accent)}
+.recoveryCount{margin:23px 0 14px;color:var(--ink2);font-size:13px}.recoveryCount strong{font-size:22px;color:var(--ink);margin-right:5px}
+.recoveryList{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:16px}
+.recoveryCard{min-width:0;border:1px solid var(--line);border-radius:14px;background:var(--paper);padding:24px;display:flex;flex-direction:column;gap:18px}
+.recoveryCardHead{display:flex;justify-content:space-between;align-items:flex-start;gap:14px}
+.recoveryCardHead h2{font-size:22px;letter-spacing:-.04em;margin:0 0 5px;overflow-wrap:anywhere}
+.recoveryCardHead span{font-size:12px;color:var(--ink2)}
+.recoveryDrop{font-size:28px;white-space:nowrap;color:var(--accent)}
+.recoveryMeasures{display:grid;grid-template-columns:repeat(3,minmax(0,1fr));gap:8px}
+.recoveryMeasures div{min-width:0;background:var(--muted);border-radius:9px;padding:11px 10px;display:flex;flex-direction:column;gap:7px}
+.recoveryMeasures small{font-size:10px;color:var(--ink2)}.recoveryMeasures strong{font-size:15px;overflow-wrap:anywhere}
+.recoveryInterpret{display:flex;flex-direction:column;align-items:flex-start;gap:8px}
+.recoveryStatus{border-radius:100px;padding:6px 10px;font-size:11px;font-weight:800;background:var(--muted);color:var(--ink)}
+.recovery-review{background:#DDF5EB;color:#12573C}.recovery-risk{background:#FFE9E9;color:#8B2634}.recovery-unknown{background:var(--muted);color:var(--ink2)}
+.recoveryInterpret p{font-size:12px;color:var(--ink2);margin:0}
+.recoveryCard footer{margin-top:auto;display:flex;justify-content:space-between;gap:14px;align-items:center;border-top:1px solid var(--line);padding-top:14px}
+.recoveryCard footer span{font-size:10px;color:var(--ink2);overflow-wrap:anywhere}
+.recoveryCard footer button{flex:none;border:1px solid var(--accent);background:transparent;color:var(--accent);border-radius:8px;padding:9px 12px;font-size:12px;font-weight:700}
+.recoveryEmpty{grid-column:1/-1;padding:40px;border:1px dashed var(--line);border-radius:12px;color:var(--ink2);text-align:center}
+.recoveryWarning{margin-top:19px}.theme-dark .recovery-review{background:#143C35;color:#8FE8BE}.theme-dark .recovery-risk{background:#482535;color:#FFD4D9}
+@media(max-width:900px){.recoveryControls{grid-template-columns:repeat(2,minmax(0,1fr))}.recoveryList{grid-template-columns:1fr}}
+@media(max-width:520px){.recovery{padding-top:25px}.recoveryControls{grid-template-columns:1fr}.recoveryCard{padding:16px}.recoveryCardHead h2{font-size:19px}.recoveryDrop{font-size:23px}.recoveryMeasures strong{font-size:12px}.recoveryCard footer{flex-wrap:wrap}}
