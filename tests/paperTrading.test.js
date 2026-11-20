@@ -10,8 +10,8 @@ import {sanitizeSaved} from '../src/storage.js';
 const NOW = 1_800_000_000_000;
 
 /** Empresa amb preu verificat pel proveïdor i rebut ara mateix. */
-const NVDA = {symbol: 'NVDA', name: 'Nvidia', currency: 'USD', price: 100, asOf: '2026-11-06T15:00:00.000Z', receivedAt: NOW};
-const ASML = {symbol: 'ASML', name: 'ASML Holding', currency: 'EUR', price: 600, asOf: '2026-11-06T15:00:00.000Z', receivedAt: NOW};
+const NVDA = {symbol: 'NVDA', name: 'Nvidia', currency: 'USD', price: 100, priceSource: 'twelvedata', asOf: '2026-11-06T15:00:00.000Z', receivedAt: NOW};
+const ASML = {symbol: 'ASML', name: 'ASML Holding', currency: 'EUR', price: 600, priceSource: 'twelvedata', asOf: '2026-11-06T15:00:00.000Z', receivedAt: NOW};
 const FX = {USD: {rate: 0.9, asOf: '2026-11-06T15:00:00.000Z', receivedAt: NOW}};
 
 /**
@@ -23,9 +23,15 @@ const order = (change = {}) => ({
 });
 
 describe('priceStatus', () => {
-  it('bloqueja els preus històrics (sense asOf del proveïdor)', () => {
-    const historic = {symbol: 'BNP', name: 'BNP', currency: 'EUR', price: 87.65};
+  it('bloqueja els preus de referència: FT i instantània del 10/11', () => {
+    const historic = {symbol: 'BNP', name: 'BNP', currency: 'EUR', price: 87.65, priceSource: 'ft'};
     expect(priceStatus(historic, FX, NOW)).toEqual({block: OrderBlock.NO_VERIFIED_QUOTE});
+    const snapshot = {...historic, price: 93.98, priceSource: 'snapshot', asOf: '2026-11-09T16:35:00.000Z'};
+    expect(priceStatus(snapshot, FX, NOW)).toEqual({block: OrderBlock.NO_VERIFIED_QUOTE});
+  });
+
+  it('bloqueja les empreses retirades de borsa encara que tinguin preu', () => {
+    expect(priceStatus({...ASML, listingStatus: 'delisted'}, FX, NOW)).toEqual({block: OrderBlock.DELISTED});
   });
 
   it('bloqueja monedes no admeses, com GBP', () => {
@@ -53,33 +59,33 @@ describe('priceStatus', () => {
 describe('priceStatus amb preus del full de Google Finance', () => {
   /** Empresa amb preu del full: hora del preu fa 1 hora i full rebut ara mateix. */
   const BNP = {
-    symbol: 'BNP', name: 'BNP Paribas', currency: 'EUR', price: 91.93, source: 'sheet',
-    sheetAsOf: new Date(NOW - 3600_000).toISOString(), sheetReceivedAt: NOW,
+    symbol: 'BNP', name: 'BNP Paribas', currency: 'EUR', price: 91.93, priceSource: 'sheet',
+    asOf: new Date(NOW - 3600_000).toISOString(), receivedAt: NOW,
   };
 
   it('permet operar amb un preu del full recent', () => {
-    expect(priceStatus(BNP, {}, NOW)).toEqual({block: null, rate: 1, source: 'sheet', priceAsOf: BNP.sheetAsOf});
+    expect(priceStatus(BNP, {}, NOW)).toEqual({block: null, rate: 1, source: 'sheet', priceAsOf: BNP.asOf});
   });
 
   it('accepta un preu de fa 3 dies (cap de setmana) però no de fa més de 4', () => {
-    expect(priceStatus({...BNP, sheetAsOf: new Date(NOW - 3 * 86400_000).toISOString()}, {}, NOW).block).toBeNull();
-    const old = {...BNP, sheetAsOf: new Date(NOW - MAX_SHEET_PRICE_AGE_MS - 1).toISOString()};
+    expect(priceStatus({...BNP, asOf: new Date(NOW - 3 * 86400_000).toISOString()}, {}, NOW).block).toBeNull();
+    const old = {...BNP, asOf: new Date(NOW - MAX_SHEET_PRICE_AGE_MS - 1).toISOString()};
     expect(priceStatus(old, {}, NOW)).toEqual({block: OrderBlock.PRICE_TOO_OLD});
   });
 
   it('bloqueja un preu sense hora o amb una hora futura', () => {
-    expect(priceStatus({...BNP, sheetAsOf: null}, {}, NOW)).toEqual({block: OrderBlock.PRICE_TIME_INVALID});
-    const future = {...BNP, sheetAsOf: new Date(NOW + 3600_000).toISOString()};
+    expect(priceStatus({...BNP, asOf: null}, {}, NOW)).toEqual({block: OrderBlock.PRICE_TIME_INVALID});
+    const future = {...BNP, asOf: new Date(NOW + 3600_000).toISOString()};
     expect(priceStatus(future, {}, NOW)).toEqual({block: OrderBlock.PRICE_TIME_INVALID});
   });
 
   it('exigeix que el full s\'hagi rebut fa menys de 15 minuts', () => {
-    expect(priceStatus({...BNP, sheetReceivedAt: NOW - MAX_QUOTE_AGE_MS - 1}, {}, NOW)).toEqual({block: OrderBlock.QUOTE_TOO_OLD});
+    expect(priceStatus({...BNP, receivedAt: NOW - MAX_QUOTE_AGE_MS - 1}, {}, NOW)).toEqual({block: OrderBlock.QUOTE_TOO_OLD});
   });
 
-  it('si també hi ha cotització de Twelve Data, té prioritat', () => {
-    const both = {...BNP, asOf: '2026-11-06T15:00:00.000Z', receivedAt: NOW};
-    expect(priceStatus(both, {}, NOW)).toMatchObject({source: 'provider', priceAsOf: both.asOf});
+  it('una cotització de Twelve Data (que substitueix la del full al catàleg) es marca com a proveïdor', () => {
+    const td = {...BNP, priceSource: 'twelvedata', asOf: '2026-11-06T15:00:00.000Z'};
+    expect(priceStatus(td, {}, NOW)).toMatchObject({source: 'provider', priceAsOf: td.asOf});
   });
 
   it('els preus del full en USD necessiten tipus de canvi', () => {
@@ -92,7 +98,7 @@ describe('priceStatus amb preus del full de Google Finance', () => {
     const account = executeOrder({cash: 1000, holdings: {}, trades: []}, BNP, 'buy',
       checkOrder({stock: BNP, side: 'buy', quantity: '2', limit: '92', cash: 1000, held: 0, fxRates: {}, now: NOW}), NOW);
     expect(account.cash).toBe(816.14);
-    expect(account.trades[0]).toMatchObject({reference: 'google-finance', priceAsOf: BNP.sheetAsOf, fxRate: 1});
+    expect(account.trades[0]).toMatchObject({reference: 'google-finance', priceAsOf: BNP.asOf, fxRate: 1});
     expect(sanitizeSaved({account}).repaired).toBe(false);
   });
 });

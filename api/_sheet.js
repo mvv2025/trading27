@@ -189,7 +189,7 @@ export function parseMultiple(value) {
 /**
  * Valida i converteix el contingut del full.
  * @param {string} text CSV del full.
- * @returns {{rows: Record<string, SheetRow>, stats: {total: number, withPrice: number, withoutPrice: number, rejected: Record<string, string>}}}
+ * @returns {{rows: Record<string, SheetRow>, stats: {total: number, withPrice: number, withoutPrice: number, delisted: number, rejected: Record<string, string>}}}
  * @throws {Error} 502 SHEET_FORMAT_CHANGED si falten columnes.
  */
 export function parseSheet(text) {
@@ -204,13 +204,15 @@ export function parseSheet(text) {
   const rows = Object.create(null);
   /** @type {Record<string, string>} */
   const rejected = {};
-  let withoutPrice = 0;
+  let withoutPrice = 0, delisted = 0;
   const cell = (line, key) => String(line[index[key]] ?? '').trim();
 
   for (const line of lines) {
     const ticker = cell(line, 'ticker');
     if (!ticker) continue;
     if (!Object.hasOwn(INSTRUMENTS, ticker)) { rejected[ticker.slice(0, 20)] = 'UNKNOWN_TICKER'; continue; }
+    // Empreses retirades de borsa (src/universe.js): el full pot conservar-ne un preu antic; no es fa servir.
+    if (INSTRUMENTS[ticker].listingStatus === 'delisted') { delisted++; continue; }
     if (Object.hasOwn(rows, ticker) || rejected[ticker]) { rejected[ticker] = 'DUPLICATE'; delete rows[ticker]; continue; }
 
     const price = parseLocaleNumber(cell(line, 'price'));
@@ -247,7 +249,7 @@ export function parseSheet(text) {
   const withPrice = Object.keys(rows).length;
   return {
     rows,
-    stats: {total: withPrice + withoutPrice + Object.keys(rejected).length, withPrice, withoutPrice, rejected},
+    stats: {total: withPrice + withoutPrice + delisted + Object.keys(rejected).length, withPrice, withoutPrice, delisted, rejected},
   };
 }
 

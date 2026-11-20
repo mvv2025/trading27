@@ -1,5 +1,5 @@
-// Curated company discovery universe. All added prices start unavailable until a provider verifies them.
-// Presence in this list does not guarantee that the user's Twelve Data plan covers this exchange.
+// Curated Trading27 company discovery universe, reconciled with exchange listings on 2026-11-07.
+// Delisted securities remain for educational/historical reference but must not be treated as active listings.
 export const EXTRA = [
   {
     "symbol": "AAPL",
@@ -104,7 +104,7 @@ export const EXTRA = [
   {
     "symbol": "CRM",
     "name": "Salesforce",
-    "market": "NASDAQ",
+    "market": "NYSE",
     "country": "Estats Units",
     "currency": "USD",
     "sector": "Tecnologia",
@@ -112,7 +112,7 @@ export const EXTRA = [
       "Tecnologia",
       "IA"
     ],
-    "mic": "XNAS",
+    "mic": "XNYS",
     "price": null,
     "change": null,
     "high": null,
@@ -144,7 +144,7 @@ export const EXTRA = [
   {
     "symbol": "NOW",
     "name": "ServiceNow",
-    "market": "NASDAQ",
+    "market": "NYSE",
     "country": "Estats Units",
     "currency": "USD",
     "sector": "Tecnologia",
@@ -152,7 +152,7 @@ export const EXTRA = [
       "Tecnologia",
       "IA"
     ],
-    "mic": "XNAS",
+    "mic": "XNYS",
     "price": null,
     "change": null,
     "high": null,
@@ -384,7 +384,7 @@ export const EXTRA = [
   {
     "symbol": "SNOW",
     "name": "Snowflake",
-    "market": "NASDAQ",
+    "market": "NYSE",
     "country": "Estats Units",
     "currency": "USD",
     "sector": "Tecnologia",
@@ -392,7 +392,7 @@ export const EXTRA = [
       "Tecnologia",
       "IA"
     ],
-    "mic": "XNAS",
+    "mic": "XNYS",
     "price": null,
     "change": null,
     "high": null,
@@ -679,7 +679,9 @@ export const EXTRA = [
     "low": null,
     "yield": null,
     "pe": null,
-    "mv": null
+    "mv": null,
+    "listingStatus": "delisted",
+    "statusReason": "Adquirida i retirada del Nasdaq l'agost de 2026"
   },
   {
     "symbol": "ROKU",
@@ -744,7 +746,7 @@ export const EXTRA = [
   {
     "symbol": "ANET",
     "name": "Arista Networks",
-    "market": "NASDAQ",
+    "market": "NYSE",
     "country": "Estats Units",
     "currency": "USD",
     "sector": "Tecnologia",
@@ -752,7 +754,7 @@ export const EXTRA = [
       "Tecnologia",
       "IA"
     ],
-    "mic": "XNAS",
+    "mic": "XNYS",
     "price": null,
     "change": null,
     "high": null,
@@ -844,7 +846,7 @@ export const EXTRA = [
   {
     "symbol": "HUBS",
     "name": "HubSpot",
-    "market": "NASDAQ",
+    "market": "NYSE",
     "country": "Estats Units",
     "currency": "USD",
     "sector": "Tecnologia",
@@ -852,7 +854,7 @@ export const EXTRA = [
       "Tecnologia",
       "IA"
     ],
-    "mic": "XNAS",
+    "mic": "XNYS",
     "price": null,
     "change": null,
     "high": null,
@@ -884,7 +886,7 @@ export const EXTRA = [
   {
     "symbol": "DELL",
     "name": "Dell Technologies",
-    "market": "NASDAQ",
+    "market": "NYSE",
     "country": "Estats Units",
     "currency": "USD",
     "sector": "Tecnologia",
@@ -892,7 +894,7 @@ export const EXTRA = [
       "Tecnologia",
       "IA"
     ],
-    "mic": "XNAS",
+    "mic": "XNYS",
     "price": null,
     "change": null,
     "high": null,
@@ -904,7 +906,7 @@ export const EXTRA = [
   {
     "symbol": "HPE",
     "name": "Hewlett Packard Enterprise",
-    "market": "NASDAQ",
+    "market": "NYSE",
     "country": "Estats Units",
     "currency": "USD",
     "sector": "Tecnologia",
@@ -912,7 +914,7 @@ export const EXTRA = [
       "Tecnologia",
       "IA"
     ],
-    "mic": "XNAS",
+    "mic": "XNYS",
     "price": null,
     "change": null,
     "high": null,
@@ -1084,7 +1086,7 @@ export const EXTRA = [
   {
     "symbol": "RGTI",
     "name": "Rigetti Computing",
-    "market": "NYSE",
+    "market": "NASDAQ",
     "country": "Estats Units",
     "currency": "USD",
     "sector": "Tecnologia",
@@ -1092,7 +1094,7 @@ export const EXTRA = [
       "Tecnologia",
       "IA"
     ],
-    "mic": "XNYS",
+    "mic": "XNAS",
     "price": null,
     "change": null,
     "high": null,
@@ -1104,7 +1106,7 @@ export const EXTRA = [
   {
     "symbol": "SOUN",
     "name": "SoundHound AI",
-    "market": "NYSE",
+    "market": "NASDAQ",
     "country": "Estats Units",
     "currency": "USD",
     "sector": "Tecnologia",
@@ -1112,7 +1114,7 @@ export const EXTRA = [
       "Tecnologia",
       "IA"
     ],
-    "mic": "XNYS",
+    "mic": "XNAS",
     "price": null,
     "change": null,
     "high": null,
@@ -1144,7 +1146,7 @@ export const EXTRA = [
   {
     "symbol": "TEM",
     "name": "Tempus AI",
-    "market": "NYSE",
+    "market": "NASDAQ",
     "country": "Estats Units",
     "currency": "USD",
     "sector": "Tecnologia",
@@ -1152,7 +1154,7 @@ export const EXTRA = [
       "Tecnologia",
       "IA"
     ],
-    "mic": "XNYS",
+    "mic": "XNAS",
     "price": null,
     "change": null,
     "high": null,
@@ -1224,7 +1226,7 @@ export const EXTRA = [
   {
     "symbol": "FSLY",
     "name": "Fastly",
-    "market": "NYSE",
+    "market": "NASDAQ",
     "country": "Estats Units",
     "currency": "USD",
     "sector": "Tecnologia",
@@ -1232,7 +1234,7 @@ export const EXTRA = [
       "Tecnologia",
       "IA"
     ],
-    "mic": "XNYS",
+    "mic": "XNAS",
     "price": null,
     "change": null,
     "high": null,
@@ -1262,7 +1264,7 @@ export const EXTRA = [
     "mv": null
   },
   {
-    "symbol": "SQ",
+    "symbol": "XYZ",
     "name": "Block",
     "market": "NYSE",
     "country": "Estats Units",
@@ -1657,7 +1659,9 @@ export const EXTRA = [
     "low": null,
     "yield": null,
     "pe": null,
-    "mv": null
+    "mv": null,
+    "listingStatus": "delisted",
+    "statusReason": "Integrada amb Skyworks i retirada del Nasdaq l'octubre de 2026"
   },
   {
     "symbol": "TER",
@@ -1767,7 +1771,7 @@ export const EXTRA = [
   {
     "symbol": "COHR",
     "name": "Coherent",
-    "market": "NASDAQ",
+    "market": "NYSE",
     "country": "Estats Units",
     "currency": "USD",
     "sector": "Semiconductors",
@@ -1776,7 +1780,7 @@ export const EXTRA = [
       "IA",
       "Tecnologia"
     ],
-    "mic": "XNAS",
+    "mic": "XNYS",
     "price": null,
     "change": null,
     "high": null,
@@ -1788,7 +1792,7 @@ export const EXTRA = [
   {
     "symbol": "WOLF",
     "name": "Wolfspeed",
-    "market": "NASDAQ",
+    "market": "NYSE",
     "country": "Estats Units",
     "currency": "USD",
     "sector": "Semiconductors",
@@ -1797,7 +1801,7 @@ export const EXTRA = [
       "IA",
       "Tecnologia"
     ],
-    "mic": "XNAS",
+    "mic": "XNYS",
     "price": null,
     "change": null,
     "high": null,
@@ -2061,14 +2065,14 @@ export const EXTRA = [
   {
     "symbol": "FITB",
     "name": "Fifth Third Bancorp",
-    "market": "NASDAQ",
+    "market": "NYSE",
     "country": "Estats Units",
     "currency": "USD",
     "sector": "Banca",
     "topics": [
       "Banca"
     ],
-    "mic": "XNAS",
+    "mic": "XNYS",
     "price": null,
     "change": null,
     "high": null,
@@ -2099,14 +2103,14 @@ export const EXTRA = [
   {
     "symbol": "KEY",
     "name": "KeyCorp",
-    "market": "NASDAQ",
+    "market": "NYSE",
     "country": "Estats Units",
     "currency": "USD",
     "sector": "Banca",
     "topics": [
       "Banca"
     ],
-    "mic": "XNAS",
+    "mic": "XNYS",
     "price": null,
     "change": null,
     "high": null,
@@ -2118,14 +2122,14 @@ export const EXTRA = [
   {
     "symbol": "RF",
     "name": "Regions Financial",
-    "market": "NASDAQ",
+    "market": "NYSE",
     "country": "Estats Units",
     "currency": "USD",
     "sector": "Banca",
     "topics": [
       "Banca"
     ],
-    "mic": "XNAS",
+    "mic": "XNYS",
     "price": null,
     "change": null,
     "high": null,
@@ -2137,14 +2141,14 @@ export const EXTRA = [
   {
     "symbol": "WAL",
     "name": "Western Alliance Bancorporation",
-    "market": "NASDAQ",
+    "market": "NYSE",
     "country": "Estats Units",
     "currency": "USD",
     "sector": "Banca",
     "topics": [
       "Banca"
     ],
-    "mic": "XNAS",
+    "mic": "XNYS",
     "price": null,
     "change": null,
     "high": null,
@@ -2189,7 +2193,9 @@ export const EXTRA = [
     "low": null,
     "yield": null,
     "pe": null,
-    "mv": null
+    "mv": null,
+    "listingStatus": "delisted",
+    "statusReason": "Integrada amb Fifth Third i retirada de cotització el febrer de 2026"
   },
   {
     "symbol": "EWBC",
@@ -2213,14 +2219,14 @@ export const EXTRA = [
   {
     "symbol": "FHN",
     "name": "First Horizon",
-    "market": "NASDAQ",
+    "market": "NYSE",
     "country": "Estats Units",
     "currency": "USD",
     "sector": "Banca",
     "topics": [
       "Banca"
     ],
-    "mic": "XNAS",
+    "mic": "XNYS",
     "price": null,
     "change": null,
     "high": null,
@@ -2458,7 +2464,7 @@ export const EXTRA = [
     "mv": null
   },
   {
-    "symbol": "BK",
+    "symbol": "BNY",
     "name": "Bank of New York Mellon",
     "market": "NYSE",
     "country": "Estats Units",
@@ -3873,7 +3879,7 @@ export const EXTRA = [
   {
     "symbol": "VTRS",
     "name": "Viatris",
-    "market": "NYSE",
+    "market": "NASDAQ",
     "country": "Estats Units",
     "currency": "USD",
     "sector": "Farmacèutica",
@@ -3881,7 +3887,7 @@ export const EXTRA = [
       "Farmacèutica",
       "Salut"
     ],
-    "mic": "XNYS",
+    "mic": "XNAS",
     "price": null,
     "change": null,
     "high": null,
@@ -4068,7 +4074,9 @@ export const EXTRA = [
     "low": null,
     "yield": null,
     "pe": null,
-    "mv": null
+    "mv": null,
+    "listingStatus": "delisted",
+    "statusReason": "Adquirida per Blackstone i TPG; empresa privada des de l'abril de 2026"
   },
   {
     "symbol": "EXAS",
@@ -4088,7 +4096,9 @@ export const EXTRA = [
     "low": null,
     "yield": null,
     "pe": null,
-    "mv": null
+    "mv": null,
+    "listingStatus": "delisted",
+    "statusReason": "Adquirida per Abbott i retirada de cotització el març de 2026"
   },
   {
     "symbol": "TECH",
@@ -4173,7 +4183,7 @@ export const EXTRA = [
   {
     "symbol": "VEEV",
     "name": "Veeva Systems",
-    "market": "NASDAQ",
+    "market": "NYSE",
     "country": "Estats Units",
     "currency": "USD",
     "sector": "Salut",
@@ -4181,7 +4191,7 @@ export const EXTRA = [
       "Salut",
       "Biotecnologia"
     ],
-    "mic": "XNAS",
+    "mic": "XNYS",
     "price": null,
     "change": null,
     "high": null,
@@ -4193,7 +4203,7 @@ export const EXTRA = [
   {
     "symbol": "GMED",
     "name": "Globus Medical",
-    "market": "NASDAQ",
+    "market": "NYSE",
     "country": "Estats Units",
     "currency": "USD",
     "sector": "Salut",
@@ -4201,7 +4211,7 @@ export const EXTRA = [
       "Salut",
       "Biotecnologia"
     ],
-    "mic": "XNAS",
+    "mic": "XNYS",
     "price": null,
     "change": null,
     "high": null,
@@ -4228,7 +4238,9 @@ export const EXTRA = [
     "low": null,
     "yield": null,
     "pe": null,
-    "mv": null
+    "mv": null,
+    "listingStatus": "delisted",
+    "statusReason": "Adquirida per Danaher i retirada del Nasdaq el juny de 2026"
   },
   {
     "symbol": "TNDM",
@@ -5027,7 +5039,7 @@ export const EXTRA = [
   {
     "symbol": "DVN",
     "name": "Devon Energy",
-    "market": "NASDAQ",
+    "market": "NYSE",
     "country": "Estats Units",
     "currency": "USD",
     "sector": "Petroli i gas",
@@ -5035,7 +5047,7 @@ export const EXTRA = [
       "Petroli i gas",
       "Energia"
     ],
-    "mic": "XNAS",
+    "mic": "XNYS",
     "price": null,
     "change": null,
     "high": null,
@@ -5067,7 +5079,7 @@ export const EXTRA = [
   {
     "symbol": "MTDR",
     "name": "Matador Resources",
-    "market": "NASDAQ",
+    "market": "NYSE",
     "country": "Estats Units",
     "currency": "USD",
     "sector": "Petroli i gas",
@@ -5075,7 +5087,7 @@ export const EXTRA = [
       "Petroli i gas",
       "Energia"
     ],
-    "mic": "XNAS",
+    "mic": "XNYS",
     "price": null,
     "change": null,
     "high": null,
@@ -5087,7 +5099,7 @@ export const EXTRA = [
   {
     "symbol": "AR",
     "name": "Antero Resources",
-    "market": "NASDAQ",
+    "market": "NYSE",
     "country": "Estats Units",
     "currency": "USD",
     "sector": "Petroli i gas",
@@ -5095,7 +5107,7 @@ export const EXTRA = [
       "Petroli i gas",
       "Energia"
     ],
-    "mic": "XNAS",
+    "mic": "XNYS",
     "price": null,
     "change": null,
     "high": null,
@@ -5107,7 +5119,7 @@ export const EXTRA = [
   {
     "symbol": "EQT",
     "name": "EQT Corporation",
-    "market": "NASDAQ",
+    "market": "NYSE",
     "country": "Estats Units",
     "currency": "USD",
     "sector": "Petroli i gas",
@@ -5115,7 +5127,7 @@ export const EXTRA = [
       "Petroli i gas",
       "Energia"
     ],
-    "mic": "XNAS",
+    "mic": "XNYS",
     "price": null,
     "change": null,
     "high": null,
@@ -5127,7 +5139,7 @@ export const EXTRA = [
   {
     "symbol": "CNX",
     "name": "CNX Resources",
-    "market": "NASDAQ",
+    "market": "NYSE",
     "country": "Estats Units",
     "currency": "USD",
     "sector": "Petroli i gas",
@@ -5135,7 +5147,7 @@ export const EXTRA = [
       "Petroli i gas",
       "Energia"
     ],
-    "mic": "XNAS",
+    "mic": "XNYS",
     "price": null,
     "change": null,
     "high": null,
@@ -5147,7 +5159,7 @@ export const EXTRA = [
   {
     "symbol": "RRC",
     "name": "Range Resources",
-    "market": "NASDAQ",
+    "market": "NYSE",
     "country": "Estats Units",
     "currency": "USD",
     "sector": "Petroli i gas",
@@ -5155,7 +5167,7 @@ export const EXTRA = [
       "Petroli i gas",
       "Energia"
     ],
-    "mic": "XNAS",
+    "mic": "XNYS",
     "price": null,
     "change": null,
     "high": null,
@@ -5167,7 +5179,7 @@ export const EXTRA = [
   {
     "symbol": "GPOR",
     "name": "Gulfport Energy",
-    "market": "NASDAQ",
+    "market": "NYSE",
     "country": "Estats Units",
     "currency": "USD",
     "sector": "Petroli i gas",
@@ -5175,7 +5187,7 @@ export const EXTRA = [
       "Petroli i gas",
       "Energia"
     ],
-    "mic": "XNAS",
+    "mic": "XNYS",
     "price": null,
     "change": null,
     "high": null,
@@ -5187,7 +5199,7 @@ export const EXTRA = [
   {
     "symbol": "MGY",
     "name": "Magnolia Oil & Gas",
-    "market": "NASDAQ",
+    "market": "NYSE",
     "country": "Estats Units",
     "currency": "USD",
     "sector": "Petroli i gas",
@@ -5195,7 +5207,7 @@ export const EXTRA = [
       "Petroli i gas",
       "Energia"
     ],
-    "mic": "XNAS",
+    "mic": "XNYS",
     "price": null,
     "change": null,
     "high": null,
@@ -5227,7 +5239,7 @@ export const EXTRA = [
   {
     "symbol": "OVV",
     "name": "Ovintiv",
-    "market": "NASDAQ",
+    "market": "NYSE",
     "country": "Estats Units",
     "currency": "USD",
     "sector": "Petroli i gas",
@@ -5235,7 +5247,7 @@ export const EXTRA = [
       "Petroli i gas",
       "Energia"
     ],
-    "mic": "XNAS",
+    "mic": "XNYS",
     "price": null,
     "change": null,
     "high": null,
@@ -5387,7 +5399,7 @@ export const EXTRA = [
   {
     "symbol": "BKR",
     "name": "Baker Hughes",
-    "market": "NYSE",
+    "market": "NASDAQ",
     "country": "Estats Units",
     "currency": "USD",
     "sector": "Petroli i gas",
@@ -5395,7 +5407,7 @@ export const EXTRA = [
       "Petroli i gas",
       "Energia"
     ],
-    "mic": "XNYS",
+    "mic": "XNAS",
     "price": null,
     "change": null,
     "high": null,
@@ -5522,7 +5534,9 @@ export const EXTRA = [
     "low": null,
     "yield": null,
     "pe": null,
-    "mv": null
+    "mv": null,
+    "listingStatus": "delisted",
+    "statusReason": "Fusionada amb Devon Energy; deixa de cotitzar el maig de 2026"
   },
   {
     "symbol": "KMI",
@@ -5607,7 +5621,7 @@ export const EXTRA = [
   {
     "symbol": "ET",
     "name": "Energy Transfer",
-    "market": "NYSE",
+    "market": "TXSE",
     "country": "Estats Units",
     "currency": "USD",
     "sector": "Petroli i gas",
@@ -5615,7 +5629,7 @@ export const EXTRA = [
       "Petroli i gas",
       "Energia"
     ],
-    "mic": "XNYS",
+    "mic": "TXSE",
     "price": null,
     "change": null,
     "high": null,
@@ -5667,7 +5681,7 @@ export const EXTRA = [
   {
     "symbol": "PAA",
     "name": "Plains All American Pipeline",
-    "market": "NYSE",
+    "market": "NASDAQ",
     "country": "Estats Units",
     "currency": "USD",
     "sector": "Petroli i gas",
@@ -5675,7 +5689,7 @@ export const EXTRA = [
       "Petroli i gas",
       "Energia"
     ],
-    "mic": "XNYS",
+    "mic": "XNAS",
     "price": null,
     "change": null,
     "high": null,
@@ -5747,7 +5761,7 @@ export const EXTRA = [
   {
     "symbol": "IMO",
     "name": "Imperial Oil",
-    "market": "NYSE",
+    "market": "NYSEAMERICAN",
     "country": "Estats Units",
     "currency": "USD",
     "sector": "Petroli i gas",
@@ -5755,7 +5769,7 @@ export const EXTRA = [
       "Petroli i gas",
       "Energia"
     ],
-    "mic": "XNYS",
+    "mic": "XASE",
     "price": null,
     "change": null,
     "high": null,
@@ -6007,7 +6021,7 @@ export const EXTRA = [
   {
     "symbol": "NOV",
     "name": "NOV",
-    "market": "NASDAQ",
+    "market": "NYSE",
     "country": "Estats Units",
     "currency": "USD",
     "sector": "Petroli i gas",
@@ -6015,7 +6029,7 @@ export const EXTRA = [
       "Petroli i gas",
       "Energia"
     ],
-    "mic": "XNAS",
+    "mic": "XNYS",
     "price": null,
     "change": null,
     "high": null,
@@ -6047,8 +6061,8 @@ export const EXTRA = [
   {
     "symbol": "SNY",
     "name": "Sanofi ADR",
-    "mic": "XNYS",
-    "market": "NYSE",
+    "mic": "XNAS",
+    "market": "NASDAQ",
     "country": "Estats Units",
     "currency": "USD",
     "sector": "Farmacèutica",
@@ -6067,9 +6081,9 @@ export const EXTRA = [
   },
   {
     "symbol": "AZN",
-    "name": "AstraZeneca ADR",
-    "mic": "XNAS",
-    "market": "NASDAQ",
+    "name": "AstraZeneca (accions ordinàries EUA)",
+    "mic": "XNYS",
+    "market": "NYSE",
     "country": "Estats Units",
     "currency": "USD",
     "sector": "Farmacèutica",

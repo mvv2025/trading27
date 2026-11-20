@@ -88,6 +88,16 @@ describe('handler de cotitzacions', () => {
     expect(options.headers.Authorization).toBe('apikey test-key');
   });
 
+  it('retorna 410 per a una empresa retirada de borsa sense cridar el proveïdor', async () => {
+    const {INSTRUMENTS} = await import('../api/_market.js');
+    const delisted = Object.entries(INSTRUMENTS).find(([, v]) => v.listingStatus === 'delisted')?.[0];
+    const res = mockRes();
+    await quotes(mockReq({symbol: delisted}), res);
+    expect(res.statusCode).toBe(410);
+    expect(res.body.error).toBe('INSTRUMENT_DELISTED');
+    expect(fetchMock).not.toHaveBeenCalled();
+  });
+
   it('no crida el proveïdor si la consulta no és canònica', async () => {
     const res = mockRes();
     await quotes(mockReq({symbol: 'NVDA', cachebuster: '123'}), res);

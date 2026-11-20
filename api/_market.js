@@ -12,7 +12,7 @@ const BASE_INSTRUMENTS={
  SHOP:{symbol:'SHOP',mic:'XTSE',currency:'CAD'},NVDA:{symbol:'NVDA',mic:'XNAS',currency:'USD'},
  GOOGL:{symbol:'GOOGL',mic:'XNAS',currency:'USD'},MSFT:{symbol:'MSFT',mic:'XNAS',currency:'USD'}
 };
-export const INSTRUMENTS={...BASE_INSTRUMENTS,...Object.fromEntries(EXTRA.map(s=>[s.symbol,{symbol:s.symbol,mic:s.mic,currency:s.currency,market:s.market}]))};
+export const INSTRUMENTS={...BASE_INSTRUMENTS,...Object.fromEntries(EXTRA.map(s=>[s.symbol,{symbol:s.symbol,mic:s.mic,currency:s.currency,market:s.market,listingStatus:s.listingStatus||'active'}]))};
 export function noCache(res){res.setHeader('Cache-Control','private, no-store, max-age=0');res.setHeader('X-Content-Type-Options','nosniff')}
 export function cacheSuccessfulQuote(res){res.setHeader('Cache-Control','public, max-age=0, s-maxage=90, stale-while-revalidate=45')}
 export function cacheSuccessfulFx(res){res.setHeader('Cache-Control','public, max-age=0, s-maxage=300, stale-while-revalidate=300')}
@@ -105,7 +105,11 @@ export function lookup(req,allowed=[]){
  if(Object.keys(query).some(k=>!permitted.has(k)))throw httpError('NON_CANONICAL_QUERY',400);
  const raw=query.symbol;
  if(typeof raw!=='string'||!raw)throw httpError('UNKNOWN_OR_MULTIPLE_SYMBOLS',400);
- if(Object.hasOwn(INSTRUMENTS,raw))return {ticker:raw,stock:INSTRUMENTS[raw]};
+ if(Object.hasOwn(INSTRUMENTS,raw)){
+  // Empreses deslistades (marcades a src/universe.js): no es consulta el proveïdor.
+  if(INSTRUMENTS[raw].listingStatus==='delisted')throw httpError('INSTRUMENT_DELISTED',410);
+  return {ticker:raw,stock:INSTRUMENTS[raw]};
+ }
  // Símbol conegut però escrit diferent (minúscules, espais): no és canònic.
  if(Object.hasOwn(INSTRUMENTS,raw.trim().toUpperCase()))throw httpError('NON_CANONICAL_QUERY',400);
  throw httpError('UNKNOWN_OR_MULTIPLE_SYMBOLS',400);
@@ -144,7 +148,7 @@ export async function consumeProviderBudget(){
  }
 }
 export function failure(res,e){
- const known=new Set(['PROVIDER_NOT_CONFIGURED','INVALID_PROVIDER_KEY','MARKET_NOT_INCLUDED_IN_PLAN','INSTRUMENT_NOT_FOUND','INVALID_INSTRUMENT_OR_QUERY','RATE_LIMIT_REACHED','PROVIDER_TEMPORARILY_UNAVAILABLE','PROVIDER_TIMEOUT','PROVIDER_NETWORK_ERROR','UPSTREAM_INVALID_RESPONSE','UNKNOWN_OR_MULTIPLE_SYMBOLS','NON_CANONICAL_QUERY','TOO_MANY_REQUESTS','PROVIDER_BUDGET_EXHAUSTED','UNKNOWN_PAIR']);
+ const known=new Set(['PROVIDER_NOT_CONFIGURED','INVALID_PROVIDER_KEY','MARKET_NOT_INCLUDED_IN_PLAN','INSTRUMENT_NOT_FOUND','INVALID_INSTRUMENT_OR_QUERY','RATE_LIMIT_REACHED','PROVIDER_TEMPORARILY_UNAVAILABLE','PROVIDER_TIMEOUT','PROVIDER_NETWORK_ERROR','UPSTREAM_INVALID_RESPONSE','UNKNOWN_OR_MULTIPLE_SYMBOLS','NON_CANONICAL_QUERY','TOO_MANY_REQUESTS','PROVIDER_BUDGET_EXHAUSTED','UNKNOWN_PAIR','INSTRUMENT_DELISTED']);
  if(e.retryAfter)res.setHeader('Retry-After',String(e.retryAfter));
  return res.status(e.status||502).json({error:known.has(e.message)?e.message:'DATA_UNAVAILABLE'});
 }

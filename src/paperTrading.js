@@ -34,6 +34,7 @@ const MAX_FUTURE_SKEW_MS = 15 * 60 * 1000;
  * @enum {string}
  */
 export const OrderBlock = Object.freeze({
+  DELISTED: 'DELISTED',
   CURRENCY_NOT_SUPPORTED: 'CURRENCY_NOT_SUPPORTED',
   NO_VERIFIED_QUOTE: 'NO_VERIFIED_QUOTE',
   QUOTE_TOO_OLD: 'QUOTE_TOO_OLD',
@@ -52,11 +53,10 @@ export const OrderBlock = Object.freeze({
  * @property {string} name
  * @property {string} currency
  * @property {number|null} price Preu actual mostrat.
- * @property {string} [asOf] Data del proveïdor; absent si el preu és històric.
- * @property {number} [receivedAt] Moment (ms) en què el client va rebre la cotització.
- * @property {'sheet'} [source] Present si el preu ve del full de Google Finance.
- * @property {string|null} [sheetAsOf] Hora del preu del full, en UTC (ISO).
- * @property {number} [sheetReceivedAt] Moment (ms) en què el client va rebre el full.
+ * @property {'twelvedata'|'sheet'|'snapshot'|'ft'|null} [priceSource] Origen del preu mostrat.
+ * @property {string|null} [asOf] Hora del preu en UTC (ISO).
+ * @property {number} [receivedAt] Moment (ms) en què el client va rebre el preu (Twelve Data o full).
+ * @property {string} [listingStatus] 'delisted' si l'empresa s'ha retirat de borsa.
  */
 
 /**
@@ -82,24 +82,23 @@ export const roundCents = (value) => Math.round(value * 100) / 100;
  * @returns {{block: string} | {block: null, rate: number, source: 'provider'|'sheet', priceAsOf: string}}
  */
 export function priceStatus(stock, fxRates, now) {
+  if (stock.listingStatus === 'delisted') return {block: OrderBlock.DELISTED};
   if (!TRADABLE_CURRENCIES.includes(stock.currency)) return {block: OrderBlock.CURRENCY_NOT_SUPPORTED};
   if (!Number.isFinite(stock.price) || stock.price <= 0) return {block: OrderBlock.NO_VERIFIED_QUOTE};
+  // Només serveixen per operar els preus de Twelve Data i del full en directe; la
+  // instantània del 10/11 ('snapshot') i el Financial Times ('ft') són de referència.
+  if (stock.priceSource !== 'twelvedata' && stock.priceSource !== 'sheet') return {block: OrderBlock.NO_VERIFIED_QUOTE};
+  if (!Number.isFinite(stock.receivedAt) || now - stock.receivedAt > MAX_QUOTE_AGE_MS) return {block: OrderBlock.QUOTE_TOO_OLD};
 
-  let source, priceAsOf;
-  if (stock.asOf) {
-    // Cotització de Twelve Data: té prioritat sobre el full.
-    if (!Number.isFinite(stock.receivedAt) || now - stock.receivedAt > MAX_QUOTE_AGE_MS) return {block: OrderBlock.QUOTE_TOO_OLD};
-    source = 'provider';
-    priceAsOf = stock.asOf;
-  } else if (stock.source === 'sheet') {
-    if (!Number.isFinite(stock.sheetReceivedAt) || now - stock.sheetReceivedAt > MAX_QUOTE_AGE_MS) return {block: OrderBlock.QUOTE_TOO_OLD};
-    const priceTime = Date.parse(stock.sheetAsOf ?? '');
+  const source = stock.priceSource === 'twelvedata' ? 'provider' : 'sheet';
+  const priceAsOf = stock.asOf ?? '';
+  if (source === 'provider') {
+    if (!priceAsOf) return {block: OrderBlock.NO_VERIFIED_QUOTE};
+  } else {
+    // Preu del full: l'hora (convertida a UTC al servidor) ha de ser vàlida i recent.
+    const priceTime = Date.parse(priceAsOf);
     if (!Number.isFinite(priceTime) || priceTime - now > MAX_FUTURE_SKEW_MS) return {block: OrderBlock.PRICE_TIME_INVALID};
     if (now - priceTime > MAX_SHEET_PRICE_AGE_MS) return {block: OrderBlock.PRICE_TOO_OLD};
-    source = 'sheet';
-    priceAsOf = stock.sheetAsOf;
-  } else {
-    return {block: OrderBlock.NO_VERIFIED_QUOTE};
   }
 
   if (stock.currency === 'EUR') return {block: null, rate: 1, source, priceAsOf};

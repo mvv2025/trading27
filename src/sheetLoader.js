@@ -83,14 +83,21 @@ export function createSheetLoader({fetchImpl = (...args) => fetch(...args), now 
  * Aplica la fila del full a una empresa del catàleg. Substitueix els camps de
  * preu (preu, variació, màxim i mínim anuals, PER i capitalització) perquè no
  * es barregin dades de dates diferents; el dividend (que el full no té) es manté.
- * @template {{price: number|null, change: number|null, high: number|null, low: number|null, pe: number|null, mv: number|null}} S
+ *
+ * Camps d'origen que deixa a l'empresa (els fan servir les etiquetes i el simulador):
+ *  - `priceSource: 'sheet'`;
+ *  - `asOf`: hora del preu en UTC (o null si el full no en dona una de vàlida);
+ *  - `receivedAt`: moment en què el client va rebre el full;
+ *  - `dataSource`, `quoteType` i `unitConversion` per a la fitxa d'Explorar.
+ * Les empreses retirades de borsa no es modifiquen.
+ * @template {{currency: string, listingStatus?: string, price: number|null, change: number|null, high: number|null, low: number|null, pe: number|null, mv: number|null}} S
  * @param {S} stock Empresa del catàleg.
  * @param {SheetRow | undefined} row Fila del full.
- * @param {number} [receivedAt] Moment (ms) en què el client va rebre el full; el simulador el fa servir.
- * @returns {S | (S & {source: 'sheet', sheetTime: string|null, sheetAsOf: string|null, sheetReceivedAt: number|undefined})}
+ * @param {number} [receivedAt] Moment (ms) en què el client va rebre el full.
+ * @returns {S}
  */
 export function applySheetRow(stock, row, receivedAt) {
-  if (!row) return stock;
+  if (!row || stock.listingStatus === 'delisted') return stock;
   const {price, changePct} = row;
   // El full dona la variació en %, l'aplicació la mostra en unitats monetàries.
   const change = changePct === null ? null : Math.round((price * changePct / (100 + changePct)) * 100) / 100;
@@ -98,13 +105,17 @@ export function applySheetRow(stock, row, receivedAt) {
     ...stock,
     price,
     change,
+    changePct,
     high: row.high52,
     low: row.low52,
     pe: row.pe,
     mv: row.marketCapB,
-    source: 'sheet',
+    priceSource: 'sheet',
+    asOf: row.asOf ?? null,
+    receivedAt,
     sheetTime: row.time,
-    sheetAsOf: row.asOf ?? null,
-    sheetReceivedAt: receivedAt,
+    dataSource: 'Google Finance (full de càlcul)',
+    quoteType: 'google_sheets_live',
+    unitConversion: stock.currency === 'GBP' ? 'GBX_TO_GBP' : null,
   };
 }

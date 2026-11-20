@@ -5,6 +5,7 @@ import {
   fetchSheetCsv, localToUtcIso, parseCsv, parseFxTab, parseLocaleNumber, parseMultiple, parsePercent, parseSheet,
 } from '../api/_sheet.js';
 import {resetMemoryStore} from '../api/_ratelimit.js';
+import {INSTRUMENTS} from '../api/_market.js';
 import {applySheetRow, createSheetLoader} from '../src/sheetLoader.js';
 
 const HEADER = '"Ticker","Empresa","Moneda","Preu actual (moneda local)","Capitalització (moneda local)","Màxim 52 setmanes","Mínim 52 setmanes","Variació diària (%)","Moneda segons Google","PER (vegades)","Hora última cotització"';
@@ -71,12 +72,21 @@ describe('parseSheet', () => {
     expect(rows.FAKE).toBeUndefined(); // no és al catàleg
     expect(rows.AAPL).toBeUndefined(); // fórmula en lloc de nombre
     expect(rows.MSFT).toBeUndefined(); // preu zero
-    expect(stats).toMatchObject({withPrice: 4, withoutPrice: 2});
+    expect(stats).toMatchObject({withPrice: 4, withoutPrice: 2, delisted: 0});
     expect(stats.rejected).toEqual({'0700': 'CURRENCY_MISMATCH', FAKE: 'UNKNOWN_TICKER', MSFT: 'INVALID_PRICE'});
   });
 
   it('anul·la un rang anual incoherent i una hora sense format', () => {
     expect(rows.TTE).toMatchObject({price: 79.73, high52: null, low52: null, pe: null, time: null, asOf: null});
+  });
+
+  it('ignora les empreses retirades de borsa', () => {
+    const delistedTicker = Object.entries(INSTRUMENTS).find(([, v]) => v.listingStatus === 'delisted')?.[0];
+    expect(delistedTicker).toBeDefined();
+    const line = `"${delistedTicker}","X","USD","10,00","","","","","USD","",""`;
+    const result = parseSheet(csv([line]));
+    expect(result.rows[delistedTicker]).toBeUndefined();
+    expect(result.stats).toMatchObject({withPrice: 0, delisted: 1});
   });
 
   it('marca els símbols duplicats i no en fa servir cap', () => {
@@ -204,9 +214,14 @@ describe('client: createSheetLoader i applySheetRow', () => {
     const seed = {symbol: 'BNP', currency: 'EUR', price: 87.65, change: 0.45, high: 113.82, low: 65.12, yield: 6.62, pe: 9.16, mv: 97.89};
     const row = {price: 101, high52: 120, low52: 60, changePct: 1, pe: null, marketCapB: 100, time: '06/11/2026 17:35', asOf: '2026-11-06T16:35:00.000Z'};
     expect(applySheetRow(seed, row, 1_800_000_000_000)).toEqual({
-      symbol: 'BNP', currency: 'EUR', price: 101, change: 1, high: 120, low: 60, yield: 6.62, pe: null, mv: 100,
-      source: 'sheet', sheetTime: '06/11/2026 17:35', sheetAsOf: '2026-11-06T16:35:00.000Z', sheetReceivedAt: 1_800_000_000_000,
+      symbol: 'BNP', currency: 'EUR', price: 101, change: 1, changePct: 1, high: 120, low: 60, yield: 6.62, pe: null, mv: 100,
+      priceSource: 'sheet', asOf: '2026-11-06T16:35:00.000Z', receivedAt: 1_800_000_000_000, sheetTime: '06/11/2026 17:35',
+      dataSource: 'Google Finance (full de càlcul)', quoteType: 'google_sheets_live', unitConversion: null,
     });
     expect(applySheetRow(seed, undefined)).toBe(seed);
+    // Les empreses retirades de borsa no agafen preus del full.
+    const delisted = {...seed, listingStatus: 'delisted'};
+    expect(applySheetRow(delisted, row, 1)).toBe(delisted);
+    expect(applySheetRow({...seed, currency: 'GBP'}, row, 1).unitConversion).toBe('GBX_TO_GBP');
   });
 });
