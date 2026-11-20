@@ -1,11 +1,13 @@
-import {lookup,provider,noCache,cacheSuccessfulHistory,asNumber,verifiedCurrency,verifiedMic,failure} from './_market.js';
+import {enforceClientLimit,lookup,provider,noCache,cacheSuccessfulHistory,asNumber,verifiedCurrency,verifiedMic,failure} from './_market.js';
 const SIZES={'1M':30,'3M':90,'6M':180,'1Y':270,'3Y':810,'5Y':1350};
 export default async function handler(req,res){
  noCache(res);if(req.method!=='GET')return res.status(405).json({error:'METHOD_NOT_ALLOWED'});
  try{
-  const {ticker,stock}=lookup(req);
-  const range=String(req.query.range||'6M').toUpperCase();
-  if(!SIZES[range])return res.status(400).json({error:'INVALID_RANGE'});
+  await enforceClientLimit(req);
+  const {ticker,stock}=lookup(req,['range']);
+  // El període és obligatori i en majúscules: una sola URL per consulta (memòria cau del CDN).
+  const range=req.query.range;
+  if(typeof range!=='string'||!Object.hasOwn(SIZES,range))return res.status(400).json({error:'INVALID_RANGE'});
   const data=await provider('time_series',stock,{interval:'1day',outputsize:SIZES[range],adjust:'splits'});
   if(!verifiedCurrency(data,stock)||!verifiedMic(data,stock)||!Array.isArray(data.values))
    return res.status(502).json({error:'HISTORY_NOT_VERIFIED'});

@@ -1,7 +1,8 @@
-import {lookup,provider,noCache,cacheSuccessfulQuote,asNumber,verifiedCurrency,verifiedMic,failure} from './_market.js';
+import {enforceClientLimit,lookup,provider,noCache,cacheSuccessfulQuote,asNumber,verifiedCurrency,verifiedMic,failure} from './_market.js';
 export default async function handler(req,res){
  noCache(res);if(req.method!=='GET')return res.status(405).json({error:'METHOD_NOT_ALLOWED'});
  try{
+  await enforceClientLimit(req);
   const {ticker,stock}=lookup(req);
   const data=await provider('quote',stock);
   const price=asNumber(data.close);
