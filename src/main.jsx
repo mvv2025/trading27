@@ -5,6 +5,7 @@ import './decision.css';
 import {LANGUAGES,translate} from './i18n';
 import {EXTRA} from './universe';
 import {analyzeComparison} from './compareInsights';
+import RecoveryRadar from './RecoveryRadar';
 import {GOOGLE_FINANCE_SNAPSHOT,GOOGLE_FINANCE_SNAPSHOT_METADATA} from './googleFinanceSnapshot';
 
 const SEED=[
@@ -96,7 +97,7 @@ function App(){
    :s?.quoteType==='fixed_external_close'?(language==='ca'?'Referència fixa · ':language==='es'?'Referencia fija · ':'Fixed quote · ')+quoteDate(s)
    :s?.dataSource==='Google Finance'?'Google Finance · '+quoteDate(s)
    :s?.asOf?((Date.now()-Date.parse(s.asOf)>15*60*1000)?(language==='ca'?'Cotització anterior':language==='es'?'Cotización anterior':'Older quote'):l.api):s?.price==null?l.unknown:l.historical;
- const pageMap=[['home',l.home],['explore',l.explore],['compare',l.compare],['practice',l.practice],['learn',l.learn],['journal',l.journal]];
+ const pageMap=[['home',l.home],['explore',l.explore],['radar',language==='ca'?'Radar de caigudes':language==='es'?'Radar de caídas':'Decline radar'],['compare',l.compare],['practice',l.practice],['learn',l.learn],['journal',l.journal]];
  useEffect(()=>{if(!helpOpen)return;const onKey=e=>{if(e.key==='Escape')setHelpOpen(false)};window.addEventListener('keydown',onKey);return ()=>window.removeEventListener('keydown',onKey)},[helpOpen]);
  useEffect(()=>{try{localStorage.setItem('trading27-language',language);localStorage.setItem('trading27-theme',theme)}catch{}document.documentElement.lang=language;document.title='Trading27 — Decision Canvas'},[language,theme]);
  useEffect(()=>{setLimit(stock?.price!=null?String(stock.price):'');setReview(false)},[selected]);
@@ -223,6 +224,7 @@ function App(){
   {historyLoading?<p className="historyState">{l.busy}</p>:historyError?<div className="historyState"><CircleAlert size={18}/> <span>{historyError}</span><button onClick={()=>loadHistory()}>{l.refresh}</button></div>:historyPrices.length>1?<><div className="chartStat"><strong>{fm(historyPrices[historyPrices.length-1],stock.currency)}</strong><span className={historyReturns>=0?'up':'down'}>{historyReturns>=0?'+':''}{fn(historyReturns)} % · {historyRange}</span></div><svg className="historyChart" viewBox="0 0 800 200" role="img" aria-label={language==='ca'?'Gràfic històric de tancaments':language==='es'?'Gráfico histórico de cierres':'Historical daily closing price chart'} preserveAspectRatio="none"><line x1="20" y1="175" x2="780" y2="175" stroke="currentColor" opacity=".17"/><line x1="20" y1="105" x2="780" y2="105" stroke="currentColor" opacity=".1"/><line x1="20" y1="35" x2="780" y2="35" stroke="currentColor" opacity=".1"/><polyline points={historyPoints} fill="none" stroke="var(--accent)" strokeWidth="3.5" strokeLinejoin="round" strokeLinecap="round"/></svg><div className="chartAxis"><span>{history[0]?.date}</span><span>{history[history.length-1]?.date}</span></div><p className="microText">{language==='ca'?'Font: Twelve Data · dades de mercat històriques, no prediccions.':language==='es'?'Fuente: Twelve Data · datos históricos de mercado, no predicciones.':'Source: Twelve Data · historical market data, not predictions.'}</p></>:<p className="historyState">{l.noData}</p>}
  </section><div className="detailDivider"/><span className="smallCaps">{l.riskTitle}</span><div className="riskNotes">{risk(stock).slice(0,3).map((v,i)=><p key={i}><span>!</span>{t(v)}</p>)}</div><div className="detailActions"><button className="filled" onClick={()=>{if(!comparison.includes(selected))toggleCompare(selected);navigate('compare')}}>{l.goCompare} ↗</button><button className="outlineButton" onClick={()=>navigate('practice')}>{l.goPractice} →</button></div></aside></section>
    </>}
+   {page==='radar'&&<RecoveryRadar stocks={catalog} language={language} onOpen={goStock}/>}
    {page==='compare'&&<>
     <div className="pageHead"><span className="smallCaps">02 / CONTRAST</span><h1>{l.compare}</h1><p>{l.compareIntro}</p></div>
     <div className="comparePicker"><div><strong>{l.choose}</strong><small>{comparison.length}/3 · {l.count}</small></div><div className="pickerChips">{catalog.map(s=><button disabled={!comparison.includes(s.symbol)&&comparison.length>=3} key={s.symbol} className={comparison.includes(s.symbol)?'chosen':''} onClick={()=>toggleCompare(s.symbol)}>{comparison.includes(s.symbol)?'✓ ': '+ '}{s.symbol}</button>)}</div></div>
